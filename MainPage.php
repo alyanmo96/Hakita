@@ -1,392 +1,424 @@
 <?php
-	$con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-	$IdResults = mysqli_query($con, "SELECT * FROM teachers");
-	$rows=mysqli_fetch_array($IdResults);
-	$fId=$rows['id'];
-	$rows=mysqli_fetch_array($IdResults);
-	$sId=$rows['id'];
-	$rows=mysqli_fetch_array($IdResults);
-	$tId=$rows['id'];
+//!!!!!!!!!!!!!!!!!!!!!!!!!its need to be the last three teachers
+    $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+    $IdResults = mysqli_query($con, "SELECT * FROM teachers");
+    /*create array for the new teachers, it's need to choose random a three new teachers
+    * but yet there is no alot teachers
+    */
+    $NewTeachersArray=array();
+    for($i=0;$i<3;$i++)
+    {
+        $rows=mysqli_fetch_array($IdResults);
+        $NewTeachersArray[$i]=$rows['id'];
+    }
 ?>
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-	    <meta charset="utf-8">
-	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	    <meta name="viewport" content="width=device-width, initial-scale=1">
-	    <title>הכיתה</title>
-	    <link href="css/bootstrap.min.css" rel="stylesheet">
-	    <link href="https://fonts.googleapis.com/css?family=Cairo:400,700" rel="stylesheet">
-	    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-	    <link rel="stylesheet" type="text/css" href="css/main.css">
-	    <meta name="viewport" content="width=device-width, initial-scale=1">
-	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-	    <style >
-	    	body
-	    	{
-	    		direction: rtl;
-	    		max-width: 100%;
-	    	}
-	    	.moreTeachers
-	    	{
-	    		direction: ltr;
-	    	}
-	    	.Services
-	    	{
-	    		direction: ltr;
-	    	}
-	    	#bs-example-navbar-collapse-1
-			{
-				float: left;
-				max-width: 50%;
-			}
-			#hakitahTitle
-			{
-				margin-left: 6%;
-				max-width: 20%;
-			}
-	    </style>
-	</head>
-    <body>
-    	<nav class="navbar navbar-inverse">
-  		<div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
-      </button>
-      <a class="navbar-brand" href="MainPage.php">הכיתה</a>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li ><a href="firstLoginPage.php">כניסה/הרשמה</a></li>
-        <li>
-		        	<a alt="work 1" data-toggle="modal" data-target="#myModalc">צור קשר</a>
-		        	<div class="modal fade" id="myModalc" tabindex="-1" role="dialog" aria-labelledby="myModalLabelv">
-						  <div class="modal-dialog" role="document">
-						    <div class="modal-content">
-						      <div class="modal-header">
-						        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						        <h4 class="modal-title" id="myModalLabelv">צור קשר</h4>
-						      </div>
-						      <div class="modal-body">
-						       <img id="aboutimg" src="img/call.jpg" alt="work 1">
-						        <hr>
-						        <p class="pA">
-						        	Admin: Eli Isaak.
-						        	<hr>
-						        	Phone: 0522222222.
-						        	<hr>
-						        	Email:EliIsaak@EliIsaak.com
-								</p>
-						      </div>
-						      <div class="modal-footer">
-						        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						       </div>
-						    </div>
-						  </div>
-						</div>
-		        </li>
-        <li>  	<a href="#">שאלות ותשובות</a>       </li>
-        <li>	<a href="searchTeachers.php">חיפוש מורה</a>        </li>
-      </ul>
-    </div>
+<html>
+<head>
+<meta charset="utf-8">
+  <title>הכיתה</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <style>
+        .row
+        {
+            display:block;
+        }
+        li
+        {
+            color:black;
+            font-size:20px;
+        }
+        .navbar-brand 
+        {
+            font-size:35px;
+        }    
+        .nav-link:hover
+        {
+            font-size:30px;
+        }
+        h1
+        {
+            font-size:45px;
+        }
+        .moreTeachers
+        {
+            font-size:25px;
+        }
+        img {
+    max-width: 100%;
+}
+.searchTeacherMainPageSection{
+    background-color:white;
+}
+.searchWords
+{
+    font-size:30px;
+}
+    </style>
+</head>
+<body>
+    <a id="button"></a><!--up button-->
+    <section><!--navbar section-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">הכיתה</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+              <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                  <li class="nav-item active">
+                    <a class="nav-link" href="firstLoginPage.php">כניסה/הרשמה <span class="sr-only">(current)</span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="searchTeachers.php">חיפוש מורה</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="FAQ.php">שאלות ותשובות</a>
+                  </li>
+              </ul>
+            </div>
+          </nav>
+    </section>    
+    <section class="mainPagePhoto">    </section><!--main photo-->     
+<hr>
+<div class="container bootstrap snippet" id="container">
+    <div class="row">
+      <div>            
+      <div class="searchTeacherMainPageSection col-sm-12">               
+          <div class="tab-content">
+            <div class="tab-pane active" id="home">
+                <hr>
+                  <form class="form" action="searchTeachers.php" method="post" id="registrationForm">  
+                      <div class="form-group">
+                             <div class="col-sm-6">
+                                  <div style=" padding-top: 1%;">
+                                   <p class="searchWords"> חיפוש מורה לפי עיר</p>
+                                     <select name="framework" id="framework" class="form-control selectpicker" data-live-search="true" multiple >
+                                        <option class="c" value="עכו">עכו</option>
+                                    <option value="עפולה">עפולה</option>
+                                    <option value="ערד">ערד</option>
+                                    <option value="עראבה">עראבה</option>
+                                    <option value="אשדוד">אשדוד</option>
+                                    <option value="אשכלון">אשכלון</option>
+                                    <option value="באקה אל גרביה">באקה אל גרביה</option>
+                                    <option value="בת ים">בת ים</option>
+                                    <option value="באר שבע">באר שבע</option>
+                                    <option value="בית שאן">בית שאן</option>
+                                    <option value="בית שמש">בית שמש</option>
+                                    <option value="בני ברק">בני ברק</option>
+                                    <option value="דימונה">דימונה</option>
+                                    <option value="אילת">אילת</option>
+                                    <option value="אלעד">אלעד</option>
+                                    <option value="גבעת שמואל">גבעת שמואל</option>
+                                    <option value="גבעתיים">גבעתיים</option>
+                                    <option value="חדרה">חדרה</option>
+                                    <option value="חיפה">חיפה</option>
+                                    <option value="הרצליה">הרצליה</option>
+                                    <option value="הוד השרון">הוד השרון</option>
+                                    <option value="חולון">חולון</option>
+                                    <option value="ירושלים">ירושלים</option>
+                                    <option value="כפר קאסם">כפר קאסם</option>
+                                    <option value="כרמיאל">כרמיאל</option>
+                                    <option value="כפר סבא">כפר סבא</option>
+                                    <option value="כפר יונה">כפר יונה</option>
+                                    <option value="כפר אתא">כפר אתא</option>
+                                    <option value="קרית ביאליק">קרית ביאליק</option>
+                                    <option value="קרית גת">קרית גת</option>
+                                    <option value="קרית מלאכי">קרית מלאכי</option>
+                                    <option value="קרית מוצקין">קרית מוצקין</option>
+                                    <option value="קרית אונו">קרית אונו</option>
+                                    <option value="קרית שמונה">קרית שמונה</option>
+                                    <option value="קרית ים">קרית ים</option>
+                                    <option value="לוד">לוד</option>
+                                    <option value="מעלות תרשיחא">מעלות תרשיחא</option>
+                                    <option value="מגדל העמק">מגדל העמק</option>
+                                    <option value="מודעין מכבים רעות">מודעין מכבים רעות</option>
+                                    <option value="נהריה">נהריה</option>
+                                    <option value="נצרת">נצרת</option>
+                                    <option value="נשר">נשר</option>
+                                    <option value="נס ציונה">נס ציונה</option>
+                                    <option value="נתניה">נתניה</option>
+                                    <option value="נתיבות">נתיבות</option>
+                                    <option value="נוף הגליל">נוף הגליל</option>
+                                    <option value="אופקים">אופקים</option>
+                                    <option value="אור עקיבה">אור עקיבה</option>
+                                    <option value="אור יהודה">אור יהודה</option>
+                                    <option value="פתח תקווה">פתח תקווה</option>
+                                    <option value="קלנסווה">קלנסווה</option>
+                                    <option value="רעננה">רעננה</option>
+                                    <option value="רהט">רהט</option>
+                                    <option value="רמת גן">רמת גן</option>
+                                    <option value="רמת השרון">רמת השרון</option>
+                                    <option value="רמלה">רמלה</option>
+                                    <option value="רחובות">רחובות</option>
+                                    <option value="ראשון לציון">ראשון לציון</option>
+                                    <option value="ראש העין">ראש העין</option>
+                                    <option value="צפת">צפת</option>
+                                    <option value="סכנין">סכנין</option>
+                                    <option value="שדרות">שדרות</option>
+                                    <option value="שפרעם"> שפרעם</option>
+                                    <option value="טמרה">טמרה</option>
+                                    <option value="טייבה">טייבה</option>
+                                    <option value="תל אביב-יפו">תל אביב-יפו</option>
+                                    <option value="טבריה">טבריה</option>
+                                    <option value="טירה">טירה</option>
+                                    <option value="טירת הכרמל">טירת-הכרמל</option>
+                                    <option value="אום אל-פחם">אום אל-פחם</option>
+                                    <option value="יבנה">יבנה</option>
+                                    <option value="יהוד-מונוסון">יהוד מונוסון</option>
+                                    <option value="Yokneam Illit">יקנעם עלית</option>
+                                     </select>
+                                     <br /><br />
+                                     <input type="hidden" name="hidden_framework" id="hidden_framework" />                                  
+                             
+                                  <br />
+                                 </div>
+                                </div>  
+                              </div>
+                              <div class="form-group">
+                             <div class="col-sm-6">
+                                  <div style=" padding-top: 1%;">
+                                   <p class="searchWords">  חיפוש מורה לפי תחום</p class="searchWords">
+                                     <select name="frameworkCourse" id="frameworkCourse" class="form-control selectpicker" data-live-search="true" multiple >
+                                        <option class="c" value="אנגלית">אנגלית</option>
+                                        <option class="c" value="ערבית">ערבית</option>
+                                        <option class="c" value="מתמטיקה">מתמטיקה/חשבון</option>
+                                        <option class="c" value="מוסיקה">מוסיקה</option>
+                                        <option class="c" value="פיזיקה">פיזיקה</option>
+                                        <option class="c" value="אנדרויד">אנדרויד</option>
+                                        <option class="c" value="ג'אווה">ג'אווה</option>
+                                     </select>
+                                     <br /><br />
+                                     <input type="hidden" name="hidden_framework_courses" id="hidden_framework_courses" />                                                              
+                                  <br />
+                                 </div>
+                                </div>  
+                              </div>
+                     <div class="form-group">
+                           <div class="col-xs-12">
+                                <br>
+                                  <label for="Save"><h4></h4></label>
+                                  <input id="searchButton" class="btn btn-success" type="submit" name="Save" value="חפש">
+                            </div>
+                      </div>
+                </form>
+             </div><!--/tab-pane-->            
+              </div><!--/tab-pane-->
+          </div><!--/tab-content-->
+        </div><!--/col-9-->
+    </div><!--/row-->
   </div>
-</nav>
-		<section class="hero">
-			<div class="overlay">
-				<div class="container">
-					<div class="row">
-						<div class="Welcome text-center">
-							<div class="table">
-								<div class="table-cell">
-									<h1>הכיתה</h1>
-							        <a href="#">בדוק מה חדש באתר</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<section class="work">
-			 <div class="container">
-			 	<div class="row">
-			 		<div class="title text-center">
-						<h1>מורים חדשים באתר</h1>
-						<div class="border"></div>
-					</div>
-						<div class="col-sm-2 col-md-2">
-							<?php
-				  				$results = mysqli_query($con, "SELECT * FROM images");
-				  				while ($rows=mysqli_fetch_array($results)) 
-				  				{
-				  					if ($rows['id']==$fId) 
-				  					{
-				  						echo "<img src='img/".$rows['image']."'   class='img-rounded img-responsive'>";
-				  					}
-				  				}			  			    
-							?>
-		        </div>
-		        <div class="col-sm-2 col-md-2">
-		            <blockquote>
-		            	<?php
-			  				$results = mysqli_query($con, "SELECT * FROM teachers");
-			  				while ($rows=mysqli_fetch_array($results)) 
-				  			{
-				  				if ($rows['id']==$fId) 
-				  				{
-				  					if ($rows["fname"]!=' '&&$rows["lname"]!=' ') 
-				  					{
-				  						echo "" . $rows["fname"]. "  " . $rows["lname"];
-				  						echo nl2br("\n");
-				  					}
-				  					else if($rows["fname"]!=' '&&$rows["lname"]==' ') 
-				  					{
-				  						echo "" . $rows["fname"];
-				  						echo nl2br("\n");
-				  					}
-				  					else if ($rows["fname"]==' '&&$rows["lname"]!=' ') 
-				  					{
-				  						echo "" . $rows["lname"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["city"]!=' ') 
-				  					{
-				  						echo "" . $rows["city"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["price"]!=1) 
-				  					{
-				  						echo "" . $rows["price"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["status"]!=' ') 
-				  					{
-				  						echo "" . $rows["status"];
-				  						echo nl2br("\n");
-				  					}
-				  				}
-				  			}							
-			  			?>
-		        </div>
-		        <div class="col-sm-2 col-md-2">
-							<?php
-				  				$results = mysqli_query($con, "SELECT * FROM images");
-				  				while ($rows=mysqli_fetch_array($results)) 
-				  				{
-				  					if ($rows['id']==$sId) 
-				  					{
-				  						echo "<img src='img/".$rows['image']."' class='img-rounded img-responsive'>";
-				  					}
-				  				}			  			    
-							?>
-		        </div>
-		        <div class="col-sm-2 col-md-2">
-		            <blockquote>
-		            	<?php
-			  				$results = mysqli_query($con, "SELECT * FROM teachers");
-			  				while ($rows=mysqli_fetch_array($results)) 
-				  			{
-				  				if ($rows['id']==$sId) 
-				  				{
-				  					if ($rows["fname"]!=' '&&$rows["lname"]!=' ') 
-				  					{
-				  						echo "" . $rows["fname"]. "  " . $rows["lname"];
-				  						echo nl2br("\n");
-				  					}
-				  					else if($rows["fname"]!=' '&&$rows["lname"]==' ') 
-				  					{
-				  						echo "" . $rows["fname"];
-				  						echo nl2br("\n");
-				  					}
-				  					else if ($rows["fname"]==' '&&$rows["lname"]!=' ') 
-				  					{
-				  						echo "" . $rows["lname"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["city"]!=' ') 
-				  					{
-				  						echo "" . $rows["city"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["price"]!=1) 
-				  					{
-				  						echo "" . $rows["price"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["status"]!=' ') 
-				  					{
-				  						echo "" . $rows["status"];
-				  						echo nl2br("\n");
-				  					}
-				  				}
-				  			}							
-			  			?>
-		        </div>
-		        <div class="col-sm-2 col-md-2">
-							<?php
-				  				$results = mysqli_query($con, "SELECT * FROM images");
-				  				while ($rows=mysqli_fetch_array($results)) 
-				  				{
-				  					if ($rows['id']==$tId) 
-				  					{
-				  						echo "<img src='img/".$rows['image']."' class='img-rounded img-responsive'>";
-				  					}
-				  				}			  			    
-							?>
-		        </div>
-		        <div class="col-sm-2 col-md-2">
-		            <blockquote>
-		            	<?php
-			  				$results = mysqli_query($con, "SELECT * FROM teachers");
-			  				while ($rows=mysqli_fetch_array($results)) 
-				  			{
-				  				if ($rows['id']==$tId) 
-				  				{
-				  					if ($rows["fname"]!=' '&&$rows["lname"]!=' ') 
-				  					{
-				  						echo "" . $rows["fname"]. "  " . $rows["lname"];
-				  						echo nl2br("\n");
-				  					}
-				  					else if($rows["fname"]!=' '&&$rows["lname"]==' ') 
-				  					{
-				  						echo "" . $rows["fname"];
-				  						echo nl2br("\n");
-				  					}
-				  					else if ($rows["fname"]==' '&&$rows["lname"]!=' ') 
-				  					{
-				  						echo "" . $rows["lname"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["city"]!=' ') 
-				  					{
-				  						echo "" . $rows["city"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["price"]!=1) 
-				  					{
-				  						echo "" . $rows["price"];
-				  						echo nl2br("\n");
-				  					}
-				  					if ($rows["status"]!=' ') 
-				  					{
-				  						echo "" . $rows["status"];
-				  						echo nl2br("\n");
-				  					}
-				  				}
-				  			}							
-			  			?>
-		        </div>		
-			 <div class="text-center col-md-12">
-			 	<a href="moreTeachers.php" class="btn btn-info btn-lg">
-		          <span class="glyphicon glyphicon-arrow-left"></span> 
-		          לעוד מורים
-		        </a> 
-			</div>
-		</section>
-		<section class="Services">
-			<div class="container">
-				<div class="row">
-					<div class="col-xs-12 col-sm-4 s_item text-center">
-						<div class="s_icon">
-							<i class="fa fa-language">	
-							</i>
-						</div>
-						<h4>מורים באתר</h4>
-						<p>
-							באתר קיימים הרבה מורים, ותיקים וחדשים.
-		מורים לכל המקצועות, יש מורים פרטיים למתמטיקה, לאנגלית, ללשון, לערבית וגם לגיטרה.
-		ובכל רחבי הארץ, מורים פרטיים בירושלים, רעננה, חיפה, באר שבע
-						</p>
-					</div>
-					<div class="col-xs-12 col-sm-4 s_item text-center">
-						<div class="s_icon">
-							<i class="fa fa-calculator">	
-							</i>
-						</div>
-						<h4>מאמרים באתר</h4>
-						<p>
-							
-		באתר קיים הרבה מאמרים הקשורים להרבה מקצועות שאתם יכולים לכנס אלהם ולהרווח מזה המון
-						</p>
-					</div>
-					<div class="col-xs-12 col-sm-4 s_item text-center">
-						<div class="s_icon">
-							<i class="fa fa-music">	
-							</i>
-						</div>
-						<h4>שימוש באתר</h4>
-						<p>
-							תנאי שימוש באתר
-					    </p>
-					</div>
-				</div>
-			</div>
-		</section>
-		<section class="about">
-			<div class="container">
-				<div class="row">
-					<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-						<div class="inner-about">
-							<div class="title text-center">
-								<h1>קצת עלינו</h1>
-								<div class="border"></div>
-							</div>
-								<p class="pA">					        	
-		באתר הכיתה כ-2300 מורים פרטיים, מרכזי לימוד ומאמני כושר. המלמדים את כל המקצועות בכל רחבי הארץ. בין היתר תמצאו באתר הכיתה כ-1350 מורים פרטיים למתמטיקה, כ-820 מורים פרטיים לאנגלית, כ-250 מורים פרטיים ללשון, כ-300 מורים פרטיים לפיסיקה, כ-150 מורים פרטיים להוראה מתקנת וחינוך מיוחד, כ-70 מורים פרטיים לכלכלה וכ-100 מורים פרטיים לסטטיסטיקה ועוד מורים פרטיים המלמדים מקצועות רבים אחרים. כמו כן ניתן למצוא בכיתה מורים פרטיים מערים בכל רחבי הארץ ובניהן ירושלים, תל אביב, באר שבע, חיפה, נתניה, ראשון לציון, פתח תקווה, אשדוד, מודיעין ועוד
-						        ...
-						        </p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<section class="about contact">
-			<div class="container">
-				<div class="row">
-					<div class="col-xs-12 col-sm-10 col-sm-offset-1">
-						<div class="inner-about">
-							<div class="title text-center">
-								<h1>צור איתנו קשר</h1>
-								<div class="border"></div>
-							</div>
-							<form action="">
-								<input type="text" name="" placeholder="שם" class="form-control">
-								<input type="email" name="" placeholder="Email" class="form-control">
-								<input type="text" name="" placeholder="סטטוס" class="form-control">
-								<input type="submit" value="send" class="btn btn-success">
-							</form>
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
-		<footer class="footer">
-			<div class="container">
-				<div class="row">
-					<div class="col-xs-12 col-sm-6">
-						<p> 
-							2019 By ELI	&copy
-						</p>
-					</div>
-				</div>
-			</div>
-		</footer>
-		<!--
-		<a id="up" href="#top">
-				<img src="img/arrow.jpg" width="30px" height="40px"/>
-		</a>-->
-		<!--<a id="toTop" href="javascript:;" style="display: inline;">-->
-<!--		<a id="toTop" href="#top" style="display: inline;">
-			<span id="toTopHover">	
-			</span>
-			<img width="40" height="40" alt="To Top" src="img/to-top@2x.png">
-		</a>-->
-	</body>
-	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	  <script src="js/bootstrap.min.js"></script>
+  <hr><hr>
+    <section class="newTeachersSection">
+        <div class="container">
+            <div class="row">
+                <div class="title text-center">
+                   <h1>מורים חדשים באתר</h1>                   
+                   <div class="border"></div>
+                   <br>
+                   <br>
+               </div>
+            <?php /*get the data for each one of the three choose as a new teachers to show them */
+                for($i=0;$i<count($NewTeachersArray);$i++)
+                {
+                    
+    $resultsOfTeacherTable = mysqli_query($con, "SELECT * FROM teachers");
+    $resultOFCity = mysqli_query($con, "SELECT * FROM teacher_cities");
+    $CoursesResults = mysqli_query($con, "SELECT * FROM teachers_courses");
+    $resultsOfImageTable = mysqli_query($con, "SELECT * FROM images");
+                    echo "<button value=\"$NewTeachersArray[$i]\" id=\"$NewTeachersArray[$i]\" class=\"teacher col-sm-3\">";
+                        echo"<input type=\"hidden\" id=\"$NewTeachersArray[$i]\">"; 
+                        echo "<blockquote>";
+                        while ($rows=mysqli_fetch_array($resultsOfImageTable)) 
+                        {
+                            if ($rows['id']==$NewTeachersArray[$i]) 
+                            {
+                                echo "<img src='img/".$rows['image']."' class='img-rounded img-responsive'>";
+                            }
+                        }
+                        while ($rows=mysqli_fetch_array($resultsOfTeacherTable)) 
+                        {
+                            if ($rows['id']==$NewTeachersArray[$i]) 
+                            {
+                                if ($rows["fname"]!=' '&&$rows["lname"]!=' ') 
+                                {
+                                    echo "" . $rows["fname"]. "  " . $rows["lname"];
+                                    echo nl2br("\n");
+                                }
+                                else if($rows["fname"]!=' '&&$rows["lname"]==' ') 
+                                {
+                                    echo "" . $rows["fname"];
+                                    echo nl2br("\n");
+                                }
+                                else if ($rows["fname"]==' '&&$rows["lname"]!=' ') 
+                                {
+                                    echo "" . $rows["lname"];
+                                    echo nl2br("\n");
+                                }
+                                $MoreThanOneWordSoAddComma=0;
+                                $city=" ";
+                                while ($teacher_citiesRows=mysqli_fetch_assoc($resultOFCity)) 
+                                {
+                                    if ($teacher_citiesRows['id']==$NewTeachersArray[$i]) 
+                                    {
+                                        if ($MoreThanOneWordSoAddComma>=1) 
+                                        {
+                                            $city.=' , ';
+                                        }
+                                        if($teacher_citiesRows['cities']!='cities')
+                                        {
+                                            $city.=$teacher_citiesRows['cities'];
+                                            $MoreThanOneWordSoAddComma++;
+                                        }
+                                    }
+                                }
+                                if ($city!=' ') 
+                                {
+                                    echo "" . $city;
+                                    echo nl2br("\n");
+                                }
+                                $CourseName=" ";
+                                while($CoursesResultsRows=mysqli_fetch_array($CoursesResults))
+                                {
+                                    if ($CoursesResultsRows['id']==$NewTeachersArray[$i]) 
+                                    {
+                                        if ($MoreThanOneWordSoAddComma>=1) 
+                                        {
+                                            $CourseName.=" , ";
+                                        }
+                                        if($CoursesResultsRows['subject']!='subject')
+                                        {
+                                            $CourseName=$CoursesResultsRows['subject'];
+                                            $MoreThanOneWordSoAddComma++;
+                                        }
+                                    }	
+                                }	
+                                if ($CourseName!=null) 
+                                {
+                                    echo "" . $CourseName;
+                                    echo nl2br("\n");
+                                }
+                            }
+                        }
+                    echo "</button>";	
+                }
+            ?>
+        <div class=" buttonCheckForMoreTeachers text-center col-md-12">
+            <a href="moreTeachers.php" class="moreTeachers btn btn-info btn-lg"> 
+            <span class="glyphicon glyphicon-arrow-left"></span>
+            לעוד מורים חדשים באתר
+             <span class="glyphicon glyphicon-arrow-left"></span> 
+           </a> 
+       </div>
+   </section>
+    <script>
+        var btn = $('#button');
+        $(window).scroll(function() {
+        if ($(window).scrollTop() > 300) {
+            btn.addClass('show');
+        } else {
+            btn.removeClass('show');
+        }
+        });
+        btn.on('click', function(e) {
+        e.preventDefault();
+        $('html, body').animate({scrollTop:0}, '300');
+        });
+    </script>
+</body>
 </html>
+<script>
+	var phpIdArrayLength = <?php echo end($NewTeachersArray);?>;
+	$(document).ready(function()
+	{
+        for (var i = 0; i <= phpIdArrayLength; i++)
+        {
+        let x=i;
+        let n = x.toString();
+        $("#"+n).click(function()
+        {
+        window.location.href = "studentCheckTeacherPage.php?id=" + x;
+        });
+        }
+	});
+</script>
+
+<script>
+$(document).ready(function(){
+ $('.selectpicker').selectpicker();
+
+ $('#framework').change(function(){
+  $('#hidden_framework').val($('#framework').val());
+ });
+
+ $('#multiple_select_form').on('Save', function(event){
+  event.preventDefault();
+  if($('#framework').val() != '')
+  {
+   var form_data = $(this).serialize();
+   $.ajax({
+    url:"secondEditPage.php",
+    method:"POST",
+    data:form_data,
+    success:function(data)
+    {
+     $('#hidden_framework').val('');
+     $('.selectpicker').selectpicker('val', '');
+     alert(data);
+    }
+   })
+  }
+  else
+  {
+   alert("נא לבחור עיר");
+   return false;
+  }
+ });
+});
+</script>
+
+<script>
+$(document).ready(function(){
+ $('.selectpicker').selectpicker();
+
+ $('#frameworkCourse').change(function(){
+  $('#hidden_framework_courses').val($('#frameworkCourse').val());
+ });
+
+ $('#multiple_select_form').on('Save', function(event){
+  event.preventDefault();
+  if($('#frameworkCourse').val() != '')
+  {
+   var form_data = $(this).serialize();
+   $.ajax({
+    url:"secondEditPage.php",
+    method:"POST",
+    data:form_data,
+    success:function(data)
+    {
+     $('#hidden_framework_courses').val('');
+     $('.selectpicker').selectpicker('val', '');
+     alert(data);
+    }
+   })
+  }
+  else
+  {
+    alert("נא לבחור קורס");
+   return false;
+  }
+ });
+});
+</script>
