@@ -1,4 +1,5 @@
 # Hakita
+hakite which mean class on hebrew language
 Private lessons website
 That publishes private teachers who can teach from anywhere, through online classes or make an appointment at a suitable location for both parties (teacher and student) individually or in groups. Learn English, math, language, programming languages Finding a private fitness trainer and driving instructor and many other topics.
 
