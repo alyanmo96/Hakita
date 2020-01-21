@@ -1,14 +1,95 @@
 <?php
-	session_start();
-	$con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+    session_start();
+    $ID=-1;
+    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+    $commentsResult = mysqli_query($con, "SELECT * FROM dBOfComments");
+    
+    if(isset($_POST['chooseLessonButton'])) 
+        {     
+            if($_GET['id'])
+            {
+                $ID=$_GET['id'];
+            }
+            else
+            {
+                $ID=$_POST['id'];
+            }
+            $lessonTime=$_POST['chooseLessonButton'];
+            $hour;
+            $day;
+            if($lessonTime<100)
+            {
+                $hour=$lessonTime%10;
+                $d=$lessonTime/10;
+                $day=floor($d);
+            }
+            else
+            {
+                $hour=$lessonTime%100;
+                $d=$lessonTime/100;
+                $day=floor($d);
+            }
+            
+            $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
+            while ($scheduleRow=mysqli_fetch_assoc($scheduleResult)) 
+            {
+                if ($scheduleRow['idOfTeacher']==$ID) 
+                {
+                    if($scheduleRow['dayOfLesson']==$day && $scheduleRow['hourOFLesson']==$hour)
+                    {
+                        $upDate="UPDATE `teacherSchedule` SET `fullOrFree`='1'WHERE idOfTeacher=$ID and hourOFLesson=$hour and dayOfLesson=$day";
+                        $result = mysqli_query($con,$upDate);
+                    }
+                }
+            }
+        }
+
+    if (isset($_POST["comments"])) {        
+        $getComment=$_POST["comments"];
+        $_POST["comments"]=null;
+        //$rating=$_POST["teacherValue"];
+        $rating=-1;
+        if($_POST["teacherValue"]=="oneValue")
+        {
+            $rating=1;
+        }
+        else if($_POST["teacherValue"]=="twoValue")
+        {
+            $rating=2;
+        }
+        else if($_POST["teacherValue"]=="threeValue")
+        {
+            $rating=3;
+        }
+        else if($_POST["teacherValue"]=="fourValue")
+        {
+            $rating=4;
+        }
+        else if($_POST["teacherValue"]=="fiveValue")
+        {
+            $rating=5;
+        }
+        $_POST["teacherValue"]=null; 
+        
+        $ID=$_POST['id'];   
+        
+       $commentWriterId=267;
+       $todayDate=date('Y-m-d');
+       $query="INSERT INTO `dBOfComments`(`idOfTeacher`,`idOfCommentWriter`,`dateOfComment`,`textOfComment`,`rating`) VALUES ('$ID','$commentWriterId','$todayDate','$getComment','$rating')";
+        $result = mysqli_query($con,$query);
+    }
+    if($ID==-1)
+    {
+        $ID=$_GET['id'];
+    }
 	// conect with tables to get information about the user to show it and use
 	$results = mysqli_query($con, "SELECT * FROM teachers");	
 	$ImgResult = mysqli_query($con, "SELECT * FROM images");
 	//variables will used on HTML
 	//(username,status,email,first name, last name, phone number, cities, courses,img,price)
 	$us=" ";	$sta=" ";	$email=" "; 	$fN=" ";	$lN=" "; 	$Phone=" "; 
-	$Cities= " "; 	$Courses=" ";   	$ImgSource=" "; 	$ID=$_GET['id']; 	$pri;
-	$gender=" ";$yearsOld=-1;
+	$Cities= " "; 	$Courses=" ";   	$ImgSource=" ";  	$pri;
+    $gender=" ";$yearsOld=-1;
 		while ($row=mysqli_fetch_assoc($results)) 
 		{
 			if ($row['id']==$ID) //get variables to use on HTML view
@@ -123,13 +204,16 @@
 		{
 			$ImgSource=$ImgRow['image'];
 		}
-	}
+    }
+    $commnetsPeopleArray=array();
+    $commnetsPeopleArrayCounter=0;
 ?>
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>הכיתה</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
@@ -138,10 +222,14 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>    
     <link rel="stylesheet" type="text/css" href="css/profile.css">
     <style>
+        .tablink
+        {
+            border-radius: 30px;
+        }
         .navbar-nav .nav-link {
-    padding-right: 0;
-    padding-left: 40%;
-}
+            padding-right: 0;
+            padding-left: 40%;
+        }
             .nav-link
             {
                 font-size:13px;
@@ -159,16 +247,69 @@
             {
                 max-width: 101%;
             }
-            #cityButtons{
+            .cityButtons{
                 margin-top:2%;
+                border-radius: 30px;
             }
-            #courseButtons{
+            .courseButtons{
                 margin-top:2%;
+                border-radius: 30px;
             }
             img {
-    vertical-align: unset;
-    border-radius: 300px;
-    border-style: none;
+            border-radius: 300px;
+            border-style: none;
+        }
+        .img-fluid {
+            max-width: 100%;
+            height: 70px;
+        }
+        .commentsImages
+        {
+            float:right;
+            max-height: 80px;
+            margin-top: 40%;
+        }
+        .textOfComment
+        {
+            font-size: 20px;
+            margin-top: -3%;
+            margin-right: 1%;
+            float: right;
+        }
+        p {
+            margin-top: 1%;
+            font-size: 25px;
+            font-weight: 700;
+        }
+        .commentCard
+        {
+            background:url('./img/7.jpg');
+            margin-right: 5%;
+            border-radius: 300px;
+        }
+        .modal-footer
+        {
+            direction:ltr;
+        }
+        .addCommentButton
+        {
+            border-radius:300px;
+        }
+        .pleaseAddFeedback
+        {
+            margin-right: -50%;
+        }
+        textarea.form-control {
+            height: 60px;
+        }
+        #sendMessageToTeacherFormSection
+        {
+            max-width: 70%;
+            margin-left: 25%;
+            margin-right: 25%;
+        }
+        .checked {
+  color: orange;
 }
     </style>
   </head>
@@ -209,7 +350,6 @@
                         $rows=mysqli_fetch_array($results);
 						if($ImgSource!='image')
 						{
-							//echo "<img src='img/".$ImgSource."' height=170px; width=250px; class='img-rounded img-responsive'>";
 							echo "<img src='img/".$ImgSource."' height=140  width=140 class='img-circle'>";
 						}				
 					?>
@@ -227,6 +367,30 @@
 			    	{
 			    		echo "<h3>" . $lN."</h3>";
                     }
+                    $countRatingOfTeacher=0;
+                    $totalCountRatingOfTeacher=0;
+                    while ($ratingOfTeacher=mysqli_fetch_assoc($commentsResult)) 
+                    {
+                        if($ratingOfTeacher['idOfTeacher']==$ID)
+                        {
+                            $countRatingOfTeacher++;
+                            $totalCountRatingOfTeacher+=$ratingOfTeacher['rating'];
+                        }
+                    }
+                    $fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
+                    $allRating=ceil($fill);
+                    
+                    for($stars=0;$stars<$allRating;$stars++)
+                    {
+                        echo ' <span class="fa fa-star checked"></span>';
+                    }
+                    $emptyStars=5-$allRating;
+                    $e=0;
+                    while($e<$emptyStars)
+                    {
+                        $e++;
+                        echo '<span class="fa fa-star"></span>';
+                    }                
 					if ($pri!=1&&$pri!=null) 
 					{
 						echo "<h6>" . "מחיר לשעה:-" .$pri ."</h6>";	
@@ -248,6 +412,7 @@
                     <button class="tablink col-sm-3" onclick="openPage('Links', this, 'blue')">צור קשר ושיתוף</button>
                     <button class="tablink col-sm-3" onclick="openPage('comments', this, 'green')">תגובות </button>
                 </div>
+                <br><br>
                     <div id="aboutTeacher" class="tabcontent">   
                               <?php
                                     echo "<div class=\"row\">";
@@ -286,7 +451,7 @@
                                     } 
                                     echo "</div>";
                                     $D=array();
-                                    $D[0]=$courseResultArray[$ID];
+                                    $D[0]=$courseResultArray[$ID];    
                                     echo "<div class=\"col-sm-3\" id=\"courseButtons\">";
                                     //if ($Courses!=null) //arrayOfTeacherCourses
                                     if(count($arrayOfTeacherCourses)>0) 
@@ -294,7 +459,7 @@
                                         //echo "<h4>"."מלמד:- ".$Courses."</h4>";
                                         for($ci=0;$ci<count($arrayOfTeacherCourses);$ci++)
                                         {
-                                            echo "<button value=\"$ID\" id=\"$ID\">$arrayOfTeacherCourses[$ci]</button>";
+                                            echo "<button class=\"courseButtons\" value=\"$ID\" id=\"$ID\">$arrayOfTeacherCourses[$ci]</button>";
                                             echo"   <input type=\"hidden\" id=\"$ID\">";
                                         }
                                     }
@@ -306,7 +471,7 @@
                                         //echo "<h4>"."נמצא ב- ".$Cities."</h4>";
                                         for($ci=0;$ci<count($arrayOfTeacherCities);$ci++)
                                         {
-                                            echo "<button>$arrayOfTeacherCities[$ci]</button>";
+                                            echo "<button class=\"cityButtons\">$arrayOfTeacherCities[$ci]</button>";
                                         }
 									}
                                     echo "</div>";
@@ -314,46 +479,272 @@
                               ?>
                     </div>        
                     <div id="comments" class="tabcontent">
-                        <h1>אין עוד תגובות</h1>
+                    <li>
+                        <button  class="addCommentButton btn btn-warning" alt="work 1" data-toggle="modal" data-target="#myModalc" title="כפתור הוספת תגובה על המורה"> <h5>הוספת תגובה חדשה</h5></button>
+                        <div class="modal fade" id="myModalc" tabindex="-1" role="dialog" aria-labelledby="myModalLabelv">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myModalLabelv">הוספת תגובה</h4>
+                                </div>
+                                <form  name="feedbackForm" action="studentCheckTeacherPage.php" method="post">
+                                        <?php
+                                            echo"<input name=\"id\" type=\"hidden\" value=\"$ID\" id=\"$ID\">"; 
+                                        ?>
+                                        <div class="modal-body">
+                                            <div class="pleaseAddFeedback">
+                                                אנא ספק/י את המשוב שלך להלן:
+                                            </div>
+                                            <hr>
+                                            <div class="feedbackValueTitle">
+                                            איך את/ה מדרג/ת את החוויה הכוללת שלך ?
+                                                <div>
+                                                    לא טוב-
+                                                    <input type="radio" name="teacherValue" id="oneValue" value="oneValue"  required>1
+                                                    <input type="radio" name="teacherValue" id="twoValue" value="twoValue"  required>2
+                                                    <input type="radio" name="teacherValue" id="threeValue" value="threeValue"  required>3
+                                                    <input type="radio" name="teacherValue" id="fourValue" value="fourValue" required>4
+                                                    <input type="radio" name="teacherValue" id="fiveValue"  value="fiveValue" required>5
+                                                    -מצויין
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                            <textarea class="form-control" type="textarea" name="comments" id="comments" placeholder="הערות/תגובות שלך" maxlength="6000" rows="7" required></textarea>
+                                            <hr>
+                                            <fieldset> 
+                                            <div class="text-center">
+                                                    <input type="submit" class="logSignButton btn btn-info btn-primary text-center" title="שמירת פיידבאק וחזרה" value="הוספה כ-תגובה חדשה">
+                                            </div>
+                                            </fieldset>
+                                    </form>
+                                <br>
+                                    <button type="submit" class="btn btn-info" data-dismiss="modal">יציאה ללא הוספת </button>
+                                </div>
+                                </div>
+                            </div>
+                            </div>
+                    </li>
+                        <?php                            
+                            $thereIsAnyComment=-1;
+                            $commentResult = mysqli_query($con, "SELECT * FROM dBOfComments");
+                            while ($commentRow=mysqli_fetch_assoc($commentResult)) //get comments if there any comments
+                            {
+                                if($commentRow['idOfTeacher']==$ID)
+                                {
+                                    $thereIsAnyComment=1;
+
+                                    $idOfTeacher=$commentRow['idOfTeacher'];
+                                    $idOfCommentWriter=$commentRow['idOfCommentWriter'];
+                                    $commnetsPeopleArray[$commnetsPeopleArrayCounter]=$idOfCommentWriter;
+                                    $getRatingOfEachComment=$commentRow['rating'];
+                                    $commnetsPeopleArrayCounter++;
+                                    $dateOfComment=$commentRow['dateOfComment'];
+                                    $textOfComment=$commentRow['textOfComment'];
+                                    $nameOfCommentWriter = " ";
+                                    echo "<div class=\"commentCard col-sm-10\">"; 
+                                    $resultnameOfCommentWriter = mysqli_query($con, "SELECT * FROM teachers");
+
+                                    while ($rowOfCommentWriter=mysqli_fetch_array($resultnameOfCommentWriter)) 
+                                    {
+                                        if ($rowOfCommentWriter['id']==$idOfCommentWriter) 
+                                        {
+                                            if (($rowOfCommentWriter['fname']!='first name'&&$rowOfCommentWriter['fname']!=' ')&&($rowOfCommentWriter['lname']!='last name'&&$rowOfCommentWriter['lname']!=' ')) 
+                                            {
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['fname'];
+                                                $nameOfCommentWriter.=" ";
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['lname'];
+                                            }
+                                            else if (($rowOfCommentWriter['fname']!='first name'&&$rowOfCommentWriter['fname']!=' ')&&($rowOfCommentWriter['lname']=='last name'||$rowOfCommentWriter['lname']==' ')) 
+                                            {
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['fname'];
+                                            }
+                                            else if (($rowOfCommentWriter['fname']=='first name'||$rowOfCommentWriter['fname']==' ')&&($rowOfCommentWriter['lname']!='last name'&&$rowOfCommentWriter['lname']!=' '))
+                                            {
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['lname'];
+                                            }  
+                                        }
+                                    }
+
+                                    $resultsOfCommentWriterImage = mysqli_query($con, "SELECT * FROM images");
+                                    while ($rowOfCommentWriter=mysqli_fetch_array($resultsOfCommentWriterImage)) 
+                                    {
+                                        if ($rowOfCommentWriter['id']==$idOfCommentWriter) 
+                                        {
+                                            if ($rowOfCommentWriter['image']!='image') 
+                                            {
+                                                echo '<div class="col-sm-1">';
+                                                echo "<img src='img/".$rowOfCommentWriter['image']."'   class=\"commentsImages\">";
+                                                echo '</div>';
+                                            }
+                                        }
+                                    }
+                                    echo "<p>".$textOfComment."</p>";  
+                                    echo "<p class=\"textOfComment\">".$nameOfCommentWriter."</p>";   
+                                  
+                                    for($star=0;$star<$getRatingOfEachComment;$star++)
+                                    {
+                                        echo ' <span class="fa fa-star checked"></span>';
+                                    }
+                                    $emptyStars=5-$getRatingOfEachComment;
+                                    $e=0;
+                                    while($e<$emptyStars)
+                                    {
+                                        $e++;
+                                        echo '<span class="fa fa-star"></span>';
+                                    }
+                                    echo "<p>".$dateOfComment."</p>";                                   
+                                    echo "<hr>";
+                                    echo "</div>";
+        
+                                }
+                            }
+                            if($thereIsAnyComment==-1)
+                            {
+                                echo "
+                                <h1>אין עוד תגובות</h1>";
+                            }
+                        ?>
                     </div>
 
 
                     <div id="Links" class="tabcontent">
-                        <div class="form-group">
-                            <h3>שיתוף מורה</h3>
-                            <label for="facebook"><h4  class="inputTitleIcon">FACEBOOK</h4><div class="fa fa-facebook"></div></label>
-                            <label for="linkedin"><h4  class="inputTitleIcon">LINKEDIN</h4><div class="fa fa-linkedin"></div></label>               
-                            <label for="youtube"><h4  class="inputTitleIcon">YOUTUBE</h4><div class="fa fa-youtube"></div></label>
-                            <label for="otherLinkOne"><h4  class="inputTitleIcon">קישור אחר</h4></label>
-                            <label for="otherLinkTwo"><h4  class="inputTitleIcon">קישור אחר</h4></label>
-                            
+                        <div class="row">
+                            <div class="form-group col-sm-6">
+                                <h3>שיתוף מורה</h3>
+                                <label for="facebook"><h4  class="inputTitleIcon">FACEBOOK</h4><div class="fa fa-facebook"></div></label>
+                                <label for="linkedin"><h4  class="inputTitleIcon">LINKEDIN</h4><div class="fa fa-linkedin"></div></label>               
+                                <label for="youtube"><h4  class="inputTitleIcon">YOUTUBE</h4><div class="fa fa-youtube"></div></label>
+                                <label for="otherLinkOne"><h4  class="inputTitleIcon">קישור אחר</h4></label>
+                                <label for="otherLinkTwo"><h4  class="inputTitleIcon">קישור אחר</h4></label>
+                                
+                            </div>
+                            <div class="form-group col-sm-6">
+                                <h3>קישורים למורה</h3>                  
+                            </div>
+                            <hr>
+                            <div class="form-group col-sm-6">
+                                <h3>פרטי תקשורת</h3> 
+                                <?php
+                                    if ($Phone!=' ') 
+                                    {
+                                        echo "<h4>"."מספר טלפון:".$Phone."</h4>";
+                                    }        
+                                    if ($email!='email'&&$email!=' ') 
+                                    {
+                                        echo "<h4>" . $email . "</h4>";
+                                    }                             
+                                ?>                                              
+                            </div>                        
+                        <div class="form-group col-sm-6">
+                            <h1 class="letters">שליחת הודעה למורה</h1>
+                            <form action="">
+                                <input type="text" name="" placeholder="שם" class="form-control">
+                                <input type="email" name="" placeholder="מייל לצור קשר" class="form-control">
+                                <input type="text" name="" placeholder="תוכן ההודעה" class="form-control">
+                                <input type="submit" value="send" class="btn btn-success text-center">
+                            </form>
                         </div>
-                        <br><br>
-                        <hr><hr>
-                        <div class="form-group">
-                            <h3>קישורים למורה</h3>                  
                         </div>
-                        <br><br>
-                        <hr><hr>
-                        <div class="form-group">
-                            <h3>פרטי תקשורת</h3> 
-                            <br>
-                            <?php
-                                if ($Phone!=' ') 
-                                {
-                                    echo "<h4>"."מספר טלפון:".$Phone."</h4>";
-                                }        
-                                if ($email!='email'&&$email!=' ') 
-                                {
-                                    echo "<h4>" . $email . "</h4>";
-                                }                             
-                            ?>
-                                              
-                        </div>
-                        <hr><hr>
+                        
+                        
                     </div>
                     <div id="dashboardSection" class="tabcontent">
-                        <h1>dashboard timeline</h1>
+                    <section class="board">          
+                        <table class="table table-sm table-dark">
+                            <thead>
+                            <tr>
+                                <th>שעה/יום</th>
+                                <th scope="col">א</th>
+                                <th scope="col">ב</th>
+                                <th scope="col">ג</th>
+                                <th scope="col">ד</th>
+                                <th scope="col">ה</th>
+                                <th scope="col">ו</th>
+                                <th scope="col">שבת</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                        <form action="studentCheckTeacherPage.php" method="post">                              
+                                <?php
+                                    echo"<input name=\"id\" type=\"hidden\" value=\"$ID\" id=\"$ID\">"; 
+                                    for($hours=7;$hours<=22;$hours++)
+                                    {
+                                        if($hours==7||$hours==13||$hours==17)
+                                        {
+                                            echo "<tr class=\"bg-primary\">";
+                                        }
+                                        elseif ($hours==9||$hours==19||$hours==15)
+                                        {
+                                            echo "<tr class=\"bg-info\">";
+                                        }
+                                        elseif ($hours==11||$hours==21)
+                                        {
+                                            echo "<tr class=\"bg-warning\">";
+                                        }
+                                        else
+                                        {
+                                            echo "<tr>";
+                                        }
+                                        if($hours<10)
+                                            {
+                                                echo "<th>"."0".$hours.":00"."</th>";
+                                            }
+                                            else
+                                            {
+                                                echo "<th>".$hours.":00"."</th>";
+                                            }
+                                        for($Days=0;$Days<7;$Days++)
+                                        {
+                                            $DaysId=$Days+1;
+                                            $hourseId=$hours;   
+                                            $addAsString=strval($DaysId);
+                                            $addAsString.=$hourseId;
+                                            $buttonGiveId=intval($addAsString);                             
+
+
+                                            $alreadyInsert=-1;
+                                            $scheduleResultForBoard = mysqli_query($con, "SELECT * FROM teacherSchedule");
+                                            while ($scheduleRow=mysqli_fetch_assoc($scheduleResultForBoard)) 
+                                            {
+                                                if ($scheduleRow['idOfTeacher']==$ID) 
+                                                {
+                                                    if($scheduleRow['dayOfLesson']==$DaysId && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==-1)
+                                                    {
+                                                        $alreadyInsert=1;
+                                                    }
+                                                }
+                                            }
+
+                                            if($hours<10&&$alreadyInsert==-1)
+                                            {
+                                                echo "<th></th>";
+                                            }
+                                            else if($hours<10&&$alreadyInsert==1)
+                                            {
+                                                echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">"."0".$hours.":00+"."</button></th>";
+                                            }
+                                            else if($hours>10&&$alreadyInsert==1)
+                                            {
+                                                echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">".$hours.":00+"."</button></th>";
+                                            }
+                                            else
+                                            {
+                                                echo "<th></th>";
+                                            }
+                                            $alreadyInsert=-1;
+                                        }
+                                        echo "</tr>";
+                                    }
+                                
+                                    
+
+                                ?>
+                            </form> 
+                            </tbody>
+                        </table>
+                        </section>
+
                     </div>
                 </section>
             <script>
@@ -370,7 +761,6 @@
             document.getElementById(pageName).style.display = "block";
             elmnt.style.backgroundColor = color;
             }
-        
             // Get the element with id="defaultOpen" and click on it
             document.getElementById("defaultOpen").click();
             </script>
@@ -412,7 +802,6 @@
         data:form_data,
         success:function(data)
         {
-         //console.log(data);
          $('#hidden_framework').val('');
          $('.selectpicker').selectpicker('val', '');
          alert(data);
@@ -421,7 +810,6 @@
       }
       else
       {
-       alert("נא לבחור עיר");
        return false;
       }
      });
@@ -447,7 +835,6 @@
         data:form_data,
         success:function(data)
         {
-         //console.log(data);
          $('#hidden_framework_courses').val('');
          $('.selectpicker').selectpicker('val', '');
          alert(data);
@@ -456,24 +843,32 @@
       }
       else
       {
-       alert("נא לבחור עיר");
        return false;
       }
      });
     });
     </script>
     <script>
-	var phpIdArrayLength = <?php echo end($D);?>;alert("here");
+
 	$(document).ready(function()
-	{alert("here");
-	for (var i = 0; i <= phpIdArrayLength; i++)
 	{
-	let x=i;
-	let n = x.toString();
-	$("#"+n).click(function()
-	{alert("here");
-	window.location.href = "searchTeachers.php?id=" + x;
-	});
-	}
+        for (var i = 0; i <= phpIdArrayLength; i++)
+        {
+            let x=i;
+            let n = x.toString();
+            $("#"+n).click(function()
+            {
+                window.location.href = "searchTeachers.php?id=" + x;
+            });
+        }
+        for (var i = 0; i <= phpIdArray; i++)
+        {
+            let x=i;
+            let n = x.toString();
+            $("#"+n).click(function()
+            {
+                window.location.href = "studentCheckTeacherPage.php?id=" + x;
+            });
+        }
 	});
 </script>
