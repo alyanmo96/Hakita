@@ -8,7 +8,8 @@
  * 
  */
 	session_start();
-	$con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+    
 	// because you can reach to this page from more than one page, so we need to know from\
 	//where we get to it for(edit page, first time on this page, etc...)
 	$logIn=$_POST['usernameLogin']; 
@@ -28,8 +29,72 @@
 	//variables will used on HTML
 	//(username,status,email,first name, last name, phone number, cities, courses,img,price)
 	$us=" ";	$sta=" ";	$email=" "; 	$fN=" ";	$lN=" "; 	$Phone=" "; 
-	$Cities= " "; 	$Courses=" ";   	$ImgSource=" "; 	$ID; 	$pri;
-	if ($logIn!=null)//get to this page by login
+    $Cities= " "; 	$Courses=" ";   	$ImgSource=" "; 	$ID; 	$pri;
+    if(isset($_POST['chooseLessonButton'])) 
+    {     
+        $alreadyInsert=-1;
+        if($_GET['id'])
+        {
+            $ID=$_GET['id'];
+        }
+        else
+        {
+            $ID=$_POST['id'];
+        }
+        //echo $_POST['chooseLessonButton'];
+        $lessonTime=$_POST['chooseLessonButton'];
+        $hour;
+        $day;
+        if($lessonTime<100)
+        {
+            $hour=$lessonTime%10;
+            $d=$lessonTime/10;
+            $day=floor($d);
+        }
+        else
+        {
+            $hour=$lessonTime%100;
+            $d=$lessonTime/100;
+            $day=floor($d);
+        }
+        $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
+        while ($scheduleRow=mysqli_fetch_assoc($scheduleResult)) 
+		{
+			if ($scheduleRow['idOfTeacher']==$ID) 
+			{
+                if($scheduleRow['dayOfLesson']==$day && $scheduleRow['hourOFLesson']==$hour)
+                {
+                    $alreadyInsert=1;
+                }
+			}
+        }
+        if($alreadyInsert!=-1)
+        {
+            $alreadyInsert=-1;
+        }
+        else
+        {
+            $todayDate=date('Y-m-d');
+            $query="INSERT INTO `teacherSchedule`(`idOfTeacher`,`hourOFLesson`,`idOfStudent`,`fullOrFree`,`dayOfLesson`) 
+            VALUES ('$ID','$hour','000','-1','$day')";
+            $result = mysqli_query($con,$query);
+        }        
+        //$_POST['chooseLessonButton']=null;
+        while ($row=mysqli_fetch_assoc($results)) 
+		{
+			if ($row['id']==$ID) //get variables to use on HTML view
+			{
+                $us=$row['username'];
+				$fN=$row['fname'];
+				$lN=$row['lname'];
+				$email=$row['email'];
+				$pri=$row['price'];
+				$sta=$row['status'];
+				$Phone=$row['phone'];
+			}
+		}
+    }
+	else if ($logIn!=null)//get to this page by login
 	{
 		$eedit=$logIn;
 		$edit=$logIn;
@@ -126,7 +191,10 @@
 		{
 			$ImgSource=$ImgRow['image'];
 		}
-	}
+    }
+    $arrayOfLessons=array();
+    $counterArrayOfLessons=0;
+   
 ?>
 <!DOCTYPE html>
 <html>
@@ -173,6 +241,34 @@
     border-radius: 300px;
     border-style: none;
 }
+        .commentsImages
+        {
+            float:right;
+            max-height: 80px;
+            margin-top: 40%;
+        }
+        .textOfComment
+        {
+            font-size: 20px;
+            margin-top: -3%;
+            margin-right: 1%;
+            float: right;
+        }
+        p {
+            margin-top: 1%;
+            font-size: 25px;
+            font-weight: 700;
+        }
+        .commentCard
+        {
+            background:url('./img/7.jpg');
+            margin-right: 5%;
+            border-radius: 300px;
+        }
+        .board
+        {
+            max-width: 100%;
+        }
     </style>
   </head>
   <body>
@@ -260,8 +356,8 @@
     </section>
     <section class="choose">
                     <div class="row">
-                        <button class="tablink col-sm-3" onclick="openPage('aboutTeacher', this, 'blueviolet')"id="defaultOpen"> פרטים שלי</button>
-                        <button class="tablink col-sm-3" onclick="openPage('dashboardSection', this, 'orange')">לוח שיעורים</button>
+                        <button class="tablink col-sm-3" onclick="openPage('aboutTeacher', this, 'blueviolet')"> פרטים שלי</button>
+                        <button class="tablink col-sm-3" onclick="openPage('dashboardSection', this, 'orange')"id="defaultOpen">לוח שיעורים</button>
                     <button class="tablink col-sm-3" onclick="openPage('Links', this, 'blue')">יצירת קשר איתי ושיתוף פרופיל</button>
                     <button class="tablink col-sm-3" onclick="openPage('comments', this, 'green')"> תגובות התלמידים שלמדתי </button>
                     <button class="tablink col-sm-3" onclick="openPage('message', this, 'orange')">  הודעות </button>
@@ -322,7 +418,87 @@
                               ?>
                     </div>        
                     <div id="comments" class="tabcontent">
-                        <h1>אין עוד תגובות</h1>
+                        
+                    <?php                            
+                            $thereIsAnyComment=-1;
+                            $commentResult = mysqli_query($con, "SELECT * FROM dBOfComments");
+                            while ($commentRow=mysqli_fetch_assoc($commentResult)) //get comments if there any comments
+                            {
+                                if($commentRow['idOfTeacher']==$ID)
+                                {
+                                    $thereIsAnyComment=1;
+
+                                    $idOfTeacher=$commentRow['idOfTeacher'];
+                                    $idOfCommentWriter=$commentRow['idOfCommentWriter'];
+                                    $commnetsPeopleArray[$commnetsPeopleArrayCounter]=$idOfCommentWriter;
+                                    $getRatingOfEachComment=$commentRow['rating'];
+                                    $commnetsPeopleArrayCounter++;
+                                    $dateOfComment=$commentRow['dateOfComment'];
+                                    $textOfComment=$commentRow['textOfComment'];
+                                    $nameOfCommentWriter = " ";
+                                    echo "<div class=\"commentCard col-sm-10\">"; 
+                                    $resultnameOfCommentWriter = mysqli_query($con, "SELECT * FROM teachers");
+
+                                    while ($rowOfCommentWriter=mysqli_fetch_array($resultnameOfCommentWriter)) 
+                                    {
+                                        if ($rowOfCommentWriter['id']==$idOfCommentWriter) 
+                                        {
+                                            if (($rowOfCommentWriter['fname']!='first name'&&$rowOfCommentWriter['fname']!=' ')&&($rowOfCommentWriter['lname']!='last name'&&$rowOfCommentWriter['lname']!=' ')) 
+                                            {
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['fname'];
+                                                $nameOfCommentWriter.=" ";
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['lname'];
+                                            }
+                                            else if (($rowOfCommentWriter['fname']!='first name'&&$rowOfCommentWriter['fname']!=' ')&&($rowOfCommentWriter['lname']=='last name'||$rowOfCommentWriter['lname']==' ')) 
+                                            {
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['fname'];
+                                            }
+                                            else if (($rowOfCommentWriter['fname']=='first name'||$rowOfCommentWriter['fname']==' ')&&($rowOfCommentWriter['lname']!='last name'&&$rowOfCommentWriter['lname']!=' '))
+                                            {
+                                                $nameOfCommentWriter.=$rowOfCommentWriter['lname'];
+                                            }  
+                                        }
+                                    }
+
+                                    $resultsOfCommentWriterImage = mysqli_query($con, "SELECT * FROM images");
+                                    while ($rowOfCommentWriter=mysqli_fetch_array($resultsOfCommentWriterImage)) 
+                                    {
+                                        if ($rowOfCommentWriter['id']==$idOfCommentWriter) 
+                                        {
+                                            if ($rowOfCommentWriter['image']!='image') 
+                                            {
+                                                echo '<div class="col-sm-1">';
+                                                echo "<img src='img/".$rowOfCommentWriter['image']."'   class=\"commentsImages\">";
+                                                echo '</div>';
+                                            }
+                                        }
+                                    }
+                                    echo "<p>".$textOfComment."</p>";  
+                                    echo "<p class=\"textOfComment\">".$nameOfCommentWriter."</p>";   
+                                  
+                                    for($star=0;$star<$getRatingOfEachComment;$star++)
+                                    {
+                                        echo ' <span class="fa fa-star checked"></span>';
+                                    }
+                                    $emptyStars=5-$getRatingOfEachComment;
+                                    $e=0;
+                                    while($e<$emptyStars)
+                                    {
+                                        $e++;
+                                        echo '<span class="fa fa-star"></span>';
+                                    }
+                                    echo "<p>".$dateOfComment."</p>";                                   
+                                    echo "<hr>";
+                                    echo "</div>";
+        
+                                }
+                            }
+                            if($thereIsAnyComment==-1)
+                            {
+                                echo "
+                                <h1>אין עוד תגובות</h1>";
+                            }
+                        ?>
 					</div>
 					<!--message-->
 					<div id="message" class="tabcontent">
@@ -331,7 +507,7 @@
 
                     <div id="Links" class="tabcontent">
                         <div class="form-group">
-                            <h3>שיתוף מורה</h3>
+                            <h3>שיתוף את הפרופיל שלי</h3>
                             <label for="facebook"><h4  class="inputTitleIcon">FACEBOOK</h4><div class="fa fa-facebook"></div></label>
                             <label for="linkedin"><h4  class="inputTitleIcon">LINKEDIN</h4><div class="fa fa-linkedin"></div></label>               
                             <label for="youtube"><h4  class="inputTitleIcon">YOUTUBE</h4><div class="fa fa-youtube"></div></label>
@@ -364,7 +540,113 @@
                         <hr><hr>
                     </div>
                     <div id="dashboardSection" class="tabcontent">
-                        <h1>dashboard timeline</h1>
+                    <section class="board">  
+        
+                            <table class="table table-sm table-dark">
+                                <thead>
+                                <tr>
+                                    <th>שעה/יום</th>
+                                    <th scope="col">א</th>
+                                    <th scope="col">ב</th>
+                                    <th scope="col">ג</th>
+                                    <th scope="col">ד</th>
+                                    <th scope="col">ה</th>
+                                    <th scope="col">ו</th>
+                                    <th scope="col">שבת</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                               <form action="profile.php" method="post">                               
+                                    <?php
+                                        echo"<input name=\"id\" type=\"hidden\" value=\"$ID\" id=\"$ID\">"; 
+                                        for($hours=7;$hours<=22;$hours++)
+                                        {
+                                            if($hours==7||$hours==13||$hours==17)
+                                            {
+                                                echo "<tr class=\"bg-primary\">";
+                                            }
+                                            elseif ($hours==9||$hours==19||$hours==15)
+                                            {
+                                                echo "<tr class=\"bg-info\">";
+                                            }
+                                            elseif ($hours==11||$hours==21)
+                                            {
+                                                echo "<tr class=\"bg-warning\">";
+                                            }
+                                            else
+                                            {
+                                                echo "<tr>";
+                                            }
+                                            if($hours<10)
+                                                {
+                                                    echo "<th>"."0".$hours.":00"."</th>";
+                                                }
+                                                else
+                                                {
+                                                    echo "<th>".$hours.":00"."</th>";
+                                                }
+                                            for($Days=0;$Days<7;$Days++)
+                                            {
+                                                $DaysId=$Days+1;
+                                                $hourseId=$hours;   
+                                                $addAsString=strval($DaysId);
+                                                $addAsString.=$hourseId;
+                                                $buttonGiveId=intval($addAsString);                             
+
+
+                                                $alreadyInsert=-1;
+                                                $scheduleResultForBoard = mysqli_query($con, "SELECT * FROM teacherSchedule");
+                                                while ($scheduleRow=mysqli_fetch_assoc($scheduleResultForBoard)) 
+                                                {
+                                                    if ($scheduleRow['idOfTeacher']==$ID) 
+                                                    {
+                                                        if($scheduleRow['dayOfLesson']==$DaysId && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==-1)
+                                                        {
+                                                            $alreadyInsert=1;
+                                                        }
+                                                        else if($scheduleRow['dayOfLesson']==$DaysId && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==1)
+                                                        {
+                                                            $alreadyInsert=2;
+                                                        }
+                                                    }
+                                                }
+
+                                                if($hours<10&&$alreadyInsert==-1)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\">"."0".$hours.":00+"."</button></th>";
+                                                }
+                                                else if($hours<10&&$alreadyInsert==1)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">"."0".$hours.":00+"."</button></th>";
+                                                }                                                
+                                                else if($hours<10&&$alreadyInsert==2)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:red\">"."0".$hours.":00+"."</button></th>";
+                                                }
+                                                else if($hours>10&&$alreadyInsert==1)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">".$hours.":00+"."</button></th>";
+                                                }
+                                                else if($hours>10&&$alreadyInsert==2)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:red\">".$hours.":00+"."</button></th>";
+                                                }
+                                                else
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\">".$hours.":00+"."</button></th>";
+                                                }
+                                                $alreadyInsert=-1;
+                                            }
+                                            echo "</tr>";
+                                        }
+                                    
+                                        
+
+                                    ?>
+                                </form> 
+                                </tbody>
+                            </table>
+                            </section>
                     </div>
                 </section>
         <script>
