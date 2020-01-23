@@ -86,6 +86,12 @@ $_SESSION['varname'] = $user;
 	}
 	else// sign up of a normal user
 	{
-    header('location: profile.php');
+    if( $studentOrTeacher=='מורה')
+    {
+      header('location: profile.php');
+    }
+    else{
+      header('location: studentProfile.php');
+    }
 	}
 ?>
