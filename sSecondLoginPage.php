@@ -181,9 +181,9 @@
                                 <div class="col-sm-12">
                                     <label for="studentOrTeacher"><h4 class="inputWords">משתמש באתר מוגדר כ-</h4></label>
                                         <select name="frameworkstudentOrTeacher" id="frameworkstudentOrTeacher" class="form-control selectpicke"  data-live-search="true" >
-                                            <option class="c" value="מורה">מורה</option>
-                                            <option class="c" value="תלמיד">תלמיד/ה</option>
-                                            <option class="c" value="שניהם">גם מורה גם תלמיד</option>
+                                            <option class="c" value="teacher">מורה</option>
+                                            <option class="c" value="student">תלמיד/ה</option>
+                                            <option class="c" value="teacher">גם מורה גם תלמיד</option>
                                           </select>
                                 <br /><br />
                                 <input type="hidden" name="hidden_framework_studentOrTeacher" id="hidden_framework_studentOrTeacher"/>                                  
@@ -195,9 +195,9 @@
                                 <div class="col-sm-12">
                                     <label for="gender"><h4 class="inputWords">מין</h4></label>
                                         <select name="frameworkGender" id="frameworkGender" class="form-control selectpicke"  data-live-search="true" >
-                                            <option class="c" value="זכר">זכר</option>
-                                            <option class="c" value="נקבה">נקבה</option>
-                                            <option class="c" value="שניהם">אחר</option>
+                                            <option class="c" value="male">זכר</option>
+                                            <option class="c" value="female">נקבה</option>
+                                            <option class="c" value="male">אחר</option>
                                           </select>
                                 <br /><br />
                                 <input type="hidden" name="hidden_framework_gender" id="hidden_framework_gender"/>                                  
