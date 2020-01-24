@@ -12,32 +12,27 @@
     
 	// because you can reach to this page from more than one page, so we need to know from\
 	//where we get to it for(edit page, first time on this page, etc...)
-	$logIn=$_POST['usernameLogin']; 
-	
-	$logInG=$_GET['usernameLogin']; 
+    /*echo $_GET['id'];
+    echo $_POST['id'];
+    $logIn=$_POST['usernameLogin']; 
+	echo $logIn;
+    $logInG=$_GET['usernameLogin']; 
+    echo $logInG;*/
 	//$signUp=$_POST['username'];
-	$edit=$_GET['username']; 	$eedit=$_SESSION['varname'];	
+	//$edit=$_GET['username']; 	$eedit=$_SESSION['varname'];	
 	// conect with tables to get information about the user to show it and use
 	$results = mysqli_query($con, "SELECT * FROM teachers");	
 	$ImgResult = mysqli_query($con, "SELECT * FROM images");
 	//variables will used on HTML
 	//(username,status,email,first name, last name, phone number, cities, courses,img,price)
 	$us=" ";	$sta=" ";	$email=" "; 	$fN=" ";	$lN=" "; 	$Phone=" "; 
-    $Cities= " "; 	$Courses=" ";   	$ImgSource=" "; 	$ID; 	$pri;
-    if ($logIn!=null)//get to this page by login
+    $Cities= " "; 	$Courses=" ";   	$ImgSource=" "; 	$ID=$_GET['id']; 	$pri;
+    
+    if ($ID)//get to this page by login
 	{
-		$eedit=$logIn;
-		$edit=$logIn;
-		$pss=$_POST['PasswordLogin'];
-		$alreadyAccount=-1;
 		while ($row=mysqli_fetch_assoc($results)) 
 		{
-			$s=$row['password'];
-			if($row['password']==$_POST['PasswordLogin'])//check password
-			{
-				$alreadyAccount=1;
-			}
-			if($row['username']==$_POST['usernameLogin'])//get variables to use on HTML view
+			if($row['id']==$ID)//get variables to use on HTML view
 			{
 				$ID=$row['id'];
 				$us=$row['username'];
@@ -48,15 +43,9 @@
 				$Phone=$row['phone'];
 			}
 		}
-		if ($alreadyAccount!=1) //if the password was wrong
-		{
-		   header('location: firstLoginPage.php');
-		   $message = "  או שם המשתמש או הסיסמה לא לא נכון ";
-		   echo "<script type='text/javascript'>alert('$message');</script>";
-		}
 	}
 	else if (($edit!=null)||($eedit!=null)) //back to profile page from edit page
-	{
+	{//echo "((edit!=null)||(eedit!=null))";
 		$ID;
 		if($edit!=null)
 		{
@@ -78,7 +67,7 @@
 				$Phone=$row['phone'];
 			}
 		}			 
-	}	
+    }
 	while ($ImgRow=mysqli_fetch_assoc($ImgResult)) //get the image
 	{
 		if($ImgRow['id']==$ID)

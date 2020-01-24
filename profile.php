@@ -22,7 +22,21 @@
 	if ($logIn=="AdminEliEssiak")//if this is the admin --> go to admin page 
 	{
 	 	header('location: AdminControlPage.php');
-	}
+    }
+/*
+    $ifStudent = mysqli_query($con, "SELECT * FROM teachers");
+    while ($scheduleRow=mysqli_fetch_assoc($ifStudent))
+    {
+        if($scheduleRow['setUserAs']=='student')
+        {
+            header('location: studentProfile.php');
+            echo "<script>                
+            var getIdFromPhpCode = \"<?php echo $AdminPutId ?>\";
+            window.location.href=\"deleteUser.php?id=\"+getIdFromPhpCode;
+            </script>";
+        }
+    } 
+    */
 	// conect with tables to get information about the user to show it and use
 	$results = mysqli_query($con, "SELECT * FROM teachers");	
 	$ImgResult = mysqli_query($con, "SELECT * FROM images");
@@ -116,7 +130,12 @@
 				$sta=$row['status'];
 				$pri=$row['price'];
 				$email=$row['email'];
-				$Phone=$row['phone'];
+                $Phone=$row['phone'];
+                if($row['setUserAs']=='student')
+                {
+                    //echo "<input type=\"hidden\ name=\"usernameLogin\">";
+                   header('location: studentProfile.php?id='.$ID);
+                }
 			}
 		}
 		if ($alreadyAccount!=1) //if the password was wrong
@@ -147,7 +166,11 @@
 				$email=$row['email'];
 				$pri=$row['price'];
 				$sta=$row['status'];
-				$Phone=$row['phone'];
+                $Phone=$row['phone'];
+                if($row['setUserAs']=='student')
+                {
+                    header('location: studentProfile.php?id='.$ID);
+                }
 			}
 		}			 
 	}	
