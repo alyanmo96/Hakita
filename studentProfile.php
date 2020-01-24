@@ -165,7 +165,7 @@
                     <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
-                    <a class="nav-link" href="searchTeacher.php"> חיפוש מורה</a>
+                    <a class="nav-link" href="searchTeachers.php"> חיפוש מורה</a>
                   </li>
                   <li class="nav-item active">
                     <a class="nav-link" href="FAQ.php">שאלות ותשובות</a>
