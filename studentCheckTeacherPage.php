@@ -3,7 +3,14 @@
     $ID=-1;
     $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
     $commentsResult = mysqli_query($con, "SELECT * FROM dBOfComments");
+    $IDOfStudent;
     
+    /*
+    echo "{";
+    echo $_GET['studentID'];
+    echo $_POST['studentID'];
+    echo "}";
+    */
     if(isset($_POST['chooseLessonButton'])) 
         {     
             if($_GET['id'])
@@ -14,6 +21,13 @@
             {
                 $ID=$_POST['id'];
             }
+            if($_GET['studentID'])
+            {
+                $IDOfStudent=$_GET['studentID']; 
+            }
+            else{
+                $IDOfStudent=$_POST['studentID']; 
+            } 
             $lessonTime=$_POST['chooseLessonButton'];
             $hour;
             $day;
@@ -329,12 +343,31 @@
                   <li class="nav-item active">
                     <a class="nav-link" href="searchTeachers.php">חיפוש מורה <span class="sr-only">(current)</span></a>
                   </li>
-                  <li class="nav-item active">
-                    <a class="nav-link" href="firstLoginPage.php">כניסה/הרשמה <span class="sr-only">(current)</span></a>
-                  </li>
+                  <?php
+                    if(!$_GET['studentID']&&!$_POST['studentID'])
+                    {
+                        echo "<li class=\"nav-item active\">
+                        <a class=\"nav-link\" href=\"firstLoginPage.php\">כניסה/הרשמה <span class=\"sr-only\">(current)</span></a>
+                      </li> ";
+                    }
+                    if($_GET['studentID']||$_POST['studentID'])
+                    {
+                        echo "<li class=\"nav-item active\">
+                        <a class=\"nav-link\" href=\"studentProfile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a>
+                      </li> ";
+                    }
+                  ?>                  
                   <li class="nav-item active">
                     <a class="nav-link" href="FAQ.php">שאלות ותשובות</a>
                   </li>
+                  <?php
+                    if($_GET['studentID']||$_POST['studentID'])
+                    {
+                      echo "<li class=\"nav-item active\">
+                      <a class=\"nav-link\" href=\"MainPage.php\">יציאה </a>
+                    </li>";
+                    }
+                  ?>
               </ul>
             </div>
           </nav>
@@ -480,17 +513,33 @@
                     </div>        
                     <div id="comments" class="tabcontent">
                     <li>
-                        <button  class="addCommentButton btn btn-warning" alt="work 1" data-toggle="modal" data-target="#myModalc" title="כפתור הוספת תגובה על המורה"> <h5>הוספת תגובה חדשה</h5></button>
+                    <?php
+                        if($_GET['studentID']||$_POST['studentID'])
+                        {
+                            echo "
+                            <button  class=\"addCommentButton btn btn-warning\" alt=\"work 1\" data-toggle=\"modal\" data-target=\"#myModalc\" title=\"כפתור הוספת תגובה על המורה\"> <h5>הוספת תגובה חדשה</h5></button>";
+                        }
+                    ?>
                         <div class="modal fade" id="myModalc" tabindex="-1" role="dialog" aria-labelledby="myModalLabelv">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                 <div class="modal-header">
+                                
                                     <h4 class="modal-title" id="myModalLabelv">הוספת תגובה</h4>
                                 </div>
                                 <form  name="feedbackForm" action="studentCheckTeacherPage.php" method="post">
                                         <?php
                                             echo"<input name=\"id\" type=\"hidden\" value=\"$ID\" id=\"$ID\">"; 
-                                        ?>
+                                            if($_GET['studentID'])
+                                            {
+                                                $sendID=$_GET['studentID']; 
+                                            }
+                                            else{
+                                                $sendID=$_POST['studentID']; 
+                                            }                                    
+                                            echo"<input name=\"studentID\" type=\"hidden\" value=\"$sendID\" id=\"$sendID\">"; 
+
+                                         ?>
                                         <div class="modal-body">
                                             <div class="pleaseAddFeedback">
                                                 אנא ספק/י את המשוב שלך להלן:
@@ -668,6 +717,14 @@
                         <form action="studentCheckTeacherPage.php" method="post">                              
                                 <?php
                                     echo"<input name=\"id\" type=\"hidden\" value=\"$ID\" id=\"$ID\">"; 
+                                    if($_GET['studentID'])
+                                    {
+                                        $sendID=$_GET['studentID']; 
+                                    }
+                                    else{
+                                        $sendID=$_POST['studentID']; 
+                                    }                                    
+                                    echo"<input name=\"studentID\" type=\"hidden\" value=\"$sendID\" id=\"$sendID\">"; 
                                     for($hours=7;$hours<=22;$hours++)
                                     {
                                         if($hours==7||$hours==13||$hours==17)
@@ -866,8 +923,8 @@
             let x=i;
             let n = x.toString();
             $("#"+n).click(function()
-            {
-                window.location.href = "studentCheckTeacherPage.php?id=" + x;
+            {alert("GGG");
+               // window.location.href = "studentCheckTeacherPage.php?id=" + x;
             });
         }
 	});
