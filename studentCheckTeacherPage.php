@@ -47,11 +47,12 @@
             $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
             while ($scheduleRow=mysqli_fetch_assoc($scheduleResult)) 
             {
-                if ($scheduleRow['idOfTeacher']==$ID) 
+                if ($scheduleRow['idOfTeacher']==$ID) //and idOfStudent
                 {
                     if($scheduleRow['dayOfLesson']==$day && $scheduleRow['hourOFLesson']==$hour)
                     {
-                        $upDate="UPDATE `teacherSchedule` SET `fullOrFree`='1'WHERE idOfTeacher=$ID and hourOFLesson=$hour and dayOfLesson=$day";
+                        $upDate="UPDATE `teacherSchedule` SET `fullOrFree`='1' , `idOfStudent`=$IDOfStudent
+                        WHERE idOfTeacher=$ID  and hourOFLesson=$hour  and dayOfLesson=$day";
                         $result = mysqli_query($con,$upDate);
                     }
                 }
