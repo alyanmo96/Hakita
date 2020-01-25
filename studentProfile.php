@@ -165,10 +165,14 @@
                     <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
-                    <a class="nav-link" href="searchTeachers.php"> חיפוש מורה</a>
+                    <!--<a class="nav-link" href="searchTeachers.php" onclick="otherPagesWithId()"> חיפוש מורה</a>-->
+                    <a class="nav-link"  onclick="otherPagesWithId()"> חיפוש מורה</a>               
+                   <!--<a class="nav-link" href="searchTeachers.php?id=" id="a">חיפוש מורה</a>-->
                   </li>
                   <li class="nav-item active">
-                    <a class="nav-link" href="FAQ.php">שאלות ותשובות</a>
+                    <!--<a class="nav-link" href="FAQ.php"onclick="otherPagesWithId()">שאלות ותשובות</a>-->
+                    <a class="nav-link" onclick="FAQPagesWithId()">שאלות ותשובות</a>
+                   
                   </li>
                   <li class="nav-item active">
                     <a class="nav-link" href="MainPage.php"> יציאה<span class="sr-only">(current)</span></a>
@@ -313,3 +317,13 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
       <script src="js/bootstrap.min.js"></script>
 </html>
+<script>
+    function otherPagesWithId()
+    {
+        location.href = "searchTeachers.php?id=" + <?php echo $ID?>;
+    }
+    function FAQPagesWithId()
+    {
+        location.href = "FAQ.php?id=" + <?php echo $ID?>;
+    }
+</script>

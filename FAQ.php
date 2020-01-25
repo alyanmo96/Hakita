@@ -59,15 +59,39 @@
                   <li class="nav-item active">
                     <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
+                  <?php
+                    if(!$_GET['id']&&!$_POST['id'])
+                    {
+                      echo "<li class=\"nav-item active\">
+                        <a class=\"nav-link\" href=\"firstLoginPage.php\">כניסה/הרשמה </a>
+                        </li>"; 
+                    }
+                   ?> 
                   <li class="nav-item active">
-                    <a class="nav-link" href="firstLoginPage.php">כניסה והרשמה </a>
+                    <a class="nav-link" onclick="otherPagesWithId()">חיפוש מורה</a>
                   </li>
-                  <li class="nav-item active">
-                    <a class="nav-link" href="searchTeachers.php">חיפוש מורה</a>
-                  </li>
+				  <?php
+                    if($_GET['id']||$_POST['id'])
+                    {
+                      echo "<li class=\"nav-item active\">
+                        <a class=\"nav-link\" href=\"MainPage.php\"> יציאה</a>
+						</li>"; 
+						if($_GET['id'])
+						{
+							$ID=$_GET['id'];
+						}
+						else
+						{
+							$ID=$_POST['id'];
+						}
+                    }
+                   ?> 
               </ul>
             </div>
           </nav>
+		  <section class="feedbackSection">			
+			<a class="nav-link" href="feedback.php"><button>פידבאק feedback</button></a>
+		  </section>
 			<section class="about">
 				<div class="container">
 					<div class="row">
@@ -167,3 +191,13 @@
         </script>    
 	</body>
 </html>
+<script>
+    function otherPagesWithId()
+    {
+        location.href = "searchTeachers.php?id=" + <?php echo $ID?>;
+    }
+    function FAQPagesWithId()
+    {
+        location.href = "FAQ.php?id=" + <?php echo $ID?>;
+    }
+</script>
