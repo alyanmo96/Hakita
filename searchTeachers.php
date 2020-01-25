@@ -4,6 +4,20 @@
   2- the select list {words need to be on the right side}
   3-the show of each teacher inside the card
 */
+/*
+if(isset($_POST['ss']))//ss
+{
+echo "jjjjjjjjjjjjjjjj";
+echo $_POST['ss'];
+}
+if(isset($_GET['ss']))//ss
+{
+echo "GGGGGGGGGGGGGGGGGG";
+}
+  echo $_GET['id'];
+    echo $_POST['id'];
+*/
+
   //session_start();
   $Cities=$_POST['hidden_framework'];
   $Courses=$_POST['hidden_framework_courses']; 
@@ -308,10 +322,12 @@
         }
         .card {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  max-width: 350px;
+  max-width: 450px;
+  min-height: 300px;
   margin: auto;
   text-align: center;
   font-family: arial;
+  display: grid;
 }
 
 .title {
@@ -319,10 +335,10 @@
   font-size: 18px;
 }
 .img{
-  max-width: 50%;
-  margin-left: 35%;
-  margin-right: 20%;
-  margin-top: 1%;
+  max-width: 80%;
+  margin-left:30%;
+  margin-right:10%;
+  border-radius: 50px;
 }
 body{
   direction:rtl;
@@ -342,16 +358,54 @@ body{
                 <li class="nav-item active">
                     <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
-                  <li class="nav-item active">
-                    <a class="nav-link" href="firstLoginPage.php">כניסה/הרשמה <span class="sr-only">(current)</span></a>
-                  </li>
+                  <?php
+                    if(!$_GET['id']&&!$_POST['id'])
+                    {
+                      echo "<li class=\"nav-item active\">
+                        <a class=\"nav-link\" href=\"firstLoginPage.php\">כניסה/הרשמה </a>
+                        </li>"; 
+                    }
+                   ?> 
                   <li class="nav-item active">
                     <a class="nav-link" href="FAQ.php">שאלות ותשובות</a>
                   </li>
+                  <?php
+                    if($_GET['id']||$_POST['id'])
+                    {
+                      echo "<li class=\"nav-item active\">
+                        <a class=\"nav-link\" href=\"MainPage.php\"> יציאה</a>
+                        </li>"; 
+                    }
+                   ?>   
               </ul>
             </div>
           </nav>
     </section>
+<hr>
+<section>
+  <?php
+  $studentId;
+    if($_GET['id']||$_POST['id'])
+    {
+      if($_GET['id'])
+      {
+        $studentId=$_GET['id'];
+      }
+      else{
+        $studentId=$_POST['id'];
+      }
+      $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+      $studentResult = mysqli_query($con, "SELECT * FROM teachers");
+      while ($row=mysqli_fetch_array($studentResult)) 
+      {
+        if($row['id']==$_GET['id']||$row['id']==$_POST['id'])
+        {          
+          echo "<h2>"." שלום".$row['fname']." ".$row['lname']."</h2>";
+        }
+      }
+    }
+  ?>
+</section>
 <hr>
 <div class="container bootstrap snippet" id="container">
     <div class="row">
@@ -361,7 +415,10 @@ body{
             <div class="tab-pane active" id="home">
                 <hr>
                   <form class="form" action="searchTeachers.php" method="post" id="registrationForm">
-                      
+                      <?php 
+                        $sendID=$_GET['id'];
+                        echo "<input type=\"hidden\" name=\"id\" id=\"$sendID\" value=\"$sendID\">";
+                      ?>
                       <div class="form-group">
                              <div class="col-sm-6">
                                   <div style=" padding-top: 1%;">
@@ -496,23 +553,17 @@ body{
                 {
                   $D=array();
                   $DCounter=0;
-                  $k=0;
-                  echo "<div class=\"col-sm-10\">";
+                  echo "<div class=\"col-sm-11\">";
                   for($i=1;$i<$CoursesIdArraylength;$i+=5)
                     {
-                      $k++;
-                      if(($k%3)==0)
-                      {
-                        echo "<br><hr><hr>";
-                      }
                       $D[$DCounter]=$courseResultArray[$i-1];
                       $DCounter++;
                       $ID=$courseResultArray[$i-1];
                       //new line
-                      echo "<div class=\"col-sm-4\">";
+                      echo "<div class=\"col-sm-3\">";
                      // echo "<button value=\"$ID\" id=\"$ID\" class=\"teacher col-sm-11\">";
                      echo "<button value=\"$ID\" id=\"$ID\" class=\"card\">";
-                      echo"   <input type=\"hidden\" id=\"$ID\">";
+                   //   echo"   <input type=\"hidden\" id=\"$ID\">";
                       //echo  $courseResultArray[$i];//first name 
                       $nameToShow=$courseResultArray[$i];
                       $i++;
@@ -520,11 +571,11 @@ body{
                       //echo $courseResultArray[$i];//phone number
                       $status=$courseResultArray[$i];
                       $i++;
-                      echo nl2br("\n");
+                      //echo nl2br("\n");
                       $cc=$courseResultArray[$i];
                       //echo  $courseResultArray[$i];//
                       $i++;
-                      echo nl2br("\n");
+                     // echo nl2br("\n");
                      // echo "<img src='img/".$courseResultArray[$i]."'   class='teacherImg'>";//image
                       echo "<img src='img/".$courseResultArray[$i]."'   class='img'>";
                      echo "<h2> "; echo $nameToShow; echo"</h2>";
@@ -634,6 +685,7 @@ $(document).ready(function(){
 
 <script>
 	var phpIdArrayLength = <?php echo end($D);?>;
+  var studentID =<?php echo ($studentId);?>;
 	$(document).ready(function()
 	{
 	for (var i = 0; i <= phpIdArrayLength; i++)
@@ -642,7 +694,9 @@ $(document).ready(function(){
 	let n = x.toString();
 	$("#"+n).click(function()
 	{
-	window.location.href = "studentCheckTeacherPage.php?id=" + x;
+    //alert(studentID);
+	  window.location.href = "studentCheckTeacherPage.php?id=" + x + "&studentID="+studentID;
+
 	});
 	}
 	});

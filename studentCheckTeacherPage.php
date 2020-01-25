@@ -87,8 +87,14 @@
         $_POST["teacherValue"]=null; 
         
         $ID=$_POST['id'];   
-        
-       $commentWriterId=267;
+        if($_GET['studentID'])
+            {
+                $commentWriterId=$_GET['studentID']; 
+            }
+            else{
+                $commentWriterId=$_POST['studentID']; 
+            }
+           // echo "{"; echo$commentWriterId;echo"}";
        $todayDate=date('Y-m-d');
        $query="INSERT INTO `dBOfComments`(`idOfTeacher`,`idOfCommentWriter`,`dateOfComment`,`textOfComment`,`rating`) VALUES ('$ID','$commentWriterId','$todayDate','$getComment','$rating')";
         $result = mysqli_query($con,$query);
@@ -537,7 +543,8 @@
                                             }
                                             else{
                                                 $sendID=$_POST['studentID']; 
-                                            }                                    
+                                            }     
+                                          //  echo "{"; echo$sendID;echo"}";                               
                                             echo"<input name=\"studentID\" type=\"hidden\" value=\"$sendID\" id=\"$sendID\">"; 
 
                                          ?>
