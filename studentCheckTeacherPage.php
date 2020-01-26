@@ -710,16 +710,26 @@
                     <section class="board">          
                         <table class="table table-sm table-dark">
                             <thead>
-                            <tr>
-                                <th>שעה/יום</th>
-                                <th scope="col">א</th>
-                                <th scope="col">ב</th>
-                                <th scope="col">ג</th>
-                                <th scope="col">ד</th>
-                                <th scope="col">ה</th>
-                                <th scope="col">ו</th>
-                                <th scope="col">שבת</th>
-                            </tr>
+                            <?php
+                                    $sunday = date('d/m', strtotime("sunday")); 
+                                    $monday = date('d/m', strtotime("monday")); 
+                                    $tuesday = date('d/m', strtotime("tuesday"));
+                                    $wednesday = date('d/m', strtotime("wednesday"));
+                                    $thursday = date('d/m', strtotime("thursday")); 
+                                    $friday = date('d/m', strtotime("friday")); 
+                                    $saturday = date('d/m', strtotime("saturday"));
+
+                                    echo "<tr>";
+                                   echo" <th>שעה/יום</th>";
+                                   echo" <th scope=\"col\">א- $sunday</th>";
+                                   echo" <th scope=\"col\">ב- $monday</th>";
+                                   echo" <th scope=\"col\">ג- $tuesday </th>";
+                                   echo" <th scope=\"col\">ד- $wednesday</th>";
+                                   echo" <th scope=\"col\">ה- $thursday</th>";
+                                   echo" <th scope=\"col\">ו- $friday</th>";
+                                   echo" <th scope=\"col\">שבת- $saturday</th>";
+                                    echo "</tr>";
+                                ?>
                             </thead>
                             <tbody>
                         <form action="studentCheckTeacherPage.php" method="post">                              
