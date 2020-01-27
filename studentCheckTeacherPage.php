@@ -711,7 +711,7 @@
                         <table class="table table-sm table-dark">
                             <thead>
                             <?php
-                                    $sunday = date('d/m', strtotime("sunday")); 
+                                    $sunday =date('d/m', strtotime("sunday -1 week")); 
                                     $monday = date('d/m', strtotime("monday")); 
                                     $tuesday = date('d/m', strtotime("tuesday"));
                                     $wednesday = date('d/m', strtotime("wednesday"));
@@ -775,9 +775,7 @@
                                             $hourseId=$hours;   
                                             $addAsString=strval($DaysId);
                                             $addAsString.=$hourseId;
-                                            $buttonGiveId=intval($addAsString);                             
-
-
+                                            $buttonGiveId=intval($addAsString);                     
                                             $alreadyInsert=-1;
                                             $scheduleResultForBoard = mysqli_query($con, "SELECT * FROM teacherSchedule");
                                             while ($scheduleRow=mysqli_fetch_assoc($scheduleResultForBoard)) 
@@ -790,18 +788,51 @@
                                                     }
                                                 }
                                             }
-
-                                            if($hours<10&&$alreadyInsert==-1)
+                                            
+                                            $tod;
+                                            $checkToday = date("l");
+                                            switch ($checkToday) 
                                             {
-                                                echo "<th></th>";
+                                                case "Sunday":
+                                                    $tod=1;
+                                                    break;
+                                                case "Monday":
+                                                    $tod=2;
+                                                    break;    
+                                                case "Tuesday":
+                                                    $tod=3;
+                                                    break;
+                                                case "Wednesday":
+                                                    $tod=4;
+                                                    break;
+                                                case "Thursday":
+                                                    $tod=5;
+                                                    break;    
+                                                case "Friday":
+                                                    $tod=6;
+                                                    break;    
+                                                case "Saturday":
+                                                    $tod=7;
+                                                    break;
                                             }
-                                            else if($hours<10&&$alreadyInsert==1)
+                                            if($Days+1>=$tod)
                                             {
-                                                echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">"."0".$hours.":00+"."</button></th>";
-                                            }
-                                            else if($hours>10&&$alreadyInsert==1)
-                                            {
-                                                echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">".$hours.":00+"."</button></th>";
+                                                if($hours<10&&$alreadyInsert==-1)
+                                                {
+                                                    echo "<th></th>";
+                                                }
+                                                else if($hours<10&&$alreadyInsert==1)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">"."0".$hours.":00+"."</button></th>";
+                                                }
+                                                else if($hours>10&&$alreadyInsert==1)
+                                                {
+                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">".$hours.":00+"."</button></th>";
+                                                }
+                                                else
+                                                {
+                                                    echo "<th></th>";
+                                                }
                                             }
                                             else
                                             {

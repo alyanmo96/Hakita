@@ -568,8 +568,8 @@
                             <table class="table table-sm table-dark">
                                 <thead>
                                 
-                                <?php
-                                    $sunday = date('d/m', strtotime("sunday")); 
+                                <?php 
+                                    $sunday = date('d/m', strtotime("sunday -1 week")); 
                                     $monday = date('d/m', strtotime("monday")); 
                                     $tuesday = date('d/m', strtotime("tuesday"));
                                     $wednesday = date('d/m', strtotime("wednesday"));
@@ -577,22 +577,24 @@
                                     $friday = date('d/m', strtotime("friday")); 
                                     $saturday = date('d/m', strtotime("saturday"));
 
+                                    
                                     echo "<tr>";
-                                   echo" <th>שעה/יום</th>";
-                                   echo" <th scope=\"col\">א- $sunday</th>";
-                                   echo" <th scope=\"col\">ב- $monday</th>";
-                                   echo" <th scope=\"col\">ג- $tuesday </th>";
-                                   echo" <th scope=\"col\">ד- $wednesday</th>";
-                                   echo" <th scope=\"col\">ה- $thursday</th>";
-                                   echo" <th scope=\"col\">ו- $friday</th>";
-                                   echo" <th scope=\"col\">שבת- $saturday</th>";
+                                    echo" <th>שעה/יום</th>";
+                                    echo" <th scope=\"col\">א- $sunday</th>";
+                                    echo" <th scope=\"col\">ב- $monday</th>";
+                                    echo" <th scope=\"col\">ג- $tuesday </th>";
+                                    echo" <th scope=\"col\">ד- $wednesday</th>";
+                                    echo" <th scope=\"col\">ה- $thursday</th>";
+                                    echo" <th scope=\"col\">ו- $friday</th>";
+                                    echo" <th scope=\"col\">שבת- $saturday</th>";
                                     echo "</tr>";
+
                                 ?>
                                 </thead>
                                 <tbody>
                                <form action="profile.php" method="post">                               
                                     <?php
-                                        $today = date("d/m/Y"); 
+                                        $today = date("d/m"); 
                                         echo"<input name=\"id\" type=\"hidden\" value=\"$ID\" id=\"$ID\">"; 
                                         for($hours=7;$hours<=22;$hours++)
                                         {
@@ -613,22 +615,20 @@
                                                 echo "<tr>";
                                             }
                                             if($hours<10)
-                                                {
-                                                    echo "<th>"."0".$hours.":00"."</th>";
-                                                }
-                                                else
-                                                {
-                                                    echo "<th>".$hours.":00"."</th>";
-                                                }
+                                            {
+                                                echo "<th>"."0".$hours.":00"."</th>";
+                                            }
+                                            else
+                                            {
+                                                echo "<th>".$hours.":00"."</th>";
+                                            }
                                             for($Days=0;$Days<7;$Days++)
                                             {
                                                 $DaysId=$Days+1;
                                                 $hourseId=$hours;   
                                                 $addAsString=strval($DaysId);
                                                 $addAsString.=$hourseId;
-                                                $buttonGiveId=intval($addAsString);                             
-
-
+                                                $buttonGiveId=intval($addAsString);                       
                                                 $alreadyInsert=-1;
                                                 $scheduleResultForBoard = mysqli_query($con, "SELECT * FROM teacherSchedule");
                                                 while ($scheduleRow=mysqli_fetch_assoc($scheduleResultForBoard)) 
@@ -645,38 +645,67 @@
                                                         }
                                                     }
                                                 }
-
-                                                if($hours<10&&$alreadyInsert==-1)
+                                                $tod;
+                                                $checkToday = date("l");
+                                                switch ($checkToday) 
                                                 {
-                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\">"."0".$hours.":00+"."</button></th>";
+                                                    case "Sunday":
+                                                        $tod=1;
+                                                        break;
+                                                    case "Monday":
+                                                        $tod=2;
+                                                        break;    
+                                                    case "Tuesday":
+                                                        $tod=3;
+                                                        break;
+                                                    case "Wednesday":
+                                                        $tod=4;
+                                                        break;
+                                                    case "Thursday":
+                                                        $tod=5;
+                                                        break;    
+                                                    case "Friday":
+                                                        $tod=6;
+                                                        break;    
+                                                    case "Saturday":
+                                                        $tod=7;
+                                                        break;
                                                 }
-                                                else if($hours<10&&$alreadyInsert==1)
+                                                if($Days+1>=$tod)
                                                 {
-                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">"."0".$hours.":00+"."</button></th>";
-                                                }                                                
-                                                else if($hours<10&&$alreadyInsert==2)
-                                                {
-                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:red\">"."0".$hours.":00+"."</button></th>";
-                                                }
-                                                else if($hours>10&&$alreadyInsert==1)
-                                                {
-                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">".$hours.":00+"."</button></th>";
-                                                }
-                                                else if($hours>10&&$alreadyInsert==2)
-                                                {
-                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:red\">".$hours.":00+"."</button></th>";
+                                                    if($hours<10&&$alreadyInsert==-1)
+                                                    {
+                                                        echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\">"."0".$hours.":00+"."</button></th>";
+                                                    }
+                                                    else if($hours<10&&$alreadyInsert==1)
+                                                    {
+                                                        echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">"."0".$hours.":00+"."</button></th>";
+                                                    }                                                
+                                                    else if($hours<10&&$alreadyInsert==2)
+                                                    {
+                                                        echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:red\">"."0".$hours.":00+"."</button></th>";
+                                                    }
+                                                    else if($hours>10&&$alreadyInsert==1)
+                                                    {
+                                                        echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:green\">".$hours.":00+"."</button></th>";
+                                                    }
+                                                    else if($hours>10&&$alreadyInsert==2)
+                                                    {
+                                                        echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\" style=\"background-color:red\">".$hours.":00+"."</button></th>";
+                                                    }
+                                                    else
+                                                    {
+                                                        echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\">".$hours.":00+"."</button></th>";
+                                                    }
+                                                    $alreadyInsert=-1;
                                                 }
                                                 else
                                                 {
-                                                    echo "<th><button name=\"chooseLessonButton\"  value=\"$buttonGiveId\">".$hours.":00+"."</button></th>";
+                                                    echo "<th>"."עבר"."</th>";
                                                 }
-                                                $alreadyInsert=-1;
                                             }
                                             echo "</tr>";
-                                        }
-                                    
-                                        
-
+                                        }     
                                     ?>
                                 </form> 
                                 </tbody>
