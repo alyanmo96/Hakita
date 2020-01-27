@@ -356,13 +356,13 @@ body{
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
                   <?php
                     if(!$_GET['id']&&!$_POST['id'])
                     {
                       echo "<li class=\"nav-item active\">
-                        <a class=\"nav-link\" href=\"firstLoginPage.php\">כניסה/הרשמה </a>
+                        <a class=\"nav-link\" href=\"loginSignUP.php\">כניסה/הרשמה </a>
                         </li>"; 
                     }
                    ?> 
@@ -373,7 +373,7 @@ body{
                     if($_GET['id']||$_POST['id'])
                     {
                       echo "<li class=\"nav-item active\">
-                        <a class=\"nav-link\" href=\"MainPage.php\"> יציאה</a>
+                        <a class=\"nav-link\" href=\"Hakita.php\"> יציאה</a>
                         </li>"; 
                     }
                    ?>   
@@ -695,7 +695,7 @@ $(document).ready(function(){
 	$("#"+n).click(function()
 	{
     //alert(studentID);
-	  window.location.href = "studentCheckTeacherPage.php?id=" + x + "&studentID="+studentID;
+	  window.location.href = "viewTeacherProfile.php?id=" + x + "&studentID="+studentID;
 
 	});
 	}

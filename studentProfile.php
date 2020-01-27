@@ -162,7 +162,7 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
                     <!--<a class="nav-link" href="searchTeachers.php" onclick="otherPagesWithId()"> חיפוש מורה</a>-->
@@ -175,7 +175,7 @@
                    
                   </li>
                   <li class="nav-item active">
-                    <a class="nav-link" href="MainPage.php"> יציאה<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="Hakita.php"> יציאה<span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
                   </li>

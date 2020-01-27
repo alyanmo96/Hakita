@@ -140,7 +140,7 @@
 		}
 		if ($alreadyAccount!=1) //if the password was wrong
 		{
-		   header('location: firstLoginPage.php');
+		   header('location: loginSignUP.php');
 		   $message = "  או שם המשתמש או הסיסמה לא לא נכון ";
 		   echo "<script type='text/javascript'>alert('$message');</script>";
 		}
@@ -305,13 +305,13 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item active">
-                    <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
                     <a class="nav-link" href="FAQ.php">שאלות ותשובות</a>
                   </li>
                   <li class="nav-item active">
-                    <a class="nav-link" href="MainPage.php"> יציאה<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="Hakita.php"> יציאה<span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
                   </li>

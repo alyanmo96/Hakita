@@ -109,14 +109,14 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand active" href="MainPage.php">הכיתה</a>
+            <a class="navbar-brand active" href="Hakita.php">הכיתה</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                   <li class="nav-item active">
-                    <a class="nav-link" href="MainPage.php">עמוד הבית <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a>
                   </li>
                   <li class="nav-item active">
-                    <a class="nav-link" href="firstLoginPage.php">כניסה והרשמה </a>
+                    <a class="nav-link" href="loginSignUP.php">כניסה והרשמה </a>
                   </li>
                   <li class="nav-item active">
                     <a class="nav-link" href="searchTeachers.php">חיפוש מורה</a>
