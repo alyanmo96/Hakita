@@ -570,12 +570,12 @@
                                 
                                 <?php 
                                     $sunday = date('d/m', strtotime("sunday -1 week")); 
-                                    $monday = date('d/m', strtotime("monday")); 
-                                    $tuesday = date('d/m', strtotime("tuesday"));
-                                    $wednesday = date('d/m', strtotime("wednesday"));
-                                    $thursday = date('d/m', strtotime("thursday")); 
-                                    $friday = date('d/m', strtotime("friday")); 
-                                    $saturday = date('d/m', strtotime("saturday"));
+                                    $monday = date('d/m', strtotime("monday -1 week")); 
+                                    $tuesday = date('d/m', strtotime("tuesday -1 week"));
+                                    $wednesday = date('d/m', strtotime("wednesday -1 week"));
+                                    $thursday = date('d/m', strtotime("thursday -1 week")); 
+                                    $friday = date('d/m', strtotime("friday -1 week")); 
+                                    $saturday = date('d/m', strtotime("saturday -1 week"));
 
                                     
                                     echo "<tr>";
