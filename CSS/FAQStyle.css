@@ -1,0 +1,164 @@
+body
+{
+    direction:rtl;
+    text-align: center;
+background-color: gray;
+}
+.about{
+
+    background-color: #1abc9c;
+}
+.Services
+{
+    max-width: 100%;
+}
+.MainPageTitle
+{
+    color:white;
+    font-size: 60px;
+    text-align: center;
+    margin-bottom: 1%;
+    padding-bottom: 1%;
+    text-decoration: none;
+}
+
+#theBigParagraph
+{
+    direction: rtl;
+}
+.letters
+{
+    color: white;
+}
+#talkWithUsTitle
+{
+    color: white;
+}
+#call
+{
+    font-size: 22px;
+    text-decoration: none;
+}
+#call:hover
+{
+    font-size: 30px;
+    text-decoration: none;
+}
+#button 
+        {
+            display: inline-block;
+            background-color: #4cae4c;
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            border-radius: 4px;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            transition: background-color .3s, 
+                opacity .5s, visibility .5s;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+         }
+            #button::after {
+            content: "\f077";
+            font-family: FontAwesome;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 2em;
+            line-height: 50px;
+            color: #fff;
+            }
+            #button:hover {
+            cursor: pointer;
+            background-color: #333;
+            }
+            #button:active {
+            background-color: #555;
+            }
+            #button.show {
+            opacity: 1;
+            visibility: visible;
+            }
+
+            /* Styles for the content section */
+
+            .content {
+            width: 77%;
+            margin: 50px auto;
+            font-family: 'Merriweather', serif;
+            font-size: 17px;
+            color: #6c767a;
+            line-height: 1.9;
+            }
+            @media (min-width: 500px) {
+            .content {
+                width: 43%;
+            }
+            #button {
+                margin: 30px;
+            }
+            }       
+
+            .row {
+                display: initial;
+            }
+
+            .navbar-brand 
+            {
+                font-size:35px;
+            }
+            .navbar-brand:hover
+            {
+                font-size:40px;
+            }
+            .nav-link
+            {
+                font-size:23px;
+            }    
+            .nav-link:hover
+            {
+                font-size:30px;
+            }
+            .commentCard
+        {
+            background:url('../img/8.jpg');
+            margin-right: 5%;
+            border-radius: 300px;
+        }
+        .checked {
+            color: orange;
+          }
+          .feedbackSection{
+              background-color:gray;
+          }
+			.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  margin: 5px 2px;
+  border-radius: 50%;
+}
+
+.fa:hover {
+    opacity: 0.7;
+}
+
+.fa-facebook {
+  background: #3B5998;
+  color: white;
+}
+#jceImg{
+  max-width: 75px;
+  max-height: 50px;
+}
+.ButtomSection
+{
+  direction: rtl;
+  background-color: #f8b87e;
+        color: white;
+        font-size: large;
+}            
