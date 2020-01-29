@@ -168,7 +168,7 @@
                         $forEdit=$us;
                     }
                 ?>
-                    <a href="edit.php?username=<?php echo $forEdit; ?>" >
+                    <a href="studentEdit.php?username=<?php echo $forEdit; ?>" >
                         <button type="button" class="btn btn-info" id="editButton">עדכן פרופיל</button>
                     </a>
                 </center>
