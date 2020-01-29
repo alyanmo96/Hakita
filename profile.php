@@ -229,7 +229,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>    
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
     <link rel="stylesheet" type="text/css" href="css/profile.css">
     <style>
         .navbar-nav .nav-link {
@@ -292,6 +293,40 @@
         {
             max-width: 100%;
         }
+        .ButtomSection
+{
+  direction: rtl;
+  background-color: #f8b87e;
+  color: white;
+  font-size: large;
+
+   left: 0;
+   bottom: 0;
+   width: 100%;
+}
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  margin: 5px 2px;
+  border-radius: 50%;
+}
+
+.fa:hover {
+    opacity: 0.7;
+}
+
+.fa-facebook {
+  background: #3B5998;
+  color: white;
+}
+#jceImg{
+  max-width: 75px;
+  max-height: 50px;
+}
+
     </style>
   </head>
   <body>
@@ -713,6 +748,38 @@
                             </section>
                     </div>
                 </section>
+                <div class="ButtomSection">      
+    <div class="container">
+      <div class="row">
+        
+      <div class="col-sm-4">
+          עקובו אחרינו ב-פייסבוק:-
+            <a href="https://www.facebook.com/hakita.co.il/" class="fa fa-facebook"></a>
+        </div>
+
+
+        <div class="col-sm-3">
+          📚            
+      רשימת מקצועות לימוד
+      <br>
+      צור קשר איתנו📧
+         
+      <p >הוספת פרויפיל</p>
+        </div>
+        <div class="col-sm-5">
+          &copy;כל הזוכיות שמורות לאתר הכיתה
+             
+              <a href="https://www.jce.ac.il/">
+
+                </a><br>
+                קבוצת פיתוח: המכללה האקדמית להנדסה עזריאלי ירושלים
+          
+                  <img id="jceImg" src="img/jce2.png" href="https://www.jce.ac.il/">              
+              
+        </div>
+      </div>
+    </div>
+      </div>
         <script>
             function openPage(pageName,elmnt,color) {
             var i, tabcontent, tablinks;
