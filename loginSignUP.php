@@ -124,63 +124,8 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/styleLogin.css">
-        <style>
-            .navbar-brand 
-            {
-                font-size:35px;
-            }
-            .navbar-brand:hover
-            {
-                font-size:40px;
-            }
-            .nav-link
-            {
-                font-size:23px;
-            }    
-            .nav-link:hover
-            {
-                font-size:30px;
-            }
-            .form-control
-            {
-                height:35px;
-                border-radius: 300px;
-            } 
-            .navbar{
-                background: url('./img/edit.jpg');   
-            }
-            .container-fluid{
-                margin-top: -1%;
-                background: url('./img/edit.jpg');
-            }  
-            .WordsOnMid
-            {
-                color: black;
-                font-size: 35px;
-            }
-            .logSign
-            {
-                color: black;
-            }
-            .glyphicon {
-    position: relative;
-    top: 1px;
-    display: list-item;
-    /* font-family: "Glyphicons Halflings"; */
-    font-style: italic;
-    font-weight: 1000;
-    line-height: 1;
-    -moz-osx-font-smoothing: grayscale;
-}
-.logSignButton
-{
-    font-size: 15px;
-}
-input{
-    border-radius: 300px;
-}
-        </style>
+        <link rel="stylesheet" type="text/css" href="css/LoginStyle.css">
+
     </head>
       <body>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -202,6 +147,7 @@ input{
               </ul>
             </div>
           </nav>
+          <br>
                 <div class="container-fluid">
                     <div class="container">
                     <h2 class="WordsOnMid text-center">   כניסה או הרשמה</h2>
@@ -254,6 +200,39 @@ input{
                     </div>
                     </div>
                 </div>
+                
+    <div class="ButtomSection">      
+    <div class="container">
+      <div class="row">
+        
+      <div class="col-sm-4">
+          עקובו אחרינו ב-פייסבוק:-
+            <a href="https://www.facebook.com/hakita.co.il/" class="fa fa-facebook"></a>
+        </div>
+        <div class="col-sm-3">
+          📚            
+      רשימת מקצועות לימוד
+      <br>
+      צור קשר איתנו📧
+         
+      <p >הוספת פרויפיל</p>
+        </div>
+        
+
+        <div class="col-sm-5">
+          &copy;כל הזוכיות שמורות לאתר הכיתה
+             
+              <a href="https://www.jce.ac.il/">
+
+                </a><br>
+                קבוצת פיתוח: המכללה האקדמית להנדסה עזריאלי ירושלים
+          
+                  <img id="jceImg" src="img/jce2.png" href="https://www.jce.ac.il/">              
+              
+        </div>
+      </div>
+    </div>
+      </div>
     </body>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

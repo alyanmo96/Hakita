@@ -242,131 +242,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>    
 
-    <link rel="stylesheet" type="text/css" href="css/profile.css">
-    <style>
-        .tablink
-        {
-            border-radius: 30px;
-        }
-        .navbar-nav .nav-link {
-            padding-right: 0;
-            padding-left: 40%;
-        }
-            .nav-link
-            {
-                font-size:13px;
-            }    
-            .nav-link:hover
-            {
-                font-size:23px;
-            }
-            body{
-                direction:rtl;
-                max-width: 100%;
-                text-align: center;
-            }
-            .row
-            {
-                max-width: 101%;
-            }
-            .cityButtons{
-                margin-top:2%;
-                border-radius: 30px;
-            }
-            .courseButtons{
-                margin-top:2%;
-                border-radius: 30px;
-            }
-            img {
-            border-radius: 300px;
-            border-style: none;
-        }
-        .img-fluid {
-            max-width: 100%;
-            height: 70px;
-        }
-        .commentsImages
-        {
-            float:right;
-            max-height: 80px;
-            margin-top: 40%;
-        }
-        .textOfComment
-        {
-            font-size: 20px;
-            margin-top: -3%;
-            margin-right: 1%;
-            float: right;
-        }
-        p {
-            margin-top: 1%;
-            font-size: 25px;
-            font-weight: 700;
-        }
-        .commentCard
-        {
-            background:url('./img/7.jpg');
-            margin-right: 5%;
-            border-radius: 300px;
-        }
-        .modal-footer
-        {
-            direction:ltr;
-        }
-        .addCommentButton
-        {
-            border-radius:300px;
-        }
-        .pleaseAddFeedback
-        {
-            margin-right: -50%;
-        }
-        textarea.form-control {
-            height: 60px;
-        }
-        #sendMessageToTeacherFormSection
-        {
-            max-width: 70%;
-            margin-left: 25%;
-            margin-right: 25%;
-        }
-        .checked {
-  color: orange;
-}
-.ButtomSection
-{
-  direction: rtl;
-  background-color: #f8b87e;
-  color: white;
-  font-size: large;
-   left: 0;
-   bottom: 0;
-   width: 100%;
-}
-.fa {
-  padding: 20px;
-  font-size: 30px;
-  width: 30px;
-  text-align: center;
-  text-decoration: none;
-  margin: 5px 2px;
-  border-radius: 50%;
-}
+    <link rel="stylesheet" type="text/css" href="css/profileStyle.css">
 
-.fa:hover {
-    opacity: 0.7;
-}
-
-.fa-facebook {
-  background: #3B5998;
-  color: white;
-}
-#jceImg{
-  max-width: 75px;
-  max-height: 50px;
-}
-
-    </style>
   </head>
   <body>
     <a id="button"></a>
@@ -888,7 +765,7 @@
                     </div>
                 </section>
                 
-    <div class="ButtomSection">      
+    <div class="ButtomFooter">      
     <div class="container">
       <div class="row">
       <div class="col-sm-4">

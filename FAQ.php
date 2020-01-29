@@ -26,54 +26,7 @@
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" type="text/css" href="css/styleFAQ.css">
-        <style>
-            .navbar-brand 
-            {
-                font-size:35px;
-            }
-            .navbar-brand:hover
-            {
-                font-size:40px;
-            }
-            .nav-link
-            {
-                font-size:23px;
-            }    
-            .nav-link:hover
-            {
-                font-size:30px;
-            }
-			.fa {
-  padding: 20px;
-  font-size: 30px;
-  width: 30px;
-  text-align: center;
-  text-decoration: none;
-  margin: 5px 2px;
-  border-radius: 50%;
-}
-
-.fa:hover {
-    opacity: 0.7;
-}
-
-.fa-facebook {
-  background: #3B5998;
-  color: white;
-}
-#jceImg{
-  max-width: 75px;
-  max-height: 50px;
-}
-.ButtomSection
-{
-  direction: rtl;
-  background-color: #f8b87e;
-        color: white;
-        font-size: large;
-}
-        </style>
+        <link rel="stylesheet" type="text/css" href="css/FAQStyle.css">
 	</head>
 	<body>
         <a id="button"></a>

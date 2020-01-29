@@ -27,68 +27,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<link rel="stylesheet" type="text/css" href="css/styleSearch.css">
-	<style>
-		#button{
-			right: 10px;
-		}
-		.navbar-nav .nav-link {
-    padding-right: 0;
-    padding-left: 40%;
-}
-	li
-    {
-        color:black;
-        font-size:20px;
-    }
-    .navbar-brand 
-    {
-        font-size:35px;
-    }    
-    .nav-link:hover
-    {
-        font-size:30px;
-	}
-	img {
-    border-style: groove;
-    border-radius: 100px;
-	}
-	.ButtomSection
-{
-  direction: rtl;
-  background-color: #f8b87e;
-  color: white;
-  font-size: large;
-  
-   left: 0;
-   bottom: 0;
-   width: 100%;
-}
-.fa {
-  padding: 20px;
-  font-size: 30px;
-  width: 30px;
-  text-align: center;
-  text-decoration: none;
-  margin: 5px 2px;
-  border-radius: 50%;
-}
-
-.fa:hover {
-    opacity: 0.7;
-}
-
-.fa-facebook {
-  background: #3B5998;
-  color: white;
-}
-#jceImg{
-  max-width: 75px;
-  max-height: 50px;
-}
-
-
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/moreTeachersStyle.css">
 </head>
 <body>
     <section><!--navbar section-->
