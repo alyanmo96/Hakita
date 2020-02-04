@@ -364,86 +364,22 @@ echo "GGGGGGGGGGGGGGGGGG";
                       <?php 
                         $sendID=$_GET['id'];
                         echo "<input type=\"hidden\" name=\"id\" id=\"$sendID\" value=\"$sendID\">";
+                        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
                       ?>
                       <div class="form-group">
                              <div class="col-sm-6">
                                   <div style=" padding-top: 1%;">
                                    <p class="searchWords"> חיפוש מורה לפי עיר</p>
-                                     <select name="framework" id="framework" class="form-control selectpicker" data-live-search="true" multiple >
-                                        <option class="c" value="עכו">עכו</option>
-                                    <option value="עפולה">עפולה</option>
-                                    <option value="ערד">ערד</option>
-                                    <option value="עראבה">עראבה</option>
-                                    <option value="אשדוד">אשדוד</option>
-                                    <option value="אשכלון">אשכלון</option>
-                                    <option value="באקה אל גרביה">באקה אל גרביה</option>
-                                    <option value="בת ים">בת ים</option>
-                                    <option value="באר שבע">באר שבע</option>
-                                    <option value="בית שאן">בית שאן</option>
-                                    <option value="בית שמש">בית שמש</option>
-                                    <option value="בני ברק">בני ברק</option>
-                                    <option value="דימונה">דימונה</option>
-                                    <option value="אילת">אילת</option>
-                                    <option value="אלעד">אלעד</option>
-                                    <option value="גבעת שמואל">גבעת שמואל</option>
-                                    <option value="גבעתיים">גבעתיים</option>
-                                    <option value="חדרה">חדרה</option>
-                                    <option value="חיפה">חיפה</option>
-                                    <option value="הרצליה">הרצליה</option>
-                                    <option value="הוד השרון">הוד השרון</option>
-                                    <option value="חולון">חולון</option>
-                                    <option value="ירושלים">ירושלים</option>
-                                    <option value="כפר קאסם">כפר קאסם</option>
-                                    <option value="כרמיאל">כרמיאל</option>
-                                    <option value="כפר סבא">כפר סבא</option>
-                                    <option value="כפר יונה">כפר יונה</option>
-                                    <option value="כפר אתא">כפר אתא</option>
-                                    <option value="קרית ביאליק">קרית ביאליק</option>
-                                    <option value="קרית גת">קרית גת</option>
-                                    <option value="קרית מלאכי">קרית מלאכי</option>
-                                    <option value="קרית מוצקין">קרית מוצקין</option>
-                                    <option value="קרית אונו">קרית אונו</option>
-                                    <option value="קרית שמונה">קרית שמונה</option>
-                                    <option value="קרית ים">קרית ים</option>
-                                    <option value="לוד">לוד</option>
-                                    <option value="מעלות תרשיחא">מעלות תרשיחא</option>
-                                    <option value="מגדל העמק">מגדל העמק</option>
-                                    <option value="מודעין מכבים רעות">מודעין מכבים רעות</option>
-                                    <option value="נהריה">נהריה</option>
-                                    <option value="נצרת">נצרת</option>
-                                    <option value="נשר">נשר</option>
-                                    <option value="נס ציונה">נס ציונה</option>
-                                    <option value="נתניה">נתניה</option>
-                                    <option value="נתיבות">נתיבות</option>
-                                    <option value="נוף הגליל">נוף הגליל</option>
-                                    <option value="אופקים">אופקים</option>
-                                    <option value="אור עקיבה">אור עקיבה</option>
-                                    <option value="אור יהודה">אור יהודה</option>
-                                    <option value="פתח תקווה">פתח תקווה</option>
-                                    <option value="קלנסווה">קלנסווה</option>
-                                    <option value="רעננה">רעננה</option>
-                                    <option value="רהט">רהט</option>
-                                    <option value="רמת גן">רמת גן</option>
-                                    <option value="רמת השרון">רמת השרון</option>
-                                    <option value="רמלה">רמלה</option>
-                                    <option value="רחובות">רחובות</option>
-                                    <option value="ראשון לציון">ראשון לציון</option>
-                                    <option value="ראש העין">ראש העין</option>
-                                    <option value="צפת">צפת</option>
-                                    <option value="סכנין">סכנין</option>
-                                    <option value="שדרות">שדרות</option>
-                                    <option value="שפרעם"> שפרעם</option>
-                                    <option value="טמרה">טמרה</option>
-                                    <option value="טייבה">טייבה</option>
-                                    <option value="תל אביב-יפו">תל אביב-יפו</option>
-                                    <option value="טבריה">טבריה</option>
-                                    <option value="טירה">טירה</option>
-                                    <option value="טירת הכרמל">טירת-הכרמל</option>
-                                    <option value="אום אל-פחם">אום אל-פחם</option>
-                                    <option value="יבנה">יבנה</option>
-                                    <option value="יהוד-מונוסון">יהוד מונוסון</option>
-                                    <option value="Yokneam Illit">יקנעם עלית</option>
-                                     </select>
+                                    <?php
+                                      echo "<SELECT  name=\"framework\" id=\"framework\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                                      $results = mysqli_query($con, "SELECT * FROM cities");
+                                      echo'<option>'.'בדוק את הערים הקימות'.'</option>';
+                                      while ($rows=mysqli_fetch_array($results))
+                                      {
+                                          echo'<option>'.$rows['cityName'].'</option>';
+                                      }
+                                      echo"</SELECT>";
+                                    ?>
                                      <br /><br />
                                      <input type="hidden" name="hidden_framework" id="hidden_framework" />                                  
                              
@@ -455,15 +391,16 @@ echo "GGGGGGGGGGGGGGGGGG";
                              <div class="col-sm-6">
                                   <div style=" padding-top: 1%;">
                                    <p class="searchWords">  חיפוש מורה לפי קורס</p class="searchWords">
-                                     <select name="frameworkCourse" id="frameworkCourse" class="form-control selectpicker" data-live-search="true" multiple >
-                                        <option class="c" value="אנגלית">אנגלית</option>
-                                        <option class="c" value="ערבית">ערבית</option>
-                                        <option class="c" value="מתמטיקה">מתמטיקה/חשבון</option>
-                                        <option class="c" value="מוסיקה">מוסיקה</option>
-                                        <option class="c" value="פיזיקה">פיזיקה</option>
-                                        <option class="c" value="אנדרויד">אנדרויד</option>
-                                        <option class="c" value="גאווה">ג'אווה</option>
-                                     </select>
+                                   <?php
+                                      echo "<SELECT name=\"frameworkCourse\" id=\"frameworkCourse\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                                      $results = mysqli_query($con, "SELECT * FROM courses");
+                                      echo'<option>'.'בדוק את המקצועות הקיימים  '.'</option>';
+                                      while ($rows=mysqli_fetch_array($results))
+                                      {
+                                          echo'<option>'.$rows['subject'].'</option>';
+                                      }
+                                      echo"</SELECT>";
+                                    ?>
                                      <br /><br />
                                      <input type="hidden" name="hidden_framework_courses" id="hidden_framework_courses" />                                                              
                                   <br />
@@ -506,24 +443,16 @@ echo "GGGGGGGGGGGGGGGGGG";
                       $DCounter++;
                       $ID=$courseResultArray[$i-1];
                       //new line
-                      echo "<div class=\"col-sm-3\">";
-                     // echo "<button value=\"$ID\" id=\"$ID\" class=\"teacher col-sm-11\">";
+                      echo "<div class=\"col-sm-3\" id=\"$ID\">";
                      echo "<button value=\"$ID\" id=\"$ID\" class=\"card\">";
-                   //   echo"   <input type=\"hidden\" id=\"$ID\">";
-                      //echo  $courseResultArray[$i];//first name 
+                     echo"<input type=\"hidden\" id=\"$ID\">";
                       $nameToShow=$courseResultArray[$i];
                       $i++;
-                      //echo nl2br("\n");
-                      //echo $courseResultArray[$i];//phone number
                       $status=$courseResultArray[$i];
                       $i++;
-                      //echo nl2br("\n");
                       $cc=$courseResultArray[$i];
-                      //echo  $courseResultArray[$i];//
                       $i++;
-                     // echo nl2br("\n");
-                     // echo "<img src='img/".$courseResultArray[$i]."'   class='teacherImg'>";//image
-                      echo "<img src='img/".$courseResultArray[$i]."'   class='img'>";
+                     echo "<img src='img/".$courseResultArray[$i]."'   class='img'>";
                      echo "<h2> "; echo $nameToShow; echo"</h2>";
                      echo "<p class=\"title\">";
                      echo $status;
@@ -572,7 +501,7 @@ echo "GGGGGGGGGGGGGGGGGG";
     </div>
       </div>
 
-    <script>
+    <script>//script used for the up button
         var btn = $('#button');
         $(window).scroll(function() {
         if ($(window).scrollTop() > 300) {
@@ -589,8 +518,7 @@ echo "GGGGGGGGGGGGGGGGGG";
   </body>
 </html>                                                    
 
-
-<script>
+<script>//get the cities names student choose
 $(document).ready(function(){
  $('.selectpicker').selectpicker();
 
@@ -624,7 +552,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script>
+<script>//get the courses names student choose
 $(document).ready(function(){
  $('.selectpicker').selectpicker();
 
@@ -658,10 +586,11 @@ $(document).ready(function(){
 });
 </script>
 
-
 <script>
+  // to get the id of teacher 
 	var phpIdArrayLength = <?php echo end($D);?>;
-  var studentID =<?php echo ($studentId);?>;
+  // to get the id of student if login
+  var studentId = <?PHP echo (!empty($studentId) ? json_encode($studentId) : '""'); ?>;
 	$(document).ready(function()
 	{
 	for (var i = 0; i <= phpIdArrayLength; i++)
@@ -670,9 +599,14 @@ $(document).ready(function(){
 	let n = x.toString();
 	$("#"+n).click(function()
 	{
-    //alert(studentID);
-	  window.location.href = "viewTeacherProfile.php?id=" + x + "&studentID="+studentID;
-
+    if(!studentId)//normal view a special teacher profile without login
+    {
+      window.location.href = "viewTeacherProfile.php?id=" + x;
+    }
+    else//normal view a special teacher profile with login
+    {
+      window.location.href = "viewTeacherProfile.php?id=" + x + "&studentID="+studentId;
+    }  
 	});
 	}
 	});
