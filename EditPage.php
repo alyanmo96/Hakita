@@ -1,6 +1,96 @@
 <?php
+/**
+ * edit page for teachers
+ */
+  $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
   session_start();
-  $ID=$_POST['ImgId'];
+  $makeChangeEnter = mysqli_query($con, "SELECT * FROM makeChange");
+  $userMakeChange=-1;
+  if(isset($_POST['first_name'])||isset($_POST['last_name'])||
+  isset($_POST['email'])||isset($_POST['phone'])||
+  isset($_POST['password'])||isset($_POST['verifyPassword'])||
+  isset($_POST['price'])||isset($_POST['status'])||
+  isset($_POST['hidden_framework'])||isset($_POST['hidden_framework_courses']))
+  {
+        $ID=$_POST['id'];
+        $results = mysqli_query($con, "SELECT * FROM teachers");
+        if ($_POST['first_name']) 
+        {
+            $fName=$_POST['first_name'];
+            $upDate="UPDATE `teachers` SET `fname`='$fName'WHERE id=$ID";
+            $results = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }        
+        if ($_POST['last_name']) 
+        {
+            $lName=$_POST['last_name'];
+            $upDate="UPDATE `teachers` SET `lname`='$lName'WHERE id=$ID";
+            $results = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }
+        if ($_POST['email']) 
+        {
+            $Email=$_POST['email'];
+            $upDate="UPDATE `teachers` SET `email`='$Email'WHERE id=$ID";
+            $results = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }        
+        if ($_POST['password']) 
+        {
+            if ($_POST['password']==$_POST['verifyPassword']) 
+            {
+                $pass=$_POST['password'];
+                $upDate="UPDATE `teachers` SET `password`='$pass'WHERE id=$ID";
+                $results = mysqli_query($con,$upDate);
+                $userMakeChange=1;
+            }
+        }
+        if ($_POST['phone']) 
+        {
+            $phone=$_POST['phone'];
+            $upDate="UPDATE `teachers` SET `phone`='$phone'WHERE id=$ID";
+            $results = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }  
+        if ($_POST['status']) 
+        {
+            $status=$_POST['status'];
+            $upDate="UPDATE `teachers` SET `status`='$status'WHERE id=$ID";
+            $results = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }          
+        if ($_POST['price']) 
+        {
+            $price=$_POST['price'];
+            $upDate="UPDATE `teachers` SET `price`='$price'WHERE id=$ID";
+            $results = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }          
+        if ($_POST['hidden_framework']) 
+        {
+            $Cities=$_POST['hidden_framework'];
+            $upDate="UPDATE `teacher_cities` SET `cities`='$Cities'WHERE id=$ID";
+            $result = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }          
+        if ($_POST['hidden_framework_courses']) 
+        {
+            $Courses=$_POST['hidden_framework_courses']; 
+            $upDate="UPDATE `teachers_courses` SET `subject`='$Courses'WHERE id=$ID";
+            $result = mysqli_query($con,$upDate);
+            $userMakeChange=1;
+        }  
+  }
+  if ($userMakeChange==1)//this table used for admin, to check who make change
+  {
+      $query="INSERT INTO `makeChange`(`id`) VALUES ('$ID')";
+      $makeChangeEnter = mysqli_query($con,$query);
+  }
+  //update image
+  if($_POST['ImgId'])
+  {
+    $ID=$_POST['ImgId'];
+  }  
   if ($ID!=1) 
   {
     //echo " if (ID!=1) ";
@@ -44,11 +134,14 @@
             $msg = "Failed to upload image";
           }
         }
-  }
-        //echo " will print {";    echo $_GET['username'];      
+  }   
         if ($_GET['username']!=null) 
         {
           $username=$_GET['username'];
+        }
+        else if ($_POST['username']!=null) 
+        {
+          $username=$_POST['username'];
         }
         else if ($_POST['ImgUsername']!=null) 
         {
@@ -160,7 +253,19 @@
             </div>
         </div>
             <div id="profile" class="tabcontent">  
-                <form class="form" action="secondEditPage.php" method="post" id="registrationForm">
+                <form class="form" action="EditPage.php" method="post" id="registrationForm">
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label for="user_name"></label>
+                        <input type="hidden" class="form-control" name="username" value="<?php echo $username?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-12">
+                        <label for="id"></label>
+                        <input type="hidden" class="form-control" name="id" value="<?php echo $ID?>">
+                    </div>
+                </div>
                 <div class="form-group"> 
                     <div class="col-sm-6"> 
                       <label for="last_name"><h4  class="inputTitle">שם משפחה</h4></label>
@@ -220,7 +325,7 @@
             </form>
             <div id="image" class="ImageSection">
 
-                <form method="POST" action="edit.php" enctype="multipart/form-data">
+                <form method="POST" action="EditPage.php" enctype="multipart/form-data">
                 <input type="hidden" class="form-control" name="ImgUsername" value="<?php echo $username?>">
                 <input type="hidden" class="form-control" name="ImgId" value="<?php echo $ID?>">
                 <input type="hidden" name="size" value="1000000">
@@ -240,137 +345,97 @@
 
             <div id="Account" class="tabcontent">
                 
-                <form class="form" action="secondEditPage.php" method="post" id="registrationForm">
-                <div class="form-group">  
-                        <label for="password"><h4  class="inputTitle">סיסמה</h4></label>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
-                </div> 
-                <div class="form-group">  
-                      <label for="password2"><h4  class="inputTitle">אימות סיסמה</h4></label>
-                        <input type="password" class="form-control" name="password2" id="password2" placeholder="אימות הסיסמה החדשה">
-                </div>
-                <div class="form-group">
-                    <br>
-                      <label for="Save"><h4></h4></label>
-                      <input class="btn btn-light" type="submit" name="Save" value="שמור">
-                </div>
+                <form class="form" action="EditPage.php" method="post" id="registrationForm">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <label for="user_name"></label>
+                            <input type="hidden" class="form-control" name="username" value="<?php echo $username?>">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <label for="id"></label>
+                            <input type="hidden" class="form-control" name="id" value="<?php echo $ID?>">
+                        </div>
+                    </div>
+                    <div class="form-group">  
+                            <label for="password"><h4  class="inputTitle">סיסמה</h4></label>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
+                    </div> 
+                    <div class="form-group">  
+                          <label for="verifyPassword"><h4  class="inputTitle">אימות סיסמה</h4></label>
+                            <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="אימות הסיסמה החדשה">
+                    </div>
+                    <div class="form-group">
+                        <br>
+                          <label for="Save"><h4></h4></label>
+                          <input class="btn btn-light" type="submit" name="Save" value="שמור">
+                    </div>
             </form>
             </div>
 
             <div id="citiesAndCourses" class="tabcontent">
-                <form method="POST" action="secondEditPage.php" enctype="multipart/form-data">
-                <div class="form-group">
-                    <div class="col-xs-6">
-                         <div style=" padding-top: 2%;">
-                           <h4  class="inputTitleCitiesAndCourses">עיר</h4>
-                           <select name="framework" id="framework" class="form-control selectpicker" data-live-search="true" multiple >
-                           <option class="c" value="עכו">עכו</option>
-                           <option value="עפולה">עפולה</option>
-                           <option value="ערד">ערד</option>
-                           <option value="עראבה">עראבה</option>
-                           <option value="אשדוד">אשדוד</option>
-                           <option value="אשכלון">אשכלון</option>
-                           <option value="באקה אל גרביה">באקה אל גרביה</option>
-                           <option value="בת ים">בת ים</option>
-                           <option value="באר שבע">באר שבע</option>
-                           <option value="בית שאן">בית שאן</option>
-                           <option value="בית שמש">בית שמש</option>
-                           <option value="בני ברק">בני ברק</option>
-                           <option value="דימונה">דימונה</option>
-                           <option value="אילת">אילת</option>
-                           <option value="אלעד">אלעד</option>
-                           <option value="גבעת שמואל">גבעת שמואל</option>
-                           <option value="גבעתיים">גבעתיים</option>
-                           <option value="חדרה">חדרה</option>
-                           <option value="חיפה">חיפה</option>
-                           <option value="הרצליה">הרצליה</option>
-                           <option value="הוד השרון">הוד השרון</option>
-                           <option value="חולון">חולון</option>
-                           <option value="ירושלים">ירושלים</option>
-                           <option value="כפר קאסם">כפר קאסם</option>
-                           <option value="כרמיאל">כרמיאל</option>
-                           <option value="כפר סבא">כפר סבא</option>
-                           <option value="כפר יונה">כפר יונה</option>
-                           <option value="כפר אתא">כפר אתא</option>
-                           <option value="קרית ביאליק">קרית ביאליק</option>
-                           <option value="קרית גת">קרית גת</option>
-                           <option value="קרית מלאכי">קרית מלאכי</option>
-                           <option value="קרית מוצקין">קרית מוצקין</option>
-                           <option value="קרית אונו">קרית אונו</option>
-                           <option value="קרית שמונה">קרית שמונה</option>
-                           <option value="קרית ים">קרית ים</option>
-                           <option value="לוד">לוד</option>
-                           <option value="מעלות תרשיחא">מעלות תרשיחא</option>
-                           <option value="מגדל העמק">מגדל העמק</option>
-                           <option value="מודעין מכבים רעות">מודעין מכבים רעות</option>
-                           <option value="נהריה">נהריה</option>
-                           <option value="נצרת">נצרת</option>
-                           <option value="נשר">נשר</option>
-                           <option value="נס ציונה">נס ציונה</option>
-                           <option value="נתניה">נתניה</option>
-                           <option value="נתיבות">נתיבות</option>
-                           <option value="נוף הגליל">נוף הגליל</option>
-                           <option value="אופקים">אופקים</option>
-                           <option value="אור עקיבה">אור עקיבה</option>
-                           <option value="אור יהודה">אור יהודה</option>
-                           <option value="פתח תקווה">פתח תקווה</option>
-                           <option value="קלנסווה">קלנסווה</option>
-                           <option value="רעננה">רעננה</option>
-                           <option value="רהט">רהט</option>
-                           <option value="רמת גן">רמת גן</option>
-                           <option value="רמת השרון">רמת השרון</option>
-                           <option value="רמלה">רמלה</option>
-                           <option value="רחובות">רחובות</option>
-                           <option value="ראשון לציון">ראשון לציון</option>
-                           <option value="ראש העין">ראש העין</option>
-                           <option value="צפת">צפת</option>
-                           <option value="סכנין">סכנין</option>
-                           <option value="שדרות">שדרות</option>
-                           <option value="שפרעם"> שפרעם</option>
-                           <option value="טמרה">טמרה</option>
-                           <option value="טייבה">טייבה</option>
-                           <option value="תל אביב-יפו">תל אביב-יפו</option>
-                           <option value="טבריה">טבריה</option>
-                           <option value="טירה">טירה</option>
-                           <option value="טירת הכרמל">טירת-הכרמל</option>
-                           <option value="אום אל-פחם">אום אל-פחם</option>
-                           <option value="יבנה">יבנה</option>
-                           <option value="יהוד-מונוסון">יהוד מונוסון</option>
-                           <option value="Yokneam Illit">יקנעם עלית</option>
-                            </select>
-                            <br /><br />
-                            <input type="hidden" name="hidden_framework" id="hidden_framework" />                                  
-                    
-                         <br />
+                <form method="POST" action="EditPage.php" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <label for="user_name"></label>
+                            <input type="hidden" class="form-control" name="username" value="<?php echo $username?>">
                         </div>
-                       </div>  
-                     </div>
-
-                     <div class="form-group">
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-12">
+                            <label for="id"></label>
+                            <input type="hidden" class="form-control" name="id" value="<?php echo $ID?>">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <div class="col-xs-6">
-                             <div style=" padding-top: 2%;">
-                              <h4  class="inputTitleCitiesAndCourses">קורסים שמלמד</h4>
-                              <select name="frameworkCourse" id="frameworkCourse" class="form-control selectpicker" data-live-search="true" multiple >
-                              <option class="c" value="אנגלית">אנגלית</option>
-                                   <option class="c" value="ערבית">ערבית</option>
-                                   <option class="c" value="מתמטיקה">מתמטיקה/חשבון</option>
-                                   <option class="c" value="מוסיקה">מוסיקה</option>
-                                   <option class="c" value="פיזיקה">פיזיקה</option>
-                                   <option class="c" value="אנדרויד">אנדרויד</option>
-                                   <option class="c" value="גאווה">ג'אווה</option>
-                                </select>
+                            <div style=" padding-top: 2%;">
+                              <h4  class="inputTitleCitiesAndCourses">עיר</h4>
+                              <?php
+                                echo "<SELECT   name=\"framework\" id=\"framework\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                                $results = mysqli_query($con, "SELECT * FROM cities");
+                                echo'<option >'.'בדוק את הערים הקימות'.'</option>';
+                                while ($rows=mysqli_fetch_array($results))
+                                {
+                                    echo'<option>'.$rows['cityName'].'</option>';
+                                }
+                                echo"</SELECT>";
+                              ?>
                                 <br /><br />
-                                <input type="hidden" name="hidden_framework_courses" id="hidden_framework_courses" />                                  
+                                <input type="hidden" name="hidden_framework" id="hidden_framework" />                                  
                         
-                             <br />
+                            <br />
                             </div>
-                           </div>  
-                         </div>
-                         <div class="form-group">
-                            <br>
-                              <label for="Save"><h4></h4></label>
-                              <input class="btn btn-info" id="citiesAndCoursesSaveButton" type="submit" name="Save" value="שמור">
+                          </div>  
                         </div>
+
+                        <div class="form-group">
+                            <div class="col-xs-6">
+                                <div style=" padding-top: 2%;">
+                                  <h4  class="inputTitleCitiesAndCourses">קורסים שמלמד</h4>
+                                    <?php
+                                      echo "<SELECT name=\"frameworkCourse\" id=\"frameworkCourse\"  class=\"form-control selectpicker\" data-live-search=\"true\">";
+                                      $results = mysqli_query($con, "SELECT * FROM courses");
+                                      echo'<option >'.'בדוק את המקצועות הקיימים  '.'</option>';
+                                      while ($rows=mysqli_fetch_array($results))
+                                      {
+                                          echo'<option>'.$rows['subject'].'</option>';
+                                      }
+                                      echo"</SELECT>";
+                                    ?>
+                                    <br /><br />
+                                    <input type="hidden" name="hidden_framework_courses" id="hidden_framework_courses" />                                  
+                            
+                                <br />
+                                </div>
+                              </div>  
+                            </div>
+                            <div class="form-group">
+                                <br>
+                                  <label for="Save"><h4></h4></label>
+                                  <input class="btn btn-info" id="citiesAndCoursesSaveButton" type="submit" name="Save" value="שמור">
+                            </div>
                     </form>
             </div>
             <div id="Links" class="tabcontent">
