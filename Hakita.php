@@ -1,15 +1,25 @@
 <?php
-//!!!!!!!!!!!!!!!!!!!!!!!!!its need to be the last three teachers
+/*
+*   this would be the main page
+ */
+    //!!!!!!!!!!!!!!!!!!!!!!!!!its need to be the last three teachers
     $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    $IdResults = mysqli_query($con, "SELECT * FROM teachers");
-    /*create array for the new teachers, it's need to choose random a three new teachers
-    * but yet there is no alot teachers
-    */
-    $NewTeachersArray=array();
-    for($i=0;$i<3;$i++)
+    $IdResults = mysqli_query($con, "SELECT * FROM teachers");    
+    /*create array for the new teachers, random a three new teachers */
+    $NewTeachersArrayBeforeRand=array();
+    $i=0;
+    while ($rows=mysqli_fetch_array($IdResults))
     {
-        $rows=mysqli_fetch_array($IdResults);
-        $NewTeachersArray[$i]=$rows['id'];
+        if($rows['id']!=211&&$rows['setUserAs']!='student')
+        {
+            $NewTeachersArrayBeforeRand[$i]=$rows['id'];
+            $i++;
+        }
+    }
+    $NewTeachersArray = array_rand($NewTeachersArrayBeforeRand, 3);
+    for($i=0;$i<count($NewTeachersArray);$i++)
+    {
+        $NewTeachersArray[$i]=$NewTeachersArrayBeforeRand[$NewTeachersArray[$i]];   
     }
 ?>
 <!DOCTYPE html>
@@ -31,7 +41,16 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/Style.css">
-    
+    <style>
+    .teacher {
+    margin: 1%;
+    max-height:288px;
+    }
+    .img-rounded {
+    border-radius: 6px;
+    max-height: 52px;
+}
+    </style>
 </head>
 <body>
     <a id="button"></a><!--up button-->
@@ -70,81 +89,16 @@
                              <div class="col-sm-6">
                                   <div style=" padding-top: 1%;">
                                    <p class="searchWords"> חיפוש מורה לפי עיר</p>
-                                     <select name="framework" id="framework" class="form-control selectpicker" data-live-search="true" multiple >
-                                        <option class="c" value="עכו">עכו</option>
-                                    <option value="עפולה">עפולה</option>
-                                    <option value="ערד">ערד</option>
-                                    <option value="עראבה">עראבה</option>
-                                    <option value="אשדוד">אשדוד</option>
-                                    <option value="אשכלון">אשכלון</option>
-                                    <option value="באקה אל גרביה">באקה אל גרביה</option>
-                                    <option value="בת ים">בת ים</option>
-                                    <option value="באר שבע">באר שבע</option>
-                                    <option value="בית שאן">בית שאן</option>
-                                    <option value="בית שמש">בית שמש</option>
-                                    <option value="בני ברק">בני ברק</option>
-                                    <option value="דימונה">דימונה</option>
-                                    <option value="אילת">אילת</option>
-                                    <option value="אלעד">אלעד</option>
-                                    <option value="גבעת שמואל">גבעת שמואל</option>
-                                    <option value="גבעתיים">גבעתיים</option>
-                                    <option value="חדרה">חדרה</option>
-                                    <option value="חיפה">חיפה</option>
-                                    <option value="הרצליה">הרצליה</option>
-                                    <option value="הוד השרון">הוד השרון</option>
-                                    <option value="חולון">חולון</option>
-                                    <option value="ירושלים">ירושלים</option>
-                                    <option value="כפר קאסם">כפר קאסם</option>
-                                    <option value="כרמיאל">כרמיאל</option>
-                                    <option value="כפר סבא">כפר סבא</option>
-                                    <option value="כפר יונה">כפר יונה</option>
-                                    <option value="כפר אתא">כפר אתא</option>
-                                    <option value="קרית ביאליק">קרית ביאליק</option>
-                                    <option value="קרית גת">קרית גת</option>
-                                    <option value="קרית מלאכי">קרית מלאכי</option>
-                                    <option value="קרית מוצקין">קרית מוצקין</option>
-                                    <option value="קרית אונו">קרית אונו</option>
-                                    <option value="קרית שמונה">קרית שמונה</option>
-                                    <option value="קרית ים">קרית ים</option>
-                                    <option value="לוד">לוד</option>
-                                    <option value="מעלות תרשיחא">מעלות תרשיחא</option>
-                                    <option value="מגדל העמק">מגדל העמק</option>
-                                    <option value="מודעין מכבים רעות">מודעין מכבים רעות</option>
-                                    <option value="נהריה">נהריה</option>
-                                    <option value="נצרת">נצרת</option>
-                                    <option value="נשר">נשר</option>
-                                    <option value="נס ציונה">נס ציונה</option>
-                                    <option value="נתניה">נתניה</option>
-                                    <option value="נתיבות">נתיבות</option>
-                                    <option value="נוף הגליל">נוף הגליל</option>
-                                    <option value="אופקים">אופקים</option>
-                                    <option value="אור עקיבה">אור עקיבה</option>
-                                    <option value="אור יהודה">אור יהודה</option>
-                                    <option value="פתח תקווה">פתח תקווה</option>
-                                    <option value="קלנסווה">קלנסווה</option>
-                                    <option value="רעננה">רעננה</option>
-                                    <option value="רהט">רהט</option>
-                                    <option value="רמת גן">רמת גן</option>
-                                    <option value="רמת השרון">רמת השרון</option>
-                                    <option value="רמלה">רמלה</option>
-                                    <option value="רחובות">רחובות</option>
-                                    <option value="ראשון לציון">ראשון לציון</option>
-                                    <option value="ראש העין">ראש העין</option>
-                                    <option value="צפת">צפת</option>
-                                    <option value="סכנין">סכנין</option>
-                                    <option value="שדרות">שדרות</option>
-                                    <option value="שפרעם"> שפרעם</option>
-                                    <option value="טמרה">טמרה</option>
-                                    <option value="טייבה">טייבה</option>
-                                    <option value="תל אביב-יפו">תל אביב-יפו</option>
-                                    <option value="טבריה">טבריה</option>
-                                    <option value="טירה">טירה</option>
-                                    <option value="טירת הכרמל">טירת-הכרמל</option>
-                                    <option value="אום אל-פחם">אום אל-פחם</option>
-                                    <option value="יבנה">יבנה</option>
-                                    <option value="יהוד-מונוסון">יהוד מונוסון</option>
-                                    <option value="Yokneam Illit">יקנעם עלית</option>
-                                     </select>
+                                   <?php
+                                    echo "<SELECT  name=\"framework\" id=\"framework\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                                    $results = mysqli_query($con, "SELECT * FROM cities");
+                                    echo'<option>'.'בדוק את הערים הקימות'.'</option>';
+                                    while ($rows=mysqli_fetch_array($results))
+                                    {
+                                        echo'<option>'.$rows['cityName'].'</option>';
+                                    }
+                                    echo"</SELECT>";
+                                  ?>
                                      <br /><br />
                                      <input type="hidden" name="hidden_framework" id="hidden_framework" />                                  
                              
@@ -156,15 +110,16 @@
                              <div class="col-sm-6">
                                   <div style=" padding-top: 1%;">
                                    <p class="searchWords">  חיפוש מורה לפי תחום</p class="searchWords">
-                                     <select name="frameworkCourse" id="frameworkCourse" class="form-control selectpicker" data-live-search="true" multiple >
-                                        <option class="c" value="אנגלית">אנגלית</option>
-                                        <option class="c" value="ערבית">ערבית</option>
-                                        <option class="c" value="מתמטיקה">מתמטיקה/חשבון</option>
-                                        <option class="c" value="מוסיקה">מוסיקה</option>
-                                        <option class="c" value="פיזיקה">פיזיקה</option>
-                                        <option class="c" value="אנדרויד">אנדרויד</option>
-                                        <option class="c" value="ג'אווה">ג'אווה</option>
-                                     </select>
+                                   <?php
+                                      echo "<SELECT name=\"frameworkCourse\" id=\"frameworkCourse\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                                      $results = mysqli_query($con, "SELECT * FROM courses");
+                                      echo'<option>'.'בדוק את המקצועות הקיימים  '.'</option>';
+                                      while ($rows=mysqli_fetch_array($results))
+                                      {
+                                          echo'<option>'.$rows['subject'].'</option>';
+                                      }
+                                      echo"</SELECT>";
+                                    ?>
                                      <br /><br />
                                      <input type="hidden" name="hidden_framework_courses" id="hidden_framework_courses" />                                                              
                                   <br />
@@ -198,11 +153,10 @@
             <?php /*get the data for each one of the three choose as a new teachers to show them */
                 for($i=0;$i<count($NewTeachersArray);$i++)
                 {
-                    
-    $resultsOfTeacherTable = mysqli_query($con, "SELECT * FROM teachers");
-    $resultOFCity = mysqli_query($con, "SELECT * FROM teacher_cities");
-    $CoursesResults = mysqli_query($con, "SELECT * FROM teachers_courses");
-    $resultsOfImageTable = mysqli_query($con, "SELECT * FROM images");
+                    $resultsOfTeacherTable = mysqli_query($con, "SELECT * FROM teachers");
+                    $resultOFCity = mysqli_query($con, "SELECT * FROM teacher_cities");
+                    $CoursesResults = mysqli_query($con, "SELECT * FROM teachers_courses");
+                    $resultsOfImageTable = mysqli_query($con, "SELECT * FROM images");
                     echo "<button value=\"$NewTeachersArray[$i]\" id=\"$NewTeachersArray[$i]\" class=\"teacher col-sm-3\">";
                         echo"<input type=\"hidden\" id=\"$NewTeachersArray[$i]\">"; 
                         echo "<blockquote>";
