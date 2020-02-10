@@ -1,39 +1,46 @@
 <?php
+/**
+ *  this file let ADMIN to update details or delete user.
+ *  get to this file from (AdminPage) file. after choose a special user,
+ *  here get his ID and other check by it his all details.
+ */
   session_start();
-  if($_GET['id'])
+  //get the id of user from the ADMIN (from AdminPage)
+  if($_GET['id'])//by redirect page
   {
     $AdminPutId=$_GET['id'];
   }
-  else
+  else//get the id of user from the ADMIN //after edit on user details
   {
     $AdminPutId=$_POST['id'];
-  }
+  }// if the admin update password/ email/ name// phone number / courses/ cities of user
   if((isset($_POST['verifyPassword'])&&isset($_POST['password']))||
     isset($_POST['email'])||isset($_POST['phone'])||
     isset($_POST['first_name'])||isset($_POST['last_name'])||
     isset($_POST['hidden_framework'])||isset($_POST['hidden_framework_courses']))
-  {
+  {// connect with DB to save the new data
     $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-      $results = mysqli_query($con, "SELECT * FROM teachers");
-      if ($_POST['first_name']) 
+      $results = mysqli_query($con, "SELECT * FROM teachers");// connect with table to reach the user
+     // update the data.... update data that was changed
+      if ($_POST['first_name']) // if ADMIN update user first name
       {
           $fName=$_POST['first_name'];
-          $upDate="UPDATE `teachers` SET `fname`='$fName'WHERE id=$AdminPutId";
+          $upDate="UPDATE `teachers` SET `fname`='$fName'WHERE id=$AdminPutId";//update it on table
           $results = mysqli_query($con,$upDate);
       }        
       if ($_POST['last_name']) 
-      {
+      {// if ADMIN update user last name
           $lName=$_POST['last_name'];
           $upDate="UPDATE `teachers` SET `lname`='$lName'WHERE id=$AdminPutId";
           $results = mysqli_query($con,$upDate);
       }
-      if ($_POST['email']) 
+      if ($_POST['email'])  // if ADMIN update user email
       {
           $Email=$_POST['email'];
           $upDate="UPDATE `teachers` SET `email`='$Email'WHERE id=$AdminPutId";
           $results = mysqli_query($con,$upDate);
       }        
-      if ($_POST['password']) 
+      if ($_POST['password']) // if ADMIN update user password
       {
           if ($_POST['password']==$_POST['verifyPassword']) 
           {
@@ -43,20 +50,20 @@
           }
       }
       if ($_POST['phone']) 
-      {
+      {// if ADMIN update user phone
           $phone=$_POST['phone'];
           $upDate="UPDATE `teachers` SET `phone`='$phone'WHERE id=$AdminPutId";
           $results = mysqli_query($con,$upDate);
       }  
       if ($_POST['hidden_framework']) 
-      {
+      {// if ADMIN update user cities
         $Cities=$_POST['hidden_framework'];
         $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
         $upDate="UPDATE `teacher_cities` SET `cities`='$Cities'WHERE id=$AdminPutId";
         $result = mysqli_query($con,$upDate);
       } 
       if ($_POST['hidden_framework_courses']) 
-      {
+      {// if ADMIN update user courses
         $Courses=$_POST['hidden_framework_courses']; 
         $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
         $upDate="UPDATE `teachers_courses` SET `subject`='$Courses'WHERE id=$AdminPutId";
@@ -64,8 +71,8 @@
       }
   }
   if(isset($_POST['deleteUserButton']))
-  {
-    $deleteUserId=$_POST['id'];
+  {//ADMIN going to delete the choosen user
+    $deleteUserId=$_POST['id'];//get the ID of user to delete
     $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
     $sql = "DELETE FROM teachers WHERE id=$deleteUserId ";
     if ($con->query($sql) === TRUE) 
@@ -74,15 +81,14 @@
       echo "Record deleted successfully";
     } 
     else 
-    {
+    {// delete user and back to admin main page
         echo "Error deleting record: " . $con->error;
     }
       header('location: AdminPage.php');
     }
     
-  if ($_POST['ImgId']) 
-  {//echo " ID!=1 ";
-    //echo "<br>";
+  if ($_POST['ImgId']) // any changed on user IMAGE
+  {
     $AdminPutId=$_POST['ImgId'];
       $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
         $msg = "";
@@ -126,17 +132,16 @@
         }
   }     
         if ($_GET['username']!=null) 
-        {//echo " GET['username']!=null ";
-          //echo "<br>";
+        {
           $username=$_GET['username'];
         }
         else if ($_POST['ImgUsername']!=null) 
-        {//echo " _POST['ImgUsername']!=null ";
-          //echo "<br>";
+        {
           $username=$_POST['ImgUsername'];
         }
         $db = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
         $results = mysqli_query($db, "SELECT * FROM teachers");
+        //  varibale to show 
         $ID=0;
         $fN=" ";
         $lN=" ";
@@ -146,7 +151,7 @@
         $Phone=" ";
         $username=" ";
         $isTeacher=1;
-        while ($row=mysqli_fetch_assoc($results)) 
+        while ($row=mysqli_fetch_assoc($results)) // get the details from teachers table
         {
           if ($row['id']==$AdminPutId) 
           {
@@ -225,9 +230,6 @@
             </li>
             <li>
               <a href="AdminPage.php">עמוד המנהל</a>
-            </li>
-            <li>
-              <a href="#">שאלות ותשובות</a>
             </li>
           </ul>
           <div class="navbar-header navbar-right">
