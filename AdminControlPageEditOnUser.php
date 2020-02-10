@@ -77,8 +77,40 @@
     $sql = "DELETE FROM teachers WHERE id=$deleteUserId ";
     if ($con->query($sql) === TRUE) 
     {
-      header('location: AdminPage.php');
-      echo "Record deleted successfully";
+      //header('location: AdminPage.php');
+      //echo "Record deleted successfully";
+    } 
+    else 
+    {// delete user and back to admin main page
+        echo "Error deleting record: " . $con->error;
+    }
+
+    $sql = "DELETE FROM teachers_courses WHERE id=$deleteUserId ";
+    if ($con->query($sql) === TRUE) 
+    {
+      //header('location: AdminPage.php');
+     // echo "Record deleted successfully";
+    } 
+    else 
+    {// delete user and back to admin main page
+        echo "Error deleting record: " . $con->error;
+    }
+
+    $sql = "DELETE FROM teacher_cities WHERE id=$deleteUserId ";
+    if ($con->query($sql) === TRUE) 
+    {
+      //header('location: AdminPage.php');
+     // echo "Record deleted successfully";
+    } 
+    else 
+    {// delete user and back to admin main page
+        echo "Error deleting record: " . $con->error;
+    }
+    $sql = "DELETE FROM images WHERE id=$deleteUserId ";
+    if ($con->query($sql) === TRUE) 
+    {
+      //header('location: AdminPage.php');
+      //echo "Record deleted successfully";
     } 
     else 
     {// delete user and back to admin main page
