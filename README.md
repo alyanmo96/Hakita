@@ -1,3 +1,6 @@
+
+**** note:{for using attached code you need to change the connection with DB you used}
+
 # Hakita
 hakite which mean class on hebrew language
 Private lessons website
