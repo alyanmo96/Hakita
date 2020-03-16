@@ -1,124 +1,75 @@
 <?php
-
-/**can enter to this page with the last user without need to login
- * 
- * 
- * 
- * 
- * 
+/**
+ * student profile page, showing inforamtion about student, let them read and send messages,  payment for a lesson, search  a teacher and get help on FAQ page. 
  */
-	session_start();
-    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    
-	// because you can reach to this page from more than one page, so we need to know from\
-	//where we get to it for(edit page, first time on this page, etc...)
-    /*echo $_GET['id'];
-    echo $_POST['id'];
-    $logIn=$_POST['usernameLogin']; 
-	echo $logIn;
-    $logInG=$_GET['usernameLogin']; 
-    echo $logInG;*/
-	//$signUp=$_POST['username'];
-	//$edit=$_GET['username']; 	$eedit=$_SESSION['varname'];	
-	// conect with tables to get information about the user to show it and use
-	$results = mysqli_query($con, "SELECT * FROM teachers");	
-	$ImgResult = mysqli_query($con, "SELECT * FROM images");
-	//variables will used on HTML
-	//(username,status,email,first name, last name, phone number, cities, courses,img,price)
-	$us=" ";	$sta=" ";	$email=" "; 	$fN=" ";	$lN=" "; 	$Phone=" "; 
-    $Cities= " "; 	$Courses=" ";   	$ImgSource=" "; 	$ID=$_GET['id']; 	$pri;
-    
-    if ($ID)//get to this page by login
-	{
-		while ($row=mysqli_fetch_assoc($results)) 
-		{
-			if($row['id']==$ID)//get variables to use on HTML view
-			{
-				$ID=$row['id'];
-				$us=$row['username'];
-				$fN=$row['fname'];
-				$lN=$row['lname'];
-				$sta=$row['status'];
-				$email=$row['email'];
-				$Phone=$row['phone'];
-			}
-		}
-	}
-	else if (($edit!=null)||($eedit!=null)) //back to profile page from edit page
-	{//echo "((edit!=null)||(eedit!=null))";
-		$ID;
-		if($edit!=null)
-		{
-			$us=$edit; 
-		}
-		else if ($eedit!=null)
-		{
-			$us=$eedit;
-		}
-		while ($row=mysqli_fetch_assoc($results)) 
-		{
-			if ($row['username']==$us) //get variables to use on HTML view
-			{
-				$ID=$row['id'];
-				$fN=$row['fname'];
-				$lN=$row['lname'];
-				$email=$row['email'];
-				$sta=$row['status'];
-				$Phone=$row['phone'];
-			}
-		}			 
+    session_start();
+    include 'connectionPage.php';//include this file for calling the DB
+    //variables will used on HTML
+    $arryOfStudentInformation=array();//this array include the student first and last name, email status and phone number, instead of calling DB each time for student information we call it once
+    $ImgSource=" "; 	$ID=$_GET['id']; $username=" ";
+    if(!$ID){//dont get to this page without any directiory
+        header('location: Hakita.php');
     }
-	while ($ImgRow=mysqli_fetch_assoc($ImgResult)) //get the image
-	{
-		if($ImgRow['id']==$ID)
-		{
+    else if($ID){//get to this page by login
+      while ($row=mysqli_fetch_assoc($IdResults)){
+        if($row['id']==$ID){//insert student information into array to get it and use on HTML view
+          $username=$row['username'];
+          $arryOfStudentInformation[0]=$row['fname'];
+          $arryOfStudentInformation[1]=$row['lname'];
+          $arryOfStudentInformation[2]=$row['status'];
+          $arryOfStudentInformation[3]=$row['email'];
+          $arryOfStudentInformation[4]=$row['phone'];
+          break;
+        }
+      }
+    }
+	while ($ImgRow=mysqli_fetch_assoc($resultsOfImageTable)){ //get the image of student
+		if($ImgRow['id']==$ID){
 			$ImgSource=$ImgRow['image'];
 		}
-    }   
+  }   
 ?>
 <!DOCTYPE html>
 <html>
   <head>
+  <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>הכיתה</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
     <link rel="stylesheet" type="text/css" href="css/profileStyle.css">
-    
   </head>
   <body>
-    <a id="button"></a>
+    <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
     <section><!--navbar section-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#">הכיתה</a>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-              <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <?php
+                echo "<a class=\"navbar-brand\" href=\"Hakita.php?id=$ID\">הכיתה</a>";
+                echo "<div class=\"collapse navbar-collapse\" id=\"navbarTogglerDemo03\">
+                <ul class=\"navbar-nav mr-auto mt-2 mt-lg-0\">";
+                if($ID){
+                  echo "<li class=\"nav-item active\">
+                    <a class=\"nav-link\" href=\"Hakita.php?id=$ID\"> עמוד הבית</a>
+                    </li>"; 
+                }
+                echo "<li class=\"nav-item active\">";
+                echo "<a class=\"nav-link\" href=\"searchTeachers.php?id=$ID\">חיפוש מורה</a>";
+                echo "</li>";
+                echo "<li class=\"nav-item active\">";
+                echo "<a class=\"nav-link\" href=\"FAQ.php?id=$ID\">שאלות ותשובות</a>";
+                echo "</li>";
+            ?>       
                 <li class="nav-item active">
-                    <a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a>
-                  </li>
-                  <li class="nav-item active">
-                    <!--<a class="nav-link" href="searchTeachers.php" onclick="otherPagesWithId()"> חיפוש מורה</a>-->
-                    <a class="nav-link"  onclick="otherPagesWithId()"> חיפוש מורה</a>               
-                   <!--<a class="nav-link" href="searchTeachers.php?id=" id="a">חיפוש מורה</a>-->
-                  </li>
-                  <li class="nav-item active">
-                    <!--<a class="nav-link" href="FAQ.php"onclick="otherPagesWithId()">שאלות ותשובות</a>-->
-                    <a class="nav-link" onclick="FAQPagesWithId()">שאלות ותשובות</a>
-                   
-                  </li>
-                  <li class="nav-item active">
-                    <a class="nav-link" href="Hakita.php"> יציאה<span class="sr-only">(current)</span></a>
-                  </li>
-                  <li class="nav-item active">
-                  </li>
+                  <a class="nav-link" href="Hakita.php"> יציאה<span class="sr-only">(current)</span></a>
+                </li>
               </ul>
             </div>
           </nav>
@@ -129,97 +80,43 @@
                 <center>
                 <a href="#aboutModal" data-toggle="modal" data-target="#myModal">
                    <?php
-						$results = mysqli_query($con, "SELECT * FROM images");
-                        $rows=mysqli_fetch_array($results);
-						if($ImgSource!='image')
-						{
+						if($ImgSource!='image'){
 							echo "<img src='img/".$ImgSource."' height=140  width=140 class='img-circle'>";
 						}				
 					?>
                 </a>
                 <?php
-			    	if (($fN!='first name'&&$fN!=' ')&&($lN!='last name'&&$lN!=' ')) 
-			    	{
-			    		echo "<h3>" . $fN . " ". $lN."</h3>";
-			    	}
-			    	else if (($fN!='first name'&&$fN!=' ')&&($lN=='last name'||$lN==' ')) 
-			    	{
-			    		echo "<h3>" . $fN . "</h3>";
-			    	}
-			    	else if (($fN=='first name'||$fN==' ')&&($lN!='last name'&&$lN!=' '))
-			    	{
-			    		echo "<h3>" . $lN."</h3>";
-                    }
-                    if($sta!=" ")
-                    {
-                        echo "<h6>".$sta."</h6>";
-                    }
-                    $forEdit=" ";
-                    if ($edit!=null) 
-                    {
-                        $forEdit=$edit;
-                    }
-                    else if($eedit!=null)
-                    {
-                        $forEdit=$eedit;
-                    }
-                    else if ($us!=null) 
-                    {
-                        $forEdit=$us;
-                    }
+                    echo "<h3>" . $arryOfStudentInformation[0] . " ". $arryOfStudentInformation[1]."</h3>";
+                    echo "<h6>".$arryOfStudentInformation[2]."</h6>";
                 ?>
-                    <a href="studentEdit.php?username=<?php echo $forEdit; ?>" >
-                        <button type="button" class="btn btn-info" id="editButton">עדכן פרופיל</button>
-                    </a>
+                <a href="EditPage.php?username=<?php echo $username; ?>" >
+                    <button type="button" class="btn btn-info" id="editButton">עדכן פרופיל</button>
+                </a>
                 </center>
             </div>          
         </div>                                           
     </section>
     <section class="choose">
                     <div class="row">
-                        <button class="tablink col-sm-6" onclick="openPage('aboutTeacher', this, 'blueviolet')"> פרטים שלי</button>
-                    <button class="tablink col-sm-6" onclick="openPage('message', this, 'orange')">  הודעות </button>
-                </div>
-                    <div id="aboutTeacher" class="tabcontent">   
-                              <?php
-                                    echo "<div class=\"row\">";
-                                    echo "<div class=\"col-sm-6\">";
-                                    if (($fN!='first name'&&$fN!=' ')&&($lN!='last name'&&$lN!=' ')) 
-                                    {
-                                        echo "<h4>" . $fN . " ". $lN."</h4>";echo"<hr>";
-                                    }
-                                    else if (($fN!='first name'&&$fN!=' ')&&($lN=='last name'||$lN==' ')) 
-                                    {
-                                        echo "<h4>" . $fN . "</h4>";echo"<hr>";
-                                    }
-                                    else if (($fN=='first name'||$fN==' ')&&($lN!='last name'&&$lN!=' '))
-                                    {
-                                        echo "<h4>" . $lN."</h4>";echo"<hr>";
-                                    }           
-                                    if($yearsOld!=-1)
-                                    {
-                                        echo "<h4>" . $yearsOld."</h4>";echo"<hr>";
-                                    }	    
-                                    if ($Phone!=' '&&$Phone!=null) 
-									{
-										echo "<h4>"."מספר טלפון:".$Phone."</h4>";echo"<hr>";
-                                    }        
-                                    if ($email!='email'&&$email!=' ') 
-									{
-										echo "<h4>" . $email . "</h4>";echo"<hr>";
-                                    }  
-                                    if($sta!=" "&&$sta!=null&&$sta!=' ')
-                                    {
-                                        echo "<h4>".$sta."</h4>";
-                                    } 
-                                    echo "</div>";                                    
-                                    echo "</div>";
-                              ?>
-                    </div>
+                        <button class="tablink col-sm-6" onclick="openPage('aboutStudent', this, 'blueviolet')"> פרטים שלי</button>
+                    <button class="tablink col-sm-6" onclick="openPage('messageSlide', this, 'orange')">  הודעות </button>
+                </div>                
 					<!--message-->
-					<div id="message" class="tabcontent">
+					<div id="messageSlide" class="tabcontent">
                         <h1>עמוד ההודעות  </h1>
 					</div>
+                    <div id="aboutStudent" class="tabcontent">   
+                        <?php
+                              echo "<div class=\"row\">";
+                              echo "<div class=\"col-sm-6\">";
+                              echo "<h4>" . $arryOfStudentInformation[0] . " ". $arryOfStudentInformation[1]."</h4>";echo"<hr>";  
+                              echo "<h4>"."מספר טלפון:".$arryOfStudentInformation[4]."</h4>";echo"<hr>";
+                              echo "<h4>" . $arryOfStudentInformation[3] . "</h4>";echo"<hr>";
+                              echo "<h4>".$arryOfStudentInformation[2]."</h4>";
+                              echo "</div>";                                    
+                              echo "</div>";
+                        ?>
+                    </div>
                 </section>
                 <div class="ButtomSection">      
     <div class="container">
@@ -269,7 +166,6 @@
             document.getElementById(pageName).style.display = "block";
             elmnt.style.backgroundColor = color;
             }
-        
             // Get the element with id="defaultOpen" and click on it
             document.getElementById("defaultOpen").click();
             </script>
@@ -291,13 +187,3 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
       <script src="js/bootstrap.min.js"></script>
 </html>
-<script>
-    function otherPagesWithId()
-    {
-        location.href = "searchTeachers.php?id=" + <?php echo $ID?>;
-    }
-    function FAQPagesWithId()
-    {
-        location.href = "FAQ.php?id=" + <?php echo $ID?>;
-    }
-</script>
