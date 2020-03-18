@@ -39,6 +39,7 @@
 			}
 		}
     }
+
     function getName($id){// function used to return first name and seconde name as one name. use on teacher name and on names of comments wirters
         //include 'connectionPage.php';//include this file for calling the DB
         $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
@@ -53,6 +54,7 @@
 			}
 		}
     }
+
     function  getImage($id){// function to return image for teacher name and comments wirters
         //include 'connectionPage.php';//include this file for calling the DB
         $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
@@ -64,7 +66,8 @@
                 return $ImgSource;
             }
         }
-    }    
+    }   
+
     function getToggleButtonStatus($ID){//function use to check the status of toggle button
         $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
         $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
@@ -75,6 +78,28 @@
         }
         return -1;
     }
+
+    function teacherRating($ID){
+        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+        $commentResult = mysqli_query($con, "SELECT * FROM dBOfComments");
+        $countRatingOfTeacher=0;        
+        $totalCountRatingOfTeacher=0;
+        while ($ratingOfTeacher=mysqli_fetch_assoc($commentResult)){
+            if($ratingOfTeacher['idOfTeacher']==$ID){
+                $countRatingOfTeacher++;  $totalCountRatingOfTeacher+=$ratingOfTeacher['rating'];
+            }
+        }
+        $fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
+        $allRating=ceil($fill);                    
+        for($stars=0;$stars<$allRating;$stars++){
+            echo ' <span class="fa fa-star checked"></span>';
+        }
+        $emptyStars=5-$allRating;$e=0;
+        while($e<$emptyStars){
+            $e++;echo '<span class="fa fa-star"></span>';
+        }
+      }
+
     function returnTeacherCitiesOrCoursesIntoArray($id,$whatToReturn){//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
         //include 'connectionPage.php';//include this file for calling the DB
         $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
@@ -228,7 +253,8 @@
                         echo "</a>";
                         echo "<h3>" . $teacherImforamtionArray[1] . " ". $$teacherImforamtionArray[2]."</h3>";
                         echo "<h6>" . "מחיר לשעה:-" .$teacherImforamtionArray[4] ."</h6>";	
-                        echo "<h6>".$teacherImforamtionArray[5]."</h6>";             
+                        echo "<h6>".$teacherImforamtionArray[5]."</h6>";
+                        echo "<p>".teacherRating($ID)."</p>";              
                     ?>
                 <a href="EditPage.php?username=<?php echo $teacherImforamtionArray[0]; ?>" ><!--edit profile, redirect to other page and sending teacher id-->
                     <button type="button" class="btn btn-info" id="editButton">עדכן פרופיל</button><!--botton of edit page-->

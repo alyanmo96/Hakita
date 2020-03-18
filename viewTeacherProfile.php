@@ -352,6 +352,7 @@
                         echo "<img src='img/".$ImgSource."' height=140  width=140 class='img-circle'></a>";			
                         echo "<h3>" . $teacherArrayInformation[1]."&nbsp;". $teacherArrayInformation[2]."</h3>";
                         $countRatingOfTeacher=0;         $totalCountRatingOfTeacher=0;
+                        $commentResult = mysqli_query($con, "SELECT * FROM dBOfComments");
                         while ($ratingOfTeacher=mysqli_fetch_assoc($commentResult)){
                             if($ratingOfTeacher['idOfTeacher']==$ID){
                                 $countRatingOfTeacher++;  $totalCountRatingOfTeacher+=$ratingOfTeacher['rating'];

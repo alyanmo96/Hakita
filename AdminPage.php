@@ -1,133 +1,224 @@
 <?php
 /**
- * 
- * 
+ * this is the ADMIN page.
+ * (-)on this page admin can make many functions as  looke for users(all users/teachers/students/new users/
+ * add a new city or anew course/which user make changes and admin settings).
+ * (-)ADMIN look for a user by choose him on list or at the section of user(teachers for example) can found him.
+ * (-)before adding a new city, ADMIN can look for all citites on site(cant add same city or same course twice).
+ * (-)the section of new user. display user with a new account less than one month.
  */
     session_start();
+    function SiteCities($city){//function to check if admin going to insert a city that is already on DB or not
+        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB
+        $teacher_citiesResultForArray = mysqli_query($con, "SELECT * FROM cities");//call the table of cities
+        $arrayOFAll=array();
+          while ($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResultForArray)){
+            $r=$teacherCitiesRows['cityName'];
+            array_push($arrayOFAll,$r);//insert a list of cities names on array, each city on different index on array, 
+            //to compare on next section(after loop) what user choose as a cities and what we have on DB
+          } 
+          for($t=0;$t<count($arrayOFAll);$t++){
+            if(stristr($city,$arrayOFAll[$t])){
+              return 1;
+            }
+          }
+        return -1;
+    }   
+    function SiteCourses($course){//function to check if admin going to insert a course that is already on DB or not
+        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB
+        $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
+        $arrayOFAll=array();
+          while ($teacherCitiesRows=mysqli_fetch_array($resultsOfCourses)){
+            $r=$teacherCitiesRows['subject'];
+            array_push($arrayOFAll,$r);//insert a list of courses names on array, each city on different index on array, 
+            //to compare on next section(after loop) what user choose as a courses and what we have on DB
+          }      
+          for($t=0;$t<count($arrayOFAll);$t++){
+            if(stristr($course,$arrayOFAll[$t])){
+              return 1;
+            }
+          }
+        return -1;
+    }    
     $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    if(isset($_POST['newCourse']))
-    {
-        $course=$_POST['newCourse'];
-        $query="INSERT INTO `courses`(`subject`) VALUES ('$course')";
-        $result = mysqli_query($con,$query);
-    }
-    if(isset($_POST['newCity']))
-    {
-      $city=$_POST['newCity'];
-      $query="INSERT INTO `cities`(`cityName`) VALUES ('$city')";
-      $result = mysqli_query($con,$query);  
-    }          
+    if(isset($_POST['newCity'])){//this section for adding a new city to site. statring by get the name of the new city, check that's really a new city, if yes add it else not
+      $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
+      $city=$_POST['newCity'];//get the name of the new city
+      if(SiteCities($city)==-1){
+        $query="INSERT INTO `cities`(`cityName`) VALUES ('$city')";//insert on DB
+        $result = mysqli_query($con,$query); 
+      }else{
+        echo"<script type='text/javascript'>alert('העיר כבר קיימת במערכת');</script>";
+      } 
+    }   
+    if(isset($_POST['newCourse'])){//this section for adding a new city to site. statring by get the name of the new course, check that's really a new course, if yes add it else not
+        $course=$_POST['newCourse'];//get the name of the new course
+        $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
+        if(SiteCourses($course)==-1){
+            $query="INSERT INTO `courses`(`subject`) VALUES ('$course')";//insert on DB
+            $result = mysqli_query($con,$query);
+        }else{
+            echo"<script type='text/javascript'>alert('הקורס כבר קיים במערכת');</script>";
+        }
+    }       
     if((isset($_POST['verifyPassword'])&&isset($_POST['password']))||
     isset($_POST['email'])||isset($_POST['phone'])||
-    isset($_POST['first_name'])||isset($_POST['last_name']))
-    {
+    isset($_POST['first_name'])||isset($_POST['last_name'])){//this section related to ADMIN settings, upload his information as password, email, phone number, name.
+        $settingsNavbar=1;//variable use to check if the ADMIN update his information for second navbar
         $adminId=211;
-        $results = mysqli_query($con, "SELECT * FROM teachers");
-        if ($_POST['first_name']) 
-        {
-            $fName=$_POST['first_name'];
-            $upDate="UPDATE `teachers` SET `fname`='$fName'WHERE id=$adminId";
+        $results = mysqli_query($con, "SELECT * FROM teachers");//connect with user table
+        if ($_POST['first_name']){//ADMIN update his first name
+            $fName=$_POST['first_name'];//get the new information
+            $upDate="UPDATE `teachers` SET `fname`='$fName'WHERE id=$adminId";//update on DB
             $results = mysqli_query($con,$upDate);
         }        
-        if ($_POST['last_name']) 
-        {
-            $lName=$_POST['last_name'];
-            $upDate="UPDATE `teachers` SET `lname`='$lName'WHERE id=$adminId";
+        if ($_POST['last_name']){//ADMIN update his last name
+            $lName=$_POST['last_name'];//get the new information
+            $upDate="UPDATE `teachers` SET `lname`='$lName'WHERE id=$adminId";//update on DB
             $results = mysqli_query($con,$upDate);
         }
-        if ($_POST['email']) 
-        {
-            $Email=$_POST['email'];
-            $upDate="UPDATE `teachers` SET `email`='$Email'WHERE id=$adminId";
+        if ($_POST['email']){//ADMIN update his email
+            $Email=$_POST['email'];//get the new information
+            $upDate="UPDATE `teachers` SET `email`='$Email'WHERE id=$adminId";//update on DB
             $results = mysqli_query($con,$upDate);
         }        
-        if ($_POST['password']) 
-        {
-            if ($_POST['password']==$_POST['verifyPassword']) 
-            {
-                $pass=$_POST['password'];
-                $upDate="UPDATE `teachers` SET `password`='$pass'WHERE id=$adminId";
-                $results = mysqli_query($con,$upDate);
+        if ($_POST['password']){//ADMIN update his password
+            if ($_POST['password']==$_POST['verifyPassword']){
+                
             }
         }
-        if ($_POST['phone']) 
-        {
+        if ($_POST['phone']){//ADMIN update his phone number
             $phone=$_POST['phone'];
-            $upDate="UPDATE `teachers` SET `phone`='$phone'WHERE id=$adminId";
+            $upDate="UPDATE `teachers` SET `phone`='$phone'WHERE id=$adminId";//update on DB
             $results = mysqli_query($con,$upDate);
+        }
+        if ($_POST['password']){//if ADMIN update his password
+            $invalidPass=-1;//variable use to check if the new user password is valid or not.
+            if ($_POST['password']==$_POST['verifyPassword']){//check that the insert password equal to the verify password
+                $uppercase = preg_match('@[A-Z]@', $_POST["password"]);//password need to include uppercase
+                $lowercase = preg_match('@[a-z]@', $_POST["password"]);//password need to include lowercase
+                $number = preg_match('@[0-9]@', $_POST["password"]);//password need to include number
+                if(strlen($_POST["password"])<8){//if password is less than 8 chars-->wrong
+                    $invalidPass=1;
+                    if(!$uppercase || !$lowercase || !$number){
+                      echo"<script type='text/javascript'>alert('סיסמה קצרה מדי, הסיסמה אמורה להכיל אותיות גדולות וקטנות ומספרים');</script>";
+                    }else{
+                          echo"<script type='text/javascript'>alert('סיסמה קצרה מדי');</script>";
+                    }
+                }else if(strlen($_POST["password"])>16){//if the password string is bigger than 16 chars
+                    $invalidPass=1;
+                    if(!$uppercase || !$lowercase || !$number){
+                        echo"<script type='text/javascript'>alert('סיסמה ארוכה מדי, הסיסמה אמורה להכיל אותיות גדולות וקטנות ומספרים');</script>";
+                    }else{
+                        echo"<script type='text/javascript'>alert('סיסמה ארוכה מדי');</script>";
+                    }
+                }else{
+                  if(!$uppercase || !$lowercase || !$number){//a valid length of password, but it's not include uppercase or lowercase chars
+                      $invalidPass=1;
+                      echo "<script type='text/javascript'>alert('הסיסמה אמורה להכיל אותיות גדולות וקטנות ומספרים');</script>";
+                    }
+                }
+                if($invalidPass==-1){//if it's a valid password-->update it
+                  $pass=$_POST['password'];
+                  $upDate="UPDATE `teachers` SET `password`='$pass'WHERE id=$adminId";//update on DB
+                  $results = mysqli_query($con,$upDate);
+                }
+            }
         }  
+    }//get all user id's....exclude admin id
+    $IdResults = mysqli_query($con, "SELECT * FROM teachers");
+    $i=0; $IdArray = array();
+    while ($rows=mysqli_fetch_array($IdResults)){
+        if($rows['id']!=211){//not the admin
+            $IdArray[$i]=$rows['id'];$i++;
+        }
+    }$i-=1;//we use it to know how many users there is, in this case after the loop we eill get then count of users + one, so we minus one
+    
+    function teacherNameFunction($id){//function used to return name
+        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB
+        $IdResults = mysqli_query($con, "SELECT * FROM teachers");
+        while ($row=mysqli_fetch_assoc($IdResults)){
+            if ($row['id']==$id){//found wanted id -> get variables to use on HTML view               
+                echo"<p>".$row['fname']." ".$row['lname']."<br/></p>";//get the first and last name as a name
+          }
+        }
     }
-	$IdResults = mysqli_query($con, "SELECT * FROM teachers");
-	$i=0;
-	$IdArray = array();
-	while ($rows=mysqli_fetch_array($IdResults))
-	{
-		if($rows['id']!=211)//not the admin.... also need to check that isnot a student
-		{
-			$IdArray[$i]=$rows['id'];
-			$i++;
-		}
-	}
-	$i-=1;
+
+    function checkUserDefineAs($ID){
+        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+        $resultsOfCheckUser = mysqli_query($con, "SELECT * FROM teachers");
+        while ($rows=mysqli_fetch_array($resultsOfCheckUser)){
+            if ($rows['id']==$ID && $rows['setUserAs']=='student'){
+                return 1;
+            }
+        } 
+        return -1;  
+    }
+    function displayFunction($arrayOfId,$relatedNumber,$returnArray,$i){
+        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+        $j=0;$arrayIdCounter=0;
+        while($j<=$i){//diplay all users
+            if(1==1){//true section
+                    if(checkUserDefineAs($arrayOfId[$j])==1&&$relatedNumber==14444){
+                        $j++;
+                        continue;
+                    }
+                    elseif(checkUserDefineAs($arrayOfId[$j])==-1&&$relatedNumber==18888){
+                        $j++;
+                        continue;
+                    }
+                if($j%3==0){//for display, each three cards at the same line
+                    echo'<div class="teacher col-sm-12"><hr><hr></div>';
+                }
+                $results=mysqli_query($con, "SELECT * FROM images");
+                while ($rows=mysqli_fetch_array($results)){
+                    if ($rows['id']==$arrayOfId[$j]){
+                        $returnArray[$arrayIdCounter]=$arrayOfId[$j]+$relatedNumber;
+                        $arrayIdCounter++;//insert id , forward index next
+                        $id=$arrayOfId[$j]+$relatedNumber;
+                        echo"<div class=\"teacher col-sm-4\" id=\"$id\"><button value=\"$id\" id=\"$id\"><input type=\"hidden\" id=\"$id\">";
+                        if ($rows['image']!='image'&&$rows['image']!=null){//display image
+                            echo"<img src='img/".$rows['image']."'class='teacherImg img-rounded img-responsive'>";
+                        }
+                    }
+                }
+                teacherNameFunction($arrayOfId[$j]); //print name  
+                echo "</button></div><br><br>";
+            }$j++;//help with diplay as we said above.
+        }
+        return $returnArray;
+    }
+    
 ?>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>הכיתה</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
-    <link rel="stylesheet" type="text/css" href="css/AdminStyle.css">
-    <style>
-    .forme-group {
-    margin-bottom: 1rem;
-    float: right;
-    margin: 1%;
-}
-    </style>
-  </head>
-  <body>
-    <?php
-        function getName($getIdOfUser)
-        {
-            $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-            $results = mysqli_query($con, "SELECT * FROM teachers");
-            $NAME=" ";
-            while ($rows=mysqli_fetch_array($results))
-            {
-                if ($rows['id']==$getIdOfUser)
-                {
-                    echo"<p>";
-                    if ($rows["fname"]!=' '&&$rows["lname"]!=' ')
-                    {
-                        echo "" . $rows["fname"]. "  " . $rows["lname"]."<br />";
-                    }
-                    else if($rows["fname"]!=' '&&$rows["lname"]==' ')
-                    {
-                        echo "" . $rows["fname"]."<br />";
-                    }
-                    else if ($rows["fname"]==' '&&$rows["lname"]!=' ')
-                    {
-                        echo "" . $rows["lname"]."<br />";
-                    }
-                    echo"</p>";
-                }
+<!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>הכיתה</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
+        <link rel="stylesheet" type="text/css" href="css/AdminStyle.css">
+        <style>
+            .forme-group {
+            margin-bottom: 1rem;
+            float: right;
+            margin: 1%;
             }
-            return $NAME;
-        }
-    ?>
-    <a id="button"></a>
+        </style>
+    </head>
+    <body>
+    <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
     <section><!--navbar section-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#">הכיתה</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                   <li class="nav-item active">
@@ -135,589 +226,316 @@
                   </li>
               </ul>
             </div>
-          </nav>
+        </nav>
     </section>
     <section class="choose">
+        <div class="row"><!--second navbar for admin, route to all user section/teachers/student/new users...-->
+            <?php
+                if($settingsNavbar){//admin settings
+                    echo "                    
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\">לכל המשתמשים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('teachers', this, 'orange')\"> מורים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('students', this, 'blue')\"> תלמידים</button> 
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('newCC', this, 'green')\"> הוספת עיר/מקוצע חדשים </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'green')\"> מי עשה שינוי </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'orange')\"id=\"defaultOpen\">  פרטי המנהל </button>";
+                }elseif($cityAndCourseNavbar){//new course/city
+                    echo "                    
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\">לכל המשתמשים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('teachers', this, 'orange')\"> מורים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('students', this, 'blue')\"> תלמידים</button> 
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('newCC', this, 'green')\"id=\"defaultOpen\"> הוספת עיר/מקוצע חדשים </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'green')\"> מי עשה שינוי </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'orange')\">  פרטי המנהל </button>";
+                }else{//default mode
+                    echo "                    
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\"id=\"defaultOpen\">לכל המשתמשים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('teachers', this, 'orange')\"> מורים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('students', this, 'blue')\"> תלמידים</button> 
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('newCC', this, 'green')\"> הוספת עיר/מקוצע חדשים </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'green')\"> מי עשה שינוי </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'orange')\">  פרטי המנהל </button>";
+               }
+            ?>
+        </div><!--next section for all users, 
+        on this section we can show all users on a cards include image and name. 
+        can click on any card to redirect to edit on choosen card, or choos from list-->              
+        <div id="allUSers" class="tabcontent">
+            <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+                <?php                                
+                    $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                    $allUsersArrayId=array();//array using to redirect (insert id users on array)
+                    echo"<SELECT name=\"searchAllChangedUsersByName\" id=\"searchAllChangedUsersByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                    $results = mysqli_query($con, "SELECT * FROM teachers");
+                    echo'<option >בחר שם</option>';
+                    while ($rows=mysqli_fetch_array($results)){
+                        if($rows['id']!=211){
+                            echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
+                        }           
+                    }
+                    echo"</SELECT><input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\"/>";
+                ?>
+            </div><br><hr><!--create line and down a line for display-->   
+            <section class="work">
+                <div class="container">
                     <div class="row">
-                    <button class="tablink col-sm-3" onclick="openPage('allUSers', this, 'blueviolet')"id="defaultOpen">   לכל המשתמשים </button>
-                    <button class="tablink col-sm-3" onclick="openPage('teachers', this, 'orange')"> מורים</button>
-                    <button class="tablink col-sm-3" onclick="openPage('students', this, 'blue')"> תלמידים</button> 
-                    <button class="tablink col-sm-3" onclick="openPage('newCC', this, 'green')"> הוספת עיר/מקוצע חדשים </button>
-                    <button class="tablink col-sm-3" onclick="openPage('newUSers', this, 'blueviolet')">   המשתמשים חדשים</button>
-                    <button class="tablink col-sm-3" onclick="openPage('madeChange', this, 'green')"> מי עשה שינוי </button>
-                    <button class="tablink col-sm-3" onclick="openPage('AdminDetails', this, 'orange')">  פרטי המנהל </button>
-
-                </div>                
-                <div id="allUSers" class="tabcontent">
-                    <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
-                            <div class="col-sm-6">
-                            </div>
-                            <div class="col-sm-6">
-                                <?php                                
-                                $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                                $allUsersArrayId=array();
-                                $allUsersArrayIdCounter=0;
-                                echo "<SELECT  name=\"searchAllChangedUsersByName\" id=\"searchAllChangedUsersByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
-                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                echo'<option >'.'בחר שם'.'</option>';
-                                while ($rows=mysqli_fetch_array($results))
-                                {
-                                    if($rows['id']!=211)
-                                    {
-                                        echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
-                                    }			
-                                }
-                                echo"</SELECT>";
-                                echo"<input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />";
-                                ?>
-                        </div>
-                        <br>
-                        <hr>   
-                        <section class="work">
-                            <div class="container">
-                            <div class="row">
-                                <?php                              
-                                    $j=0;
-                                        while ($j<=$i)
-                                        {
-                                            if(1==1)
-                                            {
-                                                if($j%3==0)
-                                                {
-                                                    echo '<div class="teacher col-sm-12">';
-                                                    echo "<hr><hr>";
-                                                    echo "</div>";
-                                                }
-                                                $results = mysqli_query($con, "SELECT * FROM images");
-                                                while ($rows=mysqli_fetch_array($results))
-                                                {
-                                                    if ($rows['id']==$IdArray[$j])
-                                                    {
-                                                        $allUsersArrayId[$allUsersArrayIdCounter]=$IdArray[$j]+155555;
-                                                        $allUsersArrayIdCounter++;
-                                                        $d=$IdArray[$j]+155555;
-                                                        echo '<div class="teacher col-sm-4" id="$d">';
-                                                        echo "<button value=\"$d\" id=\"$d\">";
-                                                        echo"   <input type=\"hidden\" id=\"$d\">";
-                                                        if ($rows['image']!='image'&&$rows['image']!=null)
-                                                        {
-                                                            echo "<img src='img/".$rows['image']."'   class='teacherImg img-rounded img-responsive'>";
-                                                        }
-                                                    }
-                                                }
-                                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                                while ($rows=mysqli_fetch_array($results))
-                                                {
-                                                    if ($rows['id']==$IdArray[$j])
-                                                    {
-                                                        getName($IdArray[$j]);                                                        
-                                                    }
-                                                }
-                                                echo "</button>";
-                                                echo '</div>';
-                                                echo "<br><br>";
-                                            }
-                                        $j++;
-                                    }
-                                ?>
-                                </div>
-                            </div>
-                            </section> 
-                    </div>                 
-                  
-                <div id="students" class="tabcontent">
-                    <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
-                            <div class="col-sm-6">
-                            </div>
-                            <div class="col-sm-6">
-                                <?php                                
-                                $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                                $studentArrayId=array();
-                                $studentArrayIdCounter=0;
-                                echo "<SELECT  name=\"searchStudentByName\" id=\"searchStudentByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
-                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                echo'<option >'.'בחר שם'.'</option>';
-                                while ($rows=mysqli_fetch_array($results))
-                                {
-                                    if($rows['id']!=211&&$rows['setUserAs']=='student')
-                                    {
-                                        echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
-                                    }			
-                                }
-                                echo"</SELECT>";
-                                echo"<input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />";
-                                ?>
-                        </div>
-                        <br>
-                        <hr>   
-                        <section class="work">
-                            <div class="container">
-                            <div class="row">
-                                <?php
-                                
-                                    function checkUSerA($id)
-                                    {
-                                        $isStudent=-1;
-                                        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                                        $resultsOfCheckUser = mysqli_query($con, "SELECT * FROM teachers");
-                                        while ($rows=mysqli_fetch_array($resultsOfCheckUser))
-                                        {
-                                            if ($rows['id']==$id && $rows['setUserAs']=='student')
-                                            {
-                                                $isStudent=1;
-                                                break;
-                                            }
-                                        } 
-                                        return $isStudent;   
-                                    }
-                                    $j=0;
-                                    $d=0;
-                                        while ($j<=$i)
-                                        {
-                                            if(checkUSerA($IdArray[$j])==1)
-                                            {
-                                                if($j%3==0)
-                                                {
-                                                    echo '<div class="teacher col-sm-12">';
-                                                    echo "<hr><hr>";
-                                                    echo "</div>";
-                                                }
-                                                $results = mysqli_query($con, "SELECT * FROM images");
-                                                while ($rows=mysqli_fetch_array($results))
-                                                {
-                                                    if ($rows['id']==$IdArray[$j])
-                                                    {
-                                                        $studentArrayId[$studentArrayIdCounter]=$IdArray[$j]+18888;
-                                                        $studentArrayIdCounter++;
-                                                        $d=$IdArray[$j]+18888;
-                                                        echo '<div class="teacher col-sm-4" id="$d">';
-                                                        echo "<button value=\"$d\" id=\"$d\">";
-                                                        echo"   <input type=\"hidden\" id=\"$d\">";
-                                                        if ($rows['image']!='image'&&$rows['image']!=null)
-                                                        {
-                                                            echo "<img src='img/".$rows['image']."'   class='teacherImg img-rounded img-responsive'>";
-                                                        }
-                                                    }
-                                                }
-                                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                                while ($rows=mysqli_fetch_array($results))
-                                                {
-                                                    if ($rows['id']==$IdArray[$j]&&$rows['setUserAs']=='student')
-                                                    {
-                                                        getName($IdArray[$j]); 
-                                                    }
-                                                }
-                                                echo "</button>";
-                                                echo '</div>';
-                                                echo "<br><br>";
-                                            }
-                                        $j++;
-                                    }
-                                ?>
-                                </div>
-                            </div>
-                            </section> 
-                    </div>                 
-                        
-                    <div id="madeChange" class="tabcontent">
-                    <?php
-                        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                        $results = mysqli_query($con, "SELECT * FROM teachers");
-                        $makeChangeEnter = mysqli_query($con, "SELECT * FROM makeChange");
-                        $getIdFromMakeChangeDataBaseCounter=0;
-                        $getIdFromMakeChangeDataBase=array();
-                        while ($row=mysqli_fetch_assoc($makeChangeEnter)) 
-                        {  
-                            $getIdFromMakeChangeDataBase[$getIdFromMakeChangeDataBaseCounter]=$row['id'];
-                            $getIdFromMakeChangeDataBaseCounter++;
-                        }
-                        $i=0;
-                        $IdArrayChanges = array(); 
-                        while ($rows=mysqli_fetch_array($results)) 
+                        <?php     
+                            $allUsersArrayId=displayFunction($IdArray,155555,$allUsersArrayId,$i);                         
+                        ?>
+                    </div>
+                </div>
+            </section> 
+        </div><!--next section for students, 
+        on this section we can show all users on a cards include image and name. 
+        can click on any card to redirect to edit on choosen card, or choos from list-->                  
+        <div id="students" class="tabcontent">
+            <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6">
+                <?php                                
+                    $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                    $studentArrayId=array();
+                    echo"<SELECT name=\"searchStudentByName\" id=\"searchStudentByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                    $results = mysqli_query($con, "SELECT * FROM teachers");
+                    echo'<option>בחר שם</option>';
+                    while ($rows=mysqli_fetch_array($results)){//search student on list(search by name)
+                        if($rows['id']!=211 && $rows['setUserAs']=='student')
                         {
-                            for ($j=0; $j < count($getIdFromMakeChangeDataBase); $j++) 
-                            { 
-                                if ($rows['id']==$getIdFromMakeChangeDataBase[$j]) 
-                                {
-                                    $IdArrayChanges[$i]=$rows['id'];
-                                    $i++;
-                                }
-                            }
+                            echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
+                        }           
+                    }
+                    echo"</SELECT><input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\"/>";
+                ?>
+            </div><br><hr>   
+            <section class="work">
+                <div class="container">
+                    <div class="row"><!--for dsplay -->
+                        <?php
+                           $studentArrayId=displayFunction($IdArray,18888,$studentArrayId,$i);
+                        ?>
+                    </div>
+                </div>
+            </section> 
+        </div> <!--next section for user who made changed on last month, 
+        on this section we can show all users on a cards include image and name. 
+        can click on any card to redirect to edit on choosen card, or choos from list-->                          
+        <div id="madeChange" class="tabcontent">
+            <?php
+                $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                $results = mysqli_query($con, "SELECT * FROM teachers");
+                $makeChangeEnter = mysqli_query($con, "SELECT * FROM makeChange");
+                $getIdFromMakeChangeDataBaseCounter=0; $getIdFromMakeChangeDataBase=array();//array to include id's of people made changed
+                while ($row=mysqli_fetch_assoc($makeChangeEnter)){//insert array of related people on array  
+                    $getIdFromMakeChangeDataBase[$getIdFromMakeChangeDataBaseCounter]=$row['id'];$getIdFromMakeChangeDataBaseCounter++;//insert id , forward index next
+                }
+                $i=0;$IdArrayChanges = array(); //last array will include the wanted id's
+                while ($rows=mysqli_fetch_array($results)){
+                    for ($j=0; $j < count($getIdFromMakeChangeDataBase); $j++){ 
+                        if ($rows['id']==$getIdFromMakeChangeDataBase[$j]){
+                            $IdArrayChanges[$i]=$rows['id'];$i++;//insert id , forward index next
                         }
-                        $i-=1;
-                    ?>                              
-                    <br>
-                    <hr>
-                        <section class="work">
-                    <div class="container">
+                    }
+                }$i-=1;
+            ?><br><hr>
+            <section class="work">
+                <div class="container">
                     <div class="row">
                         <?php
-                       
-                                $j=0;
-                                $madeChangeIdArray=array();
-                                $madeChangeIdArrayCounter=0;
-                                while ($j<=$i)
-                                {
-                                $results = mysqli_query($con, "SELECT * FROM images");
-                                while ($rows=mysqli_fetch_array($results))
-                                {
-                                    if ($rows['id']==$IdArrayChanges[$j])
-                                    {
-                                        $madeChangeIdArray[$madeChangeIdArrayCounter]=$IdArrayChanges[$j]+17777;
-                                        $madeChangeIdArrayCounter++;
-                                        $d=$IdArrayChanges[$j]+17777;
-                                        echo '<div class="teacher col-sm-3" id="$d">';
-                                        echo "<button value=\"$d\" id=\"$d\">";
-                                        echo"<input type=\"hidden\" id=\"$d\">";
-                                        if ($rows['image']!='image'&&$rows['image']!=null)
-                                        {
-                                            echo "<img src='img/".$rows['image']."'   class='teacherImg img-rounded img-responsive'>";
-                                        }
-                                    }
-                                }
-                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                while ($rows=mysqli_fetch_array($results))
-                                {
-                                    if ($rows['id']==$IdArrayChanges[$j])
-                                    {
-                                        getName($IdArrayChanges[$j]); 
-                                    }
-                                }
-                                echo "</button>";
-                                echo '</div>';
-                                $j++;
-                            }
+                            $madeChangeIdArray=array(); //array that will include the display people
+                            $madeChangeIdArray=displayFunction($IdArray,17777,$madeChangeIdArray,$i);
                         ?>
-                        </div>
                     </div>
-                    </section>
-                    </div> 
-
-                    <div id="teachers" class="tabcontent">
-                            <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
-                            <div class="col-sm-6">
-                            </div>
-                            <div class="col-sm-6">
-                                <?php
-                                $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                                $teacherIdArray=array();
-                                $teacherIdArrayCounter=0;
-                                echo "<SELECT  name=\"searchByName\" id=\"searchByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
-                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                echo'<option >'.'בחר שם'.'</option>';
-                                while ($rows=mysqli_fetch_array($results))
-                                {
-                                    if($rows['id']!=211&&$rows['setUserAs']!='student')
-                                    {
-                                        echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
-                                    }			
-                                }
-                                echo"</SELECT>";
-                                echo"<input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />";
-                                ?>
+                </div>
+            </section>
+        </div><!--next section for teachers, 
+        on this section we can show all users on a cards include image and name. 
+        can click on any card to redirect to edit on choosen card, or choos from list-->  
+        <div id="teachers" class="tabcontent">
+            <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
+            <div class="col-sm-6"></div>
+            <div class="col-sm-6"><!--search teach by name(show as a list of names)-->
+                <?php
+                    $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                    $teacherIdArray=array();//array teachers id
+                    echo "<SELECT  name=\"searchByName\" id=\"searchByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
+                    $results = mysqli_query($con, "SELECT * FROM teachers");
+                    echo'<option >בחר שם</option>';
+                    while ($rows=mysqli_fetch_array($results)){//show every teacher
+                        if($rows['id']!=211&&$rows['setUserAs']!='student'){
+                            echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
+                        }           
+                    }
+                    echo"</SELECT><input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />";
+                ?>
+            </div><br><hr>   
+            <section class="work">
+                <div class="container">
+                    <div class="row">
+                        <?php
+                            $teacherIdArray=displayFunction($IdArray,14444,$teacherIdArray,$i);
+                        ?>
+                    </div>
+                </div>
+            </section>     
+        </div><!--next section for adding a new city or a new course
+        what we show here: cities/course already on DB,  adding a new-->    
+        <div id="newCC" class="tabcontent">
+            <form action="AdminPage.php" method="post">  
+                <?php
+                    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");                            
+                    echo'<div class="form-group"><div class="col-xs-6">';
+                    echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
+                    $results = mysqli_query($con, "SELECT * FROM cities");
+                    echo'<option >בדוק את הערים הקימות</option>';
+                    while ($rows=mysqli_fetch_array($results)){//list of cities on DB
+                        echo'<option>'.$rows['cityName'].'</option>';
+                    }
+                    echo"</SELECT><br><br>";
+                    echo'<input type="text" placeholder="עיר חדשה" name="newCity"></div></div><br><br>';
+                    echo'<div class="form-group"><div class="col-xs-6">';
+                    echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
+                    $results = mysqli_query($con, "SELECT * FROM courses");
+                    echo'<option >בדוק את המקצועות הקיימים  </option>';
+                    while ($rows=mysqli_fetch_array($results)){//list of courses on DB
+                        echo'<option>'.$rows['subject'].'</option>';
+                    }
+                    echo"</SELECT></div></div><br><br>";
+                    echo'<input type="text" placeholder="מקצוע חדש" name="newCourse">';
+                    echo'
+                    <fieldset> 
+                        <div class="text-center">
+                            <input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="הוספה">
                         </div>
-                        <br>
-                        <hr>   
-                        <section class="work">
-                            <div class="container">
-                            <div class="row">
-                                <?php
-                                    function checkUSerAs($id)
-                                    {
-                                        $isStudent=-1;
-                                        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                                        $resultsOfCheckUser = mysqli_query($con, "SELECT * FROM teachers");
-                                        while ($rows=mysqli_fetch_array($resultsOfCheckUser))
-                                        {
-                                            if ($rows['id']==$id && $rows['setUserAs']=='student')
-                                            {
-                                                $isStudent=1;
-                                                break;
-                                            }
-                                        } 
-                                        return $isStudent;   
-                                    }
-                                        $j=0;
-                                        while ($j<=$i)
-                                        {
-                                            if(checkUSerAs($IdArray[$j])==-1)
-                                            {
-                                                if($j%3==0)
-                                                {
-                                                    echo '<div class="teacher col-sm-12">';
-                                                    echo "<hr><hr>";
-                                                    echo "</div>";
-                                                }
-                                                $results = mysqli_query($con, "SELECT * FROM images");
-                                                while ($rows=mysqli_fetch_array($results))
-                                                {
-                                                    if ($rows['id']==$IdArray[$j])
-                                                    {
-                                                        $teacherIdArray[$teacherIdArrayCounter]=$IdArray[$j]+14444;
-                                                        $teacherIdArrayCounter++;
-                                                        $ddd=$IdArray[$j]+14444;
-                                                        echo '<div class="teacher col-sm-4" id="$d">';
-                                                        echo "<button value=\"$ddd\" id=\"$ddd\">";
-                                                        echo"<input type=\"hidden\" id=\"$ddd\">";
-                                                        
-                                                        if ($rows['image']!='image'&&$rows['image']!=null)
-                                                        {
-                                                            echo "<img src='img/".$rows['image']."'   class='teacherImg img-rounded img-responsive'>";
-                                                        }
-                                                    }
-                                                }
-                                                $results = mysqli_query($con, "SELECT * FROM teachers");
-                                                while ($rows=mysqli_fetch_array($results))
-                                                {
-                                                    if ($rows['id']==$IdArray[$j]&&$rows['setUserAs']!='student')
-                                                    {
-                                                        getName($IdArray[$j]); 
-                                                    }
-                                                }
-                                                echo "</button>";
-                                                echo '</div>';
-                                                echo "<br><br>";
-                                            }
-                                        $j++;
-                                    }
-                                ?>
+                    </fieldset>';                    
+                ?>
+            </form> 
+        </div><!--next section for new users, 
+        on this section we can show all users on a cards include image and name. 
+        can click on any card to redirect to edit on choosen card, or choos from list--> 
+        <div id="newUSers" class="tabcontent">
+            <?php
+                session_start();
+                $todayDate=date('Y-m-d');
+                $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                $IdResults = mysqli_query($con, "SELECT * FROM teachers");
+                $idCount=0;$newUsersIdArray = array();
+                while ($rows=mysqli_fetch_array($IdResults)){
+                    $creat=$rows['createAccount'];
+                    $sameYear=1;
+                    if(($todayDate[5]>$creat[5])&&($todayDate[6]!=($creat[6]+1))){
+                        $sameYear=-1;
+                    }else if($todayDate[5]==$creat[5]){
+                            if($todayDate[6]>($creat[6]+1)){
+                            $sameYear=-1;
+                        }else{
+                            if($todayDate[6]!=($creat[6]+1)){}else if($todayDate[6]!=($creat[6]+1)){
+                                $sameYear=-1; 
+                            }
+                        }
+                    }
+                    for($i=0;$i<strlen($todayDate);$i++){
+                        $t = substr($todayDate, $i, 1);
+                        $nT = substr($creat, $i, 1);
+                        if($i<5 && $t!=$nT){
+                            $sameYear=-1;break;
+                        }
+                    }
+                    if($sameYear==1){
+                        $newUsersIdArray[$idCount]=$rows['id'];$idCount++;
+                    }
+                }    
+            ?>                    
+            <section class="work">
+                <div class="container">
+                    <div class="row">
+                        <?php
+                            $newUsersIdArray=displayFunction($newUsersIdArray,19999,$newUsersIdArray,$i);
+                        ?>
+                    </div>
+                </div>
+            </section>
+        </div><!--next section for admin to update his information-->         
+        <div id="AdminDetails" class="tabcontent">
+            <?php
+                $firstName=" ";$lastName=" ";$email=" ";$Phone=" ";$username=" ";$ID;//variable of admin inforamtion to display it 
+                $db = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                $results = mysqli_query($db, "SELECT * FROM teachers");
+                while ($row=mysqli_fetch_assoc($results)){//get admin information from DB
+                    if($row['id']=='211'){
+                        $ID=$row['id'];
+                        $username=$row['username'];
+                        $firstName=$row['fname'];
+                        $lastName=$row['lname'];
+                        $email=$row['email'];
+                        $Phone=$row['phone'];
+                    }
+                }
+            ?><hr>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12"><h1>עדכון פרטים המנהל</h1></div>
+                </div>
+                <div class="row">
+                    <div><!--left col-->
+                <div class="col-sm-12">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><h1><?php echo $username ?></h1></li>
+                    </ul>              
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="home"><hr>
+                            <form class="form" action="AdminPage.php" method="post" id="registrationForm">                                
+                                <div class="forme-group">                          
+                                    <div class="col-xs-6">
+                                        <label for="first_name"><h4>שם פרטי</h4></label>
+                                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>" title="enter your first name if any.">
+                                    </div>
+                                </div> 
+                                <div class="forme-group">                          
+                                    <div class="col-xs-6">
+                                        <label for="last_name"><h4>שם משפחה</h4></label>
+                                        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="<?php echo $lastName?>" >
+                                    </div>
                                 </div>
-                            </div>
-                            </section>     
-                    </div>  
-                                    
-                    <div id="newCC" class="tabcontent">
-                    <form action="AdminPage.php" method="post">  
-                        <?php
-                            $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");                            
-                            echo'<div class="form-group">
-                            <div class="col-xs-6">';
-                            echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
-                            $results = mysqli_query($con, "SELECT * FROM cities");
-                            echo'<option >'.'בדוק את הערים הקימות'.'</option>';
-                            while ($rows=mysqli_fetch_array($results))
-                            {
-                                echo'<option>'.$rows['cityName'].'</option>';
-                            }
-                            echo"</SELECT>";
-                            echo"<br><br>";
-                            echo'<input type="text" placeholder="עיר חדשה" name="newCity">';
-                            echo'</div></div><br><br>';
-                            echo'<div class="form-group">
-                            <div class="col-xs-6">';
-                            echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
-                            $results = mysqli_query($con, "SELECT * FROM courses");
-                            echo'<option >'.'בדוק את המקצועות הקיימים  '.'</option>';
-                            while ($rows=mysqli_fetch_array($results))
-                            {
-                                echo'<option>'.$rows['subject'].'</option>';
-                            }
-                            echo"</SELECT>";
-                            echo'</div></div>';
-                            echo"<br><br>";
-                            echo'<input type="text" placeholder="מקצוע חדש" name="newCourse">';
-                            echo'
-                            <fieldset> 
-                            <div class="text-center">
-                                    <input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="הוספה">
-                            </div>
-                            </fieldset>
-                            ';
-                            
-                        ?>
-                        </form> 
-                    </div>   
-                    <div id="newUSers" class="tabcontent">
-                        <?php
-                            session_start();
-                            $todayDate=date('Y-m-d');
-                            $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                            $IdResults = mysqli_query($con, "SELECT * FROM teachers");
-                            $idCount=0;
-                            $newUsersIdArray = array();
-                            while ($rows=mysqli_fetch_array($IdResults))
-                            {
-                                $creat=$rows['createAccount'];
-                                $sameYear=1;
-                                if(($todayDate[5]>$creat[5])&&($todayDate[6]!=($creat[6]+1)))
-                                {
-                                    $sameYear=-1;
-                                }
-                                    else if($todayDate[5]==$creat[5])
-                                    {
-                                        if($todayDate[6]>($creat[6]+1))
-                                        {
-                                        $sameYear=-1;
-                                        }
-                                        else
-                                        {
-                                        if($todayDate[6]!=($creat[6]+1)){}
-                                        else if($todayDate[6]!=($creat[6]+1))
-                                            {
-                                            $sameYear=-1; 
-                                            }
-                                        }
-                                    }
-                                    for($i=0;$i<strlen($todayDate);$i++)
-                                    {
-                                        $t = substr($todayDate, $i, 1);
-                                        $nT = substr($creat, $i, 1);
-                                        if($i<5 && $t!=$nT)
-                                        {
-                                        $sameYear=-1;
-                                            break;
-                                        }
-                                    }
-                                    // echo $sameYear. "<br>";
-                                    if ($sameYear==1) 
-                                    {
-                                        $newUsersIdArray[$idCount]=$rows['id'];
-                                        $idCount++;
-                                    }
-                            }    
-                        ?>                    
-                    <section class="work">
-                        <div class="container">
-                        <div class="row">
-                            <?php
-                                    $j=0;
-                                    $newUsersSiteIdArray=array();
-                                    $newUsersSiteIdArrayCounter=0;
-                                    while ($j<=$i)
-                                    {
-                                    $results = mysqli_query($con, "SELECT * FROM images");
-                                    while ($rows=mysqli_fetch_array($results))
-                                    {
-                                        if ($rows['id']==$newUsersIdArray[$j])
-                                        {
-                                            $newUsersSiteIdArray[$newUsersSiteIdArrayCounter]=$newUsersIdArray[$j]+19999;
-                                            $newUsersSiteIdArrayCounter++;
-                                            $d=$newUsersIdArray[$j]+19999;
-                                            echo '<div class="teacher col-sm-3" id="$d">';
-                                            echo "<button value=\"$d\" id=\"$d\">";
-                                            echo"   <input type=\"hidden\" id=\"$d\">";
-                                            if ($rows['image']!='image'&&$rows['image']!=null)
-                                            {
-                                                echo "<img src='img/".$rows['image']."'   class='teacherImg img-rounded img-responsive'>";
-                                            }
-                                        }
-                                    }
-                                    $results = mysqli_query($con, "SELECT * FROM teachers");
-                                    while ($rows=mysqli_fetch_array($results))
-                                    {
-                                        if ($rows['id']==$newUsersIdArray[$j])
-                                        {
-                                            getName($newUsersIdArray[$j]); 
-                                        }
-                                    }
-                                    echo "</button>";
-                                    echo '</div>';
-                                    $j++;
-                                }
-                            ?>
-                            </div>
-                        </div>
-                        </section>
-                    </div>        
-                    
-                    <div id="AdminDetails" class="tabcontent">
-                        <!--<h1>שלום וברכה מנהל האתר</h1>
-                        <button onclick="addANewAdminPage()">הוספת מנהל חדש</button>
-                     --><?php
-                            $firstName=" ";
-                            $lastName=" ";
-                            $email=" ";
-                            $Phone=" ";
-                            $username=" ";
-                            $ID;
-                            $db = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                            $results = mysqli_query($db, "SELECT * FROM teachers");
-                           //$adminsArray=array();
-                           //$adminsArrayCounter=0;
-                            while ($row=mysqli_fetch_assoc($results)) 
-                            {
-                                //if($row['setUserAs']=='ADMIN')
-                                if($row['id']=='211')
-                                {
-                                    //$adminsArray[$adminsArrayCounter]=$row['id'];
-                                    //$adminsArrayCounter++;
-                                    $ID=$row['id'];
-                                    $username=$row['username'];
-                                    $firstName=$row['fname'];
-                                    $lastName=$row['lname'];
-                                    $email=$row['email'];
-                                    $Phone=$row['phone'];
-                                }
-                            }
-                        ?>                        
-                        <hr>
-                        <div class="container">
-                            <div class="row">
-                            <div class="col-sm-12"><h1>עדכון פרטים המנהל</h1></div>
-                            </div>
-                            <div class="row">
-                            <div ><!--left col-->
-                                    
-                            <div class="col-sm-12">
-                                    <ul class="nav nav-tabs">
-                                        <li class="active">
-                                        <h1> <?php echo $username ?></h1>
-                                        </li>
-                                    </ul>              
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="home">
-                                        <hr>
-                                        <form class="form" action="AdminPage.php" method="post" id="registrationForm">
-                                            
-                                        <div class="forme-group">                          
-                                                    <div class="col-xs-6">
-                                                        <label for="first_name"><h4>שם פרטי</h4></label>
-                                                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>" title="enter your first name if any.">
-                                                    </div>
-                                                </div> 
-                                            <div class="forme-group">                          
-                                                    <div class="col-xs-6">
-                                                    <label for="last_name"><h4>שם משפחה</h4></label>
-                                                        <input type="text" class="form-control" name="last_name" id="last_name" placeholder="<?php echo $lastName?>" >
-                                                    </div>
-                                                </div>
-                                                <div class="forme-group">                         
-                                                    <div class="col-xs-6">
-                                                        <label for="phone"><h4>   מספר טלפון    </h4></label>
-                                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo $Phone?>">
-                                                    </div>
-                                                </div>
-                                            <div class="forme-group">
-                                                        <div class="col-xs-6">
-                                                        <label for="email"><h4>Email</h4></label>
-                                                        <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo $email?>">
-                                                    </div>
-                                                </div>  
-                                                <div class="forme-group">                          
-                                                    <div class="col-xs-6">
-                                                        <label for="password"><h4>סיסמה</h4></label>
-                                                        <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
-                                                    </div>
-                                                </div> 
-                                                <div class="forme-group">                          
-                                                    <div class="col-xs-6">
-                                                    <label for="verifyPassword"><h4>אימות סיסמה</h4></label>
-                                                        <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="אימות הסיסמה החדשה">
-                                                    </div>
-                                                </div>
-                                            <div class="forme-group">
-                                                <div class="col-xs-12">
-                                                        <br>
-                                                        <label for="Save"><h4></h4></label>
-                                                        <input type="submit" name="Save" value="שמור">                                                        
-                                                    </div>
-                                            </div>
-                                        </form>
-                                    </div><!--/tab-pane-->                                  
-                                    
-                                    </div><!--/tab-pane-->
-                                </div><!--/tab-content-->
-                    </div>
+                                <div class="forme-group">                         
+                                    <div class="col-xs-6">
+                                        <label for="phone"><h4>   מספר טלפון    </h4></label>
+                                        <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo $Phone?>">
+                                    </div>
+                                </div>
+                                <div class="forme-group">
+                                    <div class="col-xs-6">
+                                        <label for="email"><h4>Email</h4></label>
+                                        <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo $email?>">
+                                    </div>
+                                </div>  
+                                <div class="forme-group">                          
+                                    <div class="col-xs-6">
+                                        <label for="password"><h4>סיסמה</h4></label>
+                                        <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
+                                    </div>
+                                </div> 
+                                <div class="forme-group">                          
+                                    <div class="col-xs-6">
+                                    <label for="verifyPassword"><h4>אימות סיסמה</h4></label>
+                                        <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="אימות הסיסמה החדשה">
+                                    </div>
+                                </div>
+                                <div class="forme-group">
+                                    <div class="col-xs-12"><br>
+                                        <label for="Save"><h4></h4></label>
+                                        <input type="submit" name="Save" value="שמור">                                                        
+                                    </div>
+                                </div>
+                            </form>
+                        </div><!--/tab-pane-->                                
+                    </div><!--/tab-pane-->
+                </div><!--/tab-content-->
+            </div>
 
                 <div class="ButtomSection">      
     <div class="container">
@@ -787,136 +605,108 @@
 <script>
 $(document).ready(function()
 {
-	$("#searchStudentByName").on('change',function(){
-	var id =$(this).val();
-	if (id)
-	{
+    $("#searchStudentByName").on('change',function(){
+    var id =$(this).val();
+    if(id){
        window.location.href = "AdminControlPageEditOnUser.php?id=" + id;
-	}
-	});
+    }
+    });
     $("#searchByName").on('change',function(){
-	var id =$(this).val();
-	if (id)
-	{
+    var id =$(this).val();
+    if(id){
         window.location.href = "AdminControlPageEditOnUser.php?id=" + id;
-	}
-	});
+    }
+    });
     $("#searchAllChangedUsersByName").on('change',function(){
-	var id =$(this).val();
-	if (id)
-	{
+    var id =$(this).val();
+    if(id){
         window.location.href = "AdminControlPageEditOnUser.php?id=" + id;
-	}
-	});
+    }
+    });
 });
-</script>
-<script>
-	$(document).ready(function(){
-	 $('.selectpicker').selectpicker();
-
-	 $('#searchByName').change(function(){
-	  $('#hidden_framework').val($('#searchByName').val());
-	 });
-
-	 $('#multiple_select_form').on('Save', function(event){
-	  event.preventDefault();
-	  if($('#searchByName').val() != '')
-	  {
-	   var form_data = $(this).serialize();
-	   var id =$(this).val();
-	   $.ajax({
-	    url:"AdminControlPageEditOnUser.php",
-	    method:"POST",
-	    data:form_data,
-	    success:function(data)
-	    {
-	     //console.log(data);
-	     $('#hidden_framework').val('');
-	     $('.selectpicker').selectpicker('val', '');
-	     alert(data);
-	    }
-	   })
-	  }
-	  else
-	  {
-	   return false;
-	  }
-	 });
-	});
-</script>
-
-<script>
-	var teachesIdArrayLength = <?php echo end($teacherIdArray);?>;
-	$(document).ready(function()
-	{
-        for (var i = 14444; i <= teachesIdArrayLength; i++)
-        { 
+$(document).ready(function(){
+     $('.selectpicker').selectpicker();
+     $('#searchByName').change(function(){
+      $('#hidden_framework').val($('#searchByName').val());
+     });
+     $('#multiple_select_form').on('Save', function(event){
+      event.preventDefault();
+      if($('#searchByName').val() != ''){
+       var form_data = $(this).serialize();
+       var id =$(this).val();
+       $.ajax({
+        url:"AdminControlPageEditOnUser.php",
+        method:"POST",
+        data:form_data,
+        success:function(data)
+        {
+         $('#hidden_framework').val('');
+         $('.selectpicker').selectpicker('val', '');
+         alert(data);
+        }
+       })
+      }
+      else{
+       return false;
+      }
+     });
+    });
+    var teachesIdArrayLength = <?PHP echo (!empty(end($teacherIdArray)) ? json_encode(end($teacherIdArray)) : '""'); ?>;
+    $(document).ready(function()
+    {
+        for (var i = 14444; i <= teachesIdArrayLength; i++){ 
             let x=i;
             let n = x.toString();
-            $("#"+n).click(function()
-            {
+            $("#"+n).click(function(){
                 x-=14444;
-               if(x>0)
-               {
+               if(x>0){
                  window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
                }
             });
         }
-        var studentsIdArrayLength = <?php echo end($studentArrayId);?>;
-        for (var i = 18888; i <= studentsIdArrayLength; i++)
-        { 
+        var studentsIdArrayLength = <?PHP echo (!empty(end($studentArrayId)) ? json_encode(end($studentArrayId)) : '""'); ?>;
+        for (var i = 18888; i <= studentsIdArrayLength; i++){ 
             let x=i;
             let n = x.toString();
-            $("#"+n).click(function()
-            {
+            $("#"+n).click(function(){
                 x-=18888;
-                if(x>0)
-               {
-                     window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
+                if(x>0){
+                    window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
                }
             });
         }
-	    var madeChangeIdArrayLength = <?php echo end($madeChangeIdArray);?>;
-        for (var i = 17777; i <= madeChangeIdArrayLength; i++)
-        { 
+        var madeChangeIdArrayLength = <?PHP echo (!empty(end($madeChangeIdArray)) ? json_encode(end($madeChangeIdArray)) : '""'); ?>;
+        for (var i = 17777; i <= madeChangeIdArrayLength; i++){ 
             let x=i;
             let n = x.toString();
-            $("#"+n).click(function()
-            {                
+            $("#"+n).click(function(){                
                 x-=17777;
-            if(x>0)
-               {
+            if(x>0){
                 window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
-               }
+            }
             });
         }
-	    var allUsersArrayId = <?php echo end($allUsersArrayId);?>;
-        for (var i = 155555; i <= allUsersArrayId; i++)
-        { 
+        var allUsersArrayId = <?PHP echo (!empty(end($allUsersArrayId)) ? json_encode(end($allUsersArrayId)) : '""'); ?>;
+        for (var i = 155555; i <= allUsersArrayId; i++){ 
             let x=i;
             let n = x.toString();
-            $("#"+n).click(function()
-            {                
+            $("#"+n).click(function(){                
                 x-=155555;
-            if(x>0)
-               {
-                    window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
-               }
+            if(x>0){
+                 window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
+            }
             });
         }
-	    var newUsersSiteIdArray = <?php echo end($newUsersSiteIdArray);?>;
-        for (var i = 19999; i <= newUsersSiteIdArray; i++)
-        { 
+        var newUsersSiteIdArray = <?PHP echo (!empty(end($newUsersSiteIdArray)) ? json_encode(end($newUsersSiteIdArray)) : '""'); ?>;
+        for (var i = 19999; i <= newUsersSiteIdArray; i++){ 
             let x=i;
             let n = x.toString();
-            $("#"+n).click(function()
-            {                
+            $("#"+n).click(function(){                
                 x-=19999;
-            if(x>0)
-               {
-                    window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
+            if(x>0){
+                 window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
                }
             });
         }
-	});
+    });
 </script>

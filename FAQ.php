@@ -1,35 +1,31 @@
 <?php
 	/*
-		1-the design
-		2- on the bottom of the page get email from user
+		FAQ page  {feedbak/about site/ contact admin}
 	*/
 ?>
 <!DOCTYPE html>
 <html>
 	<head>
+    <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>הכיתה</title>
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	  <title>הכיתה</title>
+	  <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Cairo:400,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>  
-    <meta name="viewport" content="width=device-width, initial-scale=1">
- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" type="text/css" href="css/FAQStyle.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/FAQStyle.css">
 	</head>
 	<body>
-        <a id="button"></a>
+    <a id="button"></a>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -37,41 +33,43 @@
             <a class="navbar-brand active" href="Hakita.php">הכיתה</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                  <li class="nav-item active">
-                    <a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a>
-                  </li>
-                  <?php
-                    if(!$_GET['id']&&!$_POST['id'])
-                    {
-                      echo "<li class=\"nav-item active\">
-                        <a class=\"nav-link\" href=\"loginSignUP.php\">כניסה/הרשמה </a>
-                        </li>"; 
+              <?php
+                    if($_GET['id']||$_POST['id']){
+                      $IDOfStudent = ($_GET['id']) ? $_GET['id'] : $_POST['id'];
+                      $isStudent=-1; 
+                      $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                      $IdResults = mysqli_query($con, "SELECT * FROM teachers");
+                      while ($rows=mysqli_fetch_array($IdResults)){
+                        if ($rows['id']==$isStudent && $rows['setUserAs']=='student'){
+                            $isStudent=1;
+                            break;
+                        }
+                      }
+                      echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php?id=$IDOfStudent\"> עמוד הבית</a></li>"; 
+                      
+                      if($isStudent==1){
+                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php?id=$IDOfStudent\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
+                      }else{// if the login user was a teacher, then he want to access to his profile
+                       echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php?id=$IDOfStudent\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
+                      }
+                      echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php\"> יציאה</a></li>"; 
+                    }
+                    if(!$IDOfStudent){
+                      echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"loginSignUP.php\">כניסה/הרשמה </a></li>"; 
                     }
                    ?> 
-                  <li class="nav-item active">
-                    <a class="nav-link" onclick="otherPagesWithId()">חיפוש מורה</a>
-                  </li>
-				  <?php
-                    if($_GET['id']||$_POST['id'])
-                    {
-                      echo "<li class=\"nav-item active\">
-                        <a class=\"nav-link\" href=\"Hakita.php\"> יציאה</a>
-						</li>"; 
-						if($_GET['id'])
-						{
-							$ID=$_GET['id'];
-						}
-						else
-						{
-							$ID=$_POST['id'];
-						}
-                    }
-                   ?> 
+                  <li class="nav-item active"><a class="nav-link" onclick="otherPagesWithId()">חיפוש מורה</a></li>
               </ul>
             </div>
           </nav>
-		  <section class="feedbackSection">			
-			<a class="nav-link" href="feedback.php"><button>פידבאק feedback</button></a>
+		  <section class="feedbackSection">		
+        <?php
+          if($IDOfStudent){
+            echo"<a class=\"nav-link\" href=\"feedback.php?id=$IDOfStudent\"><button>פידבאק feedback</button></a>";
+          }else{
+            echo'<a class="nav-link" href="feedback.php"><button>פידבאק feedback</button></a>';
+          }
+        ?>			
 		  </section>
 			<section class="about">
 				<div class="container">
@@ -185,31 +183,26 @@
       </div>
     </div>
       </div>
-
-
-        <script>
-            var btn = $('#button');
-            $(window).scroll(function() {
-            if ($(window).scrollTop() > 300) {
-                btn.addClass('show');
-            } else {
-                btn.removeClass('show');
-            }
-            });
-            btn.on('click', function(e) {
-            e.preventDefault();
-            $('html, body').animate({scrollTop:0}, '300');
-            });
-        </script>    
+ 
 	</body>
 </html>
 <script>
-    function otherPagesWithId()
-    {
-        location.href = "searchTeachers.php?id=" + <?php echo $ID?>;
-    }
-    function FAQPagesWithId()
-    {
-        location.href = "FAQ.php?id=" + <?php echo $ID?>;
-    }
+  var btn = $('#button');
+  $(window).scroll(function() {
+  if ($(window).scrollTop() > 300) {
+      btn.addClass('show');
+  } else {
+      btn.removeClass('show');
+  }
+  });
+  btn.on('click', function(e) {
+  e.preventDefault();
+  $('html, body').animate({scrollTop:0}, '300');
+  });
+  function otherPagesWithId(){
+      location.href = "searchTeachers.php?id=" + <?php echo $ID?>;
+  }
+  function FAQPagesWithId(){
+      location.href = "FAQ.php?id=" + <?php echo $ID?>;
+  }
 </script>
