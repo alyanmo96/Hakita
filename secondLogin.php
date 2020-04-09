@@ -2,65 +2,91 @@
 // continue sign up page to get more details about the new user
   session_start();
   if(isset($_POST['first_name'])||isset($_POST['last_name'])){
-    $db = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    $resultsOfTeachers = mysqli_query($db, "SELECT * FROM teachers");
+    //$db=mysqli_connect("Localhost","id13199818_id11176973aki1","{4jXlXc1>dkm+tIg","id13199818_haki1");
+    $db=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+    $resultsOfTeachers = mysqli_query($db, "SELECT * FROM users");
     $resultsOfImageTable = mysqli_query($db, "SELECT * FROM images");
     $ID=0;$username=" ";    
     while ($row=mysqli_fetch_assoc($resultsOfTeachers)){//get the new user id and username for the new account
-      $ID=$row['id'];$username=$row['username'];
+      $ID=$row['id'];
+      $username=$row['username'];
     }
     // create a new Tables and enter the new user temporary detaile
     $query="INSERT INTO `images`(`image`,`text`,`id`) VALUES ('image','text','$ID')";
     $result = mysqli_query($db,$query);
     //next variables that what user insert, for save it on DB
-    $first_name=$_POST['first_name'];$last_name=$_POST['last_name'];$email=$_POST['email'];$status=$_POST['status'];$PHONE=$_POST['phone'];
-    $gender=$_POST['frameworkGender'];$studentOrTeacher=$_POST['frameworkstudentOrTeacher'];      
+    $first_name=$_POST['first_name'];
+    $last_name=$_POST['last_name'];
+    $email=$_POST['email'];
+    $PHONE=$_POST['phone'];
+    $gender=$_POST['frameworkGender'];
+    $studentOrTeacher=$_POST['frameworkstudentOrTeacher'];      
     // enter the new information like (first name, last name, email address,etc...)
     //before that page we insert a temporary information, so here we need to update the new information
-    $upDate="UPDATE `teachers` SET `fname`='$first_name'WHERE id=$ID";
+    $upDate="UPDATE `users` SET `fname`='$first_name'WHERE id=$ID";
     $result = mysqli_query($db,$upDate);
-    $upDate="UPDATE `teachers` SET `lname`='$last_name'WHERE id=$ID";
+    $upDate="UPDATE `users` SET `lname`='$last_name'WHERE id=$ID";
     $result = mysqli_query($db,$upDate);
-    $upDate="UPDATE `teachers` SET `email`='$email'WHERE id=$ID";
+    $upDate="UPDATE `users` SET `email`='$email'WHERE id=$ID";
     $result=mysqli_query($db,$upDate);
     if($gender!='male'){//the defaul gender for user is male, this going to user for the default image of user
-      $upDate="UPDATE `teachers` SET `gender`='$gender'WHERE id=$ID";
+      $upDate="UPDATE `users` SET `gender`='$gender'WHERE id=$ID";
       $result=mysqli_query($db,$upDate);    
       $ImgSource="womenDefaultImage.png";//female account, update his image also
       $upDate="UPDATE `images` SET `image`='$ImgSource'WHERE id=$ID";
       $result=mysqli_query($db,$upDate);
     }else{//male account, update his image also
       $gender='male';
-      $upDate="UPDATE `teachers` SET `gender`='$gender'WHERE id=$ID";
+      $upDate="UPDATE `users` SET `gender`='$gender'WHERE id=$ID";
       $result=mysqli_query($db,$upDate);
       $ImgSource="manDefaultImage.png";
       $upDate="UPDATE `images` SET `image`='$ImgSource'WHERE id=$ID";
       $result=mysqli_query($db,$upDate);
     }
     if($studentOrTeacher!='teacher'){//create account for user as a student
-      $upDate="UPDATE `teachers` SET `setUserAs`='$studentOrTeacher'WHERE id=$ID";
+      $upDate="UPDATE `users` SET `setUserAs`='$studentOrTeacher'WHERE id=$ID";
       $result = mysqli_query($db,$upDate);
-    }else{//create account for user as a student
+    }else{//create account for user as a teacher
       $query="INSERT INTO `teachers_courses`(`id`,`subject`) VALUES ('$ID','subject')";
       $result = mysqli_query($db,$query);
       $query="INSERT INTO `teacher_cities`(`id`,`cities`) VALUES ('$ID','cities')";
       $result = mysqli_query($db,$query);
       $studentOrTeacher='teacher';
-      $upDate="UPDATE `teachers` SET `setUserAs`='$studentOrTeacher'WHERE id=$ID";
-      $result = mysqli_query($db,$upDate);
-      $upDate="UPDATE `teachers` SET `status`='$status'WHERE id=$ID";//status just for teachers account
+      $upDate="UPDATE `users` SET `setUserAs`='$studentOrTeacher'WHERE id=$ID";
       $result = mysqli_query($db,$upDate);
     }
-    $upDate="UPDATE `teachers` SET `phone`='$PHONE'WHERE id=$ID";//phone number
+    $upDate="UPDATE `users` SET `phone`='$PHONE'WHERE id=$ID";//phone number
     $result = mysqli_query($db,$upDate);
-    $_SESSION['varname'] = $user;
-    if ($user=="AdminEliEssiak"){// login of admin (need to change that)
+    
+    
+    
+    //$_SESSION['varname'] = $user;
+    
+    
+    
+    /*
+      $_SESSION['id']=$ID;
+      
+
+    */
+    if ($username=="AdminEliEssiak"){// login of admin (need to change that)
       header('location: AdminControlPage.php');
     }else{// sredirect to user page
       if( $studentOrTeacher=='teacher'){//teacher page
         header('location: profile.php?id='.$ID);
+        /*
+      
+      header("Location: profile.php");
+
+    */
       }else{//student page
         header('location: studentProfile.php?id='.$ID);
+        /*
+      
+      header("Location: studentProfile.php");
+
+    */
       }
     }
   }
@@ -80,46 +106,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/LoginStyle.css">
+    <style>
+      body
+          {
+            background-image: url("img/secondLogin2.jpg");
+          }
+          p{
+            font-size: large;
+          }
+    </style>
   </head>
   <body>
     <a id="button"></a><!--up button{will display after down to 300 px and more}-->
-    <nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-            <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span> <!--navbar on small screen-->                     
-          </button>
-        </div>
-        <div class="collapse navbar-collapse" id="myNavbar"><!--user do not want to continue on create account-->
-          <ul class="nav navbar-nav navbar-right"><li><a href="Hakita.php">יציאה</a></li></ul>
-        </div>
-      </div>
-    </nav>
     <div class="container bootstrap snippet">
       <div class="row">
         <h1 id="title">נא למלא את הפרטים</h1><!--title-->
         <div class="row"></hr><br></div>
           <div class="col-sm-12"><!--display username-->
-              <ul class="nav nav-tabs"><li class="active"><h1><?php echo $username; ?></h1></li></ul>              
+              <ul class="nav nav-tabs"><li class="active"></li></ul>              
+              <div class="tab-content col-sm-3"><!--some information for the user {user can update his details later}-->
+                <h5 id="titleOfCanChangeInformations"><p>***ניתן יהיה לשנות את כל הפרטים אחר כך***</p></h5>
+                <p>  שתי השדות של שם פרטי ושם משפחה להציג אותך כמשתמש בהודעות. במידה והחשבון הוגדר כמורה ניתן יהיה לחפש לפי השם</p>
+                <p>מספר הטלפון כך לצור איתך קשר, אפשר שלא לרשום גם</p>
+                <p> הגדרת המשתמש כ-תלמיד לא תיתן את האפשרות לחפש אותך ב- (חיפוש מורה)</p>
+                <p> במידה והחשבון הוגדר כתלמיד/ה החשבון לא יופיע כמורה </p>
+                <p> הגדרת המין עוזרת בחיפוש לאנשים שמעדיפים מורים גברים או נשים</p>
+              </div>
               <div class="tab-content col-sm-9">
                 <div class="tab-pane active" id="home"><hr>
                   <form class="form" action="secondLogin.php" method="post" id="registrationForm">                   
-                    <div class="form-group">
-                        <div class="col-xs-12">
-                            <label for="user_name"></label>
-                            <input type="hidden" class="form-control" name="username">
-                        </div>
-                    </div>
                     <div class="form-group"> <!--lable for first_name-->
                       <div class="col-sm-12">
                           <label for="first_name"><h4 class="inputWords">שם פרטי</h4></label>
-                          <input type="text" class="inputWordsInside form-control" name="first_name" id="first_name" placeholder="שם פרטי" title="enter your first name if any.">
+                          <input type="text" class="inputWordsInside form-control" name="first_name" id="first_name" placeholder="שם פרטי" title="שם פרטי" required>
                       </div>
                     </div>
                     <div class="form-group">    <!--lable for last_name-->                      
                         <div class="col-sm-12">
                           <label for="last_name"><h4 class="inputWords">שם משפחה</h4></label>
-                          <input type="text" class="inputWordsInside form-control" name="last_name" id="last_name"placeholder="שם משפחה" >
+                          <input type="text" class="inputWordsInside form-control" name="last_name" id="last_name"placeholder="שם משפחה" required>
                         </div>
                     </div>             
                     <div class="form-group"> <!--lable for phone-->                        
@@ -131,7 +156,7 @@
                     <div class="form-group"><!--lable for Email-->
                       <div class="email col-sm-12">
                         <label for="email"><h4 class="inputWords">Email</h4></label>
-                        <input type="email" class="inputWordsInside form-control" name="email" id="email" placeholder="your.email@email.com" title="enter your email.">
+                        <input type="email" class="inputWordsInside form-control" name="email" id="email" placeholder="your.email@email.com" title="דואר אלקטרוני"required>
                       </div>
                     </div>
                     <div class="form-group"><!--lable for define the account of user as a teacher or a student-->
@@ -142,7 +167,7 @@
                                 <option class="c" value="student">תלמיד/ה</option>
                                 <option class="c" value="teacher">גם מורה גם תלמיד</option>
                               </select><br/><br/>
-                          <input type="hidden" name="hidden_framework_studentOrTeacher" id="hidden_framework_studentOrTeacher"/><br/>
+                          <input type="hidden" name="hidden_framework_studentOrTeacher" id="hidden_framework_studentOrTeacher"/>
                       </div>
                     </div>   
                     <div class="form-group"><!--lable fordefine the account of user as a male or a female-->
@@ -153,7 +178,7 @@
                                   <option class="c" value="female">נקבה</option>
                                   <option class="c" value="male">אחר</option>
                                 </select><br/><br/>
-                          <input type="hidden" name="hidden_framework_gender" id="hidden_framework_gender"/><br/>
+                          <input type="hidden" name="hidden_framework_gender" id="hidden_framework_gender"/>
                       </div>
                     </div>   
                     <div class="form-group"><!--save button-->
@@ -164,15 +189,7 @@
                     </div>
                   </form>
                 </div>             
-              </div>
-              <div class="tab-content col-sm-3"><!--some information for the user {user can update his details later}-->
-                <h5 id="titleOfCanChangeInformations">***ניתן יהיה לשנות את כל הפרטים אחר כך***</h5>
-                <br><br><br><p>  שתי השדות של שם פרטי ושם משפחה לייצג אותך להציג אותך כמשתמש בהודעות. במידה והחשבון הוגדר כמורה ניתן יהיה לחפש לפי השם</p><br><br><br><br>
-                <p>מספר הטלפון כך לצור איתך קשר, אפשר שלא לרשום גם</p><br><br><br><br>
-                <p> הגדרת המשתמש כ-תלמיד לא תיתן את האפשרות לחפש אותך ב- (חיפוש מורה)</p>
-                <br><br><br><br><p> במידה והחשבון הוגדר כתלמיד/ה החשבון לא יופיע כמורה </p>
-                <br><br><p> הגדרת המין עוזרת בחיפוש לאנשים שמעדיפים מורים גברים או נשים</p>
-              </div>
+              </div>              
             </div>
           </div>
         </div>

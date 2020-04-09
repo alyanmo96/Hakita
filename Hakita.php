@@ -1,4 +1,17 @@
 <?php
+
+session_start();
+ /**
+     * 
+     *  $ID=$_SESSION['id']
+     *   $_SESSION['id']=$ID;
+     * 
+     * 
+     * 
+     * 
+     * 
+     * 
+     */
     /*
       this is the main page. include navbar : login/signUp, FAQ, search a techer.      an image on the top of page, search section.
       new teacher section, there willl be a sections for english teachers, arabic.....
@@ -7,8 +20,10 @@
     */
     //this function is for return the name of teacher cities on teachers section like new teacher
     function teacherCities($id){//need to conncet with the DB, the main connection not useful inside function
-      include 'connectionPage.php';//include this file for calling the DB
-      $MoreThanOneWordSoAddComma=0;//this variable using case there is a teachers with more than one city, so write a comma between each two cities
+     // include 'connectionPage.php';//include this file for calling the DB
+     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+     $resultOFTeachersCity = mysqli_query($con, "SELECT * FROM teacher_cities");  
+     $MoreThanOneWordSoAddComma=0;//this variable using case there is a teachers with more than one city, so write a comma between each two cities
       $city=" ";//city variable
       while ($teacher_citiesRows=mysqli_fetch_assoc($resultOFTeachersCity)){//searching on cities table about the teacher id
           if ($teacher_citiesRows['id']==$id){//if the id on table eqaul to the id of teacher, check in which city he/she is
@@ -25,9 +40,12 @@
     }
     //this function is for return the name of teacher courses who learn on teachers section like new teacher
     function teacherCourses($id){//need to conncet with the DB, the main connection not useful inside function
-      include 'connectionPage.php';//include this file for calling the DB
+      //include 'connectionPage.php';//include this file for calling the DB
       $MoreThanOneWordSoAddComma=0;//this variable using case there is a teachers learn more than one course, so write a comma between each two courses
       $CourseName=" ";//course variable
+      
+     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+     $CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");
       while($CoursesResultsRows=mysqli_fetch_array($CoursesOfTeachersResults)){
           if ($CoursesResultsRows['id']==$id){ //if the id on table eqaul to the id of teacher, check which course he/she learn
               if ($MoreThanOneWordSoAddComma>=1){ //for more than one city add comma
@@ -43,7 +61,10 @@
     }
     //this function is for return the name of teacher image
     function teacherImage($id){
-      include 'connectionPage.php';//include this file for calling the DB
+      
+     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+     $resultsOfImageTable = mysqli_query($con, "SELECT * FROM images");
+     // include 'connectionPage.php';//include this file for calling the DB
       while ($rows=mysqli_fetch_array($resultsOfImageTable)){
         if ($rows['id']==$id){
           return $rows['image'];
@@ -54,11 +75,13 @@
     $EnglishTeachersIdArray=array();//array for using on english teacher section
     $EnglishTeachersIdArrayCounter=0;
     $teachersIdArray=array();/*create array for the new teachers, random a three new teachers */
-    include 'connectionPage.php';//include this file for calling the DB
+   // include 'connectionPage.php';//include this file for calling the DB
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+    $IdResults = mysqli_query($con, "SELECT * FROM users");
     $i=0; $j=0;//$i for $allUsersArrayWithThereMainInformations, and $j using for arrays help us with showing section
     while ($rows=mysqli_fetch_array($IdResults)){/*create array for the new teachers, random a three new teachers */
-        if($rows['id']!=211&&$rows['setUserAs']!='student'&&($rows['id']!=$_GET['id']&&$rows['id']!=$_POST['id'])){//get just the teachers
-            $allUsersArrayWithThereMainInformations[$i]=$rows['id'];$i++;//get the id, and forward index
+      if($rows['id']!=211&&$rows['setUserAs']!='student'&&($rows['id']!=$_GET['id']&&$rows['id']!=$_POST['id'])){//get just the teachers
+        $allUsersArrayWithThereMainInformations[$i]=$rows['id'];$i++;//get the id, and forward index
             $teachersIdArray[$j]=$rows['id'];$j++;//this useful for showing teachers sections like new teachers or engilsh teachers, and forward index
             $allUsersArrayWithThereMainInformations[$i]=$rows['fname'];$i++;//get first name, and forward index
             $allUsersArrayWithThereMainInformations[$i]=$rows['lname'];$i++;// get last name, and forward index
@@ -132,6 +155,12 @@
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                   <?php                    
+                   // if(!$ID){
+
+
+
+
+
                     if(!$_GET['id']&&!$_POST['id']){//for the unlogin user will display (signin/sign up) search for a teacher and FAQ page
                         echo '<li class="nav-item active">
                         <a class="nav-link" href="loginSignUP.php">כניסה/הרשמה </a>
@@ -151,7 +180,14 @@
                         3- search for a teacher
                         4- FAQ page
                         ( on {3,4} what's deffirnet with unlogin user, here we send the id of the user)
-                        */   
+                        */  
+                        
+                        
+
+
+
+
+
                         $isStudent=-1; 
                         $IDOfUser;// get the id of login user(teacher/student) by POST or GET
                         if($_GET['id']){
@@ -159,9 +195,18 @@
                         }else{
                             $IDOfUser=$_POST['id'];
                         }
+
+
+
+
+
                         include 'connectionPage.php';//include this file for calling the DB
                         while ($rows=mysqli_fetch_array($IdResults)){
-                          if ($rows['id']==$IDOfUser && $rows['setUserAs']=='student'){
+                          //if ($rows['id']==$ID && $rows['setUserAs']=='student'){
+                          
+                          
+                          
+                            if ($rows['id']==$IDOfUser && $rows['setUserAs']=='student'){
                               $isStudent=1;
                               break;
                           }
@@ -171,11 +216,32 @@
                           echo "<li class=\"nav-item active\">
                             <a class=\"nav-link\" href=\"studentProfile.php?id=$IDOfUser\">פרופיל שלי <span class=\"sr-only\">(current)</span></a>
                           </li> ";
+
+
+                          /*
+
+                          echo "<li class=\"nav-item active\">
+                            <a class=\"nav-link\" href=\"studentProfile.php">פרופיל שלי <span class=\"sr-only\">(current)</span></a>
+                          </li> ";
+                     */
                         }else
                         {// if the login user was a teacher, then he want to access to his profile
                           echo "<li class=\"nav-item active\">
                             <a class=\"nav-link\" href=\"profile.php?id=$IDOfUser\">פרופיל שלי <span class=\"sr-only\">(current)</span></a>
                           </li> ";
+
+
+                          /*
+                          
+                          echo "<li class=\"nav-item active\">
+                            <a class=\"nav-link\" href=\"profile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a>
+                          </li> ";
+
+                           echo '<li class="nav-item active">
+                            <a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a>
+                          </li> ';
+                          
+                          */
                         }// login user go to search teachers page/FAQ page/exit from his account
                         echo"<li class=\"nav-item\">
                           <a class=\"nav-link\" href=\"searchTeachers.php?id=$IDOfUser\">חיפוש מורה</a>
@@ -186,6 +252,23 @@
                         <li class=\"nav-item\">
                           <a class=\"nav-link\" href=\"Hakita.php\">יציאה </a>
                         </li>";
+
+                        /*
+
+
+
+
+                        echo"<li class=\"nav-item\">
+                          <a class=\"nav-link\" href=\"searchTeachers.php\">חיפוש מורה</a>
+                        </li>
+                        <li class=\"nav-item\">
+                          <a class=\"nav-link\" href=\"FAQ.phpr\">שאלות ותשובות</a>
+                        </li>
+                        <li class=\"nav-item\">
+                          <a class=\"nav-link\" href=\"logout.php\">יציאה </a>
+                        </li>";
+
+                        */
                     }
                   ?>
               </ul>
@@ -278,11 +361,37 @@
                 ?>
             <div class=" buttonCheckForMoreTeachers text-center col-md-12">
                 <?php
+
+
+/*
+                $_SESSION['subject']="AllTeachers";
+
+
+                */
                 if($IDOfUser){                  
                   echo "<a href=\"moreTeachers.php?subject=AllTeachers&id=$IDOfUser\" class=\"moreTeachers btn btn-info btn-lg\">";
+                
+                
+                /*
+
+
+                
+                echo "<a href=\"moreTeachers.php\" class=\"moreTeachers btn btn-info btn-lg\">";
+                
+                */
+                
                 }else{
                   echo "<a href=\"moreTeachers.php?subject=AllTeachers\" class=\"moreTeachers btn btn-info btn-lg\">";
+                  /*
 
+                echo "<a href=\"moreTeachers.php\" class=\"moreTeachers btn btn-info btn-lg\">";
+                  
+                
+                
+                
+                echo '<a href="moreTeachers.php" class="moreTeachers btn btn-info btn-lg">';
+                  
+                  */
                 }
               ?> 
                 <span class="glyphicon glyphicon-arrow-left"></span>
@@ -314,11 +423,33 @@
                 ?>
             <div class=" buttonCheckForMoreTeachers text-center col-md-12">
               <?php
+
+
+/*
+                $_SESSION['subject']="אנגלית";
+
+
+                */
                 if($IDOfUser){                  
                   echo "<a href=\"moreTeachers.php?subject=אנגלית&id=$IDOfUser\" class=\"moreTeachers btn btn-info btn-lg\">";
+                
+                /*
+
+  echo "<a href=\"moreTeachers.php\" class=\"moreTeachers btn btn-info btn-lg\">";
+                
+                */
+                
+                
                 }else{
                   echo "<a href=\"moreTeachers.php?subject=אנגלית\" class=\"moreTeachers btn btn-info btn-lg\">";
 
+
+                  /*
+
+echo "<a href=\"moreTeachers.php\" class=\"moreTeachers btn btn-info btn-lg\">";
+
+
+                  */
                 }
               ?> 
                 <span class="glyphicon glyphicon-arrow-left"></span>
@@ -356,6 +487,35 @@
   3- the section of choosing course or city, after choosing from the list menu,get the framework
   and send it for search teacher page by POST 
 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!---
+
+
+
+
+check window.location.href without parameters
+
+
+
+--->
 <script>
 //this section on <script> is using for redirect the user to the choosen teacher profile
   var phpId = <?php echo end($NewTeachersArray)+3333;?>;

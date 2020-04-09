@@ -5,20 +5,33 @@
 	 * from the main page will display teacher as a new teacher or english teacher etc...
 	 */
 	session_start();
+/*
+	*  $userId=$_SESSION['id']
+	*   $_SESSION['id']=$userId;
+
+
+
+
+	*/
 	if($_GET['id']){//get to this page by login user or not
 		$userId=$_GET['id'];
 	}
-	include 'connectionPage.php';//include this file for calling the DB
+    //$con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB
+	$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
 	function deleteUnrelativeElementFromArray($Id,$includeSubject){//function to keep the relative id's on array. using for {more english teachers}for example.
-		include 'connectionPage.php';//include this file for calling the DB, need to connect again, case public connection not work inside function
+//		$con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB, need to connect again, case public connection not work inside function
+		$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+		$CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");
 		while ($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
 			if ($rows['id']==$Id && (strpos($rows['subject'] , $includeSubject)!==FALSE)){//if we found the reqaired id, check if teacher learn this subject
 				return 1;//yes learn, dont need to continue, back true.
 			}	
-		}
-		return -1;//in case teacher not learn...
+		}return -1;//in case teacher not learn...
 	}
 	$i=0;/* variable used to add a new relative id on next array*/$IdArray = array(); // get all teachers id.
+	$IdResults = mysqli_query($con, "SELECT * FROM users");
 	while ($rows=mysqli_fetch_array($IdResults)){
 		if ($rows['id']!=211&&$rows['setUserAs']!='student'){//the id of the admin and not a student
 			if($_GET['subject']=='AllTeachers'){//for all teachers, we dont need to check if a special teacher learn a sepcial subject or not
@@ -29,36 +42,78 @@
 		}
 	}$i-=1;
 	function teacherImage($id){//this function is for return the name of teacher image
-		include 'connectionPage.php';//include this file for calling the DB
-		while ($rows=mysqli_fetch_array($resultsOfImageTable)){
-		  if ($rows['id']==$id){//if we found the reqaired id, show the image
-			    echo "<div class=\"col-md-3\"><img src='img/".$rows['image']."'   class=\"m-1 w-100 img-fluid\" style=\"max-height: 200px;\"></div>";
+//		$con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB
+		$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+		$resultsOfImageTable = mysqli_query($con, "SELECT * FROM images");
+		while($rows=mysqli_fetch_array($resultsOfImageTable)){
+		  if($rows['id']==$id){//if we found the reqaired id, show the image
+				return $rows['image'];
 		  	}
 		}
 	}
 	function returnTeacherCitiesOrCoursesIntoArray($id,$whatToReturn){//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
-        include 'connectionPage.php';//include this file for calling the DB
-        $returnData="";//data{cities or courses want to return}
+//		$con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB	
+		$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+		$returnData="";//data{cities or courses want to return}
         if($whatToReturn==5){//for courses
-            while ($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
-                if ($rows['id']==$id){//if we found the reqaired id
+			$CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");
+			while($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
+                if($rows['id']==$id){//if we found the reqaired id
                         if($rows['subject']!='subject'){//found what we need, get it and return it back
-                            $returnData.=$rows['subject'];
-                        break;
+                            $returnData.=$rows['subject'];break;
                         }
                     }	
             }
-        }else{//for cities
-            while ($rows=mysqli_fetch_assoc($resultOFTeachersCity)){
-                if ($rows['id']==$id){
+		}else{//for cities
+			$resultOFTeachersCity = mysqli_query($con, "SELECT * FROM teacher_cities");
+            while($rows=mysqli_fetch_assoc($resultOFTeachersCity)){
+                if($rows['id']==$id){
                     if($rows['cities']!='cities'){
-                        $returnData.=$rows['cities'];
-                    break;
+                        $returnData.=$rows['cities'];break;
                     }			
                 }		
             }
-        }
-        return $returnData;// return data  for cities or courses
+        } return $returnData;// return data  for cities or courses
+	}
+	function getTeacherInformation($id){// function used to return first name and seconde name as one name. use on teacher name and on names of comments wirters
+//        $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+		$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+		$IdResults=mysqli_query($con, "SELECT * FROM users");
+		$name=" ";
+		$fact=array();
+        while($row=mysqli_fetch_assoc($IdResults)){
+            if ($row['id']==$id){//when we found the name on the table of DB            
+                $name.=$row['fname'];$name.='&nbsp;';$name.=$row['lname'];array_push($fact,$name);	
+				array_push($fact,$row['gender']);
+				array_push($fact,$row['price']); 				
+				array_push($fact,$row['status']); 
+			}
+		}
+		return $fact; 
+    }
+	function teacherRating($id){
+		$countRatingOfTeacher=0;$totalCountRatingOfTeacher=0;
+//		$con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//include this file for calling the DB	
+		$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+		$commentResult = mysqli_query($con, "SELECT * FROM dBOfComments");
+		while ($ratingOfTeacher=mysqli_fetch_assoc($commentResult)){
+			if($ratingOfTeacher['idOfTeacher']==$id){
+				$countRatingOfTeacher++;$totalCountRatingOfTeacher+=$ratingOfTeacher['rating'];
+			}
+		}
+		$fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
+		$allRating=ceil($fill);                    
+		for($stars=0;$stars<$allRating;$stars++){
+			echo ' <span class="fa fa-star checked"></span>';
+		}
+		$emptyStars=5-$allRating;$e=0;
+		while($e<$emptyStars){
+			$e++;echo '<span class="fa fa-star"></span>';
+		}
 	}
 ?>
 <!DOCTYPE html>
@@ -75,6 +130,37 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<link rel="stylesheet" type="text/css" href="css/moreTeachersStyle.css">
+		<style>
+		.card-img{
+			max-height:150px;
+		}
+		.checked {
+    color: orange;
+  }
+  .col-sm-6 {
+            float: right;
+        }
+        .card{margin-right: auto;
+            margin-left: auto;
+		}
+		.card-title {
+    margin-bottom: 0px;
+    float: right;
+}.fa {
+    padding: 0px;
+    font-size: 15px;
+    width: 10px;
+    text-align: center;
+    text-decoration: none;
+    margin: 5px;
+    border-radius: 50%;
+}
+footer
+      {
+          background-color: black;
+          color: white;
+      }   
+		</style>
 	</head>
 	<body>
 		<section><!--navbar section-->
@@ -97,10 +183,10 @@
 						( on {3,4} what's deffirnet with unlogin user, here we send the id of the user)
 						*/   
 						$isStudent=-1; 
-						include 'connectionPage.php';//include this file for calling the DB
-						while ($rows=mysqli_fetch_array($IdResults)){
+						$IdResult = mysqli_query($con, "SELECT * FROM teachers");//include this file for calling the DB
+						while($rows=mysqli_fetch_array($IdResult)){
 							if ($rows['id']==$userId && $rows['setUserAs']=='student'){//found the required id
-								$isStudent=1;	break;//change the flag to one, and break, no need to continue.
+								$isStudent=1;break;//change the flag to one, and break, no need to continue.
 							}
 						}
 						echo "<a class=\"navbar-brand\" href=\"Hakita.php?id=$userId\">הכיתה</a>
@@ -115,93 +201,112 @@
 							echo"<li class=\"nav-item\"><a class=\"nav-link\" href=\"searchTeachers.php?id=$userId\">חיפוש מורה</a></li>
 							<li class=\"nav-item\"><a class=\"nav-link\" href=\"FAQ.php?id=$userId\">שאלות ותשובות</a></li>
 							<li class=\"nav-item\"><a class=\"nav-link\" href=\"Hakita.php\">יציאה </a></li>";
+						/*
+
+
+						echo "<a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>
+						<div class=\"collapse navbar-collapse\" id=\"navbarTogglerDemo03\">
+						<ul class=\"navbar-nav mr-auto mt-2 mt-lg-0\">
+							<li class=\"nav-item\"><a class=\"nav-link\" href=\"Hakita.php\"> עמוד הבית</a></li>";
+							if($isStudent==1){// if the login user was a student, then he want to access to his profile
+							echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a></li> ";
+							}else{// if the login user was a teacher, then he want to access to his profile
+							echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a></li> ";
+							}// login user go to search teachers page/FAQ page/exit from his account
+							echo"<li class=\"nav-item\"><a class=\"nav-link\" href=\"searchTeachers.php\">חיפוש מורה</a></li>
+							<li class=\"nav-item\"><a class=\"nav-link\" href=\"FAQ.php\">שאלות ותשובות</a></li>
+							<li class=\"nav-item\"><a class=\"nav-link\" href=\"logout.php\">יציאה </a></li>";
+
+
+
+
+
+
+
+						*/
+						
+						
+						
 						}
 					?>
 				</ul>
 				</div>
 			</nav>
-		</section> 
-		<hr>
-		<section class="col-sm-1">
-			<a id="button"></a>
-		</section>
+		</section><hr>
+		<section class="col-sm-1"><a id="button"></a></section>
 		<section class="work col-sm-12">
 			<div class="container">
 				<div class="row">
 					<?php
 						if(count($IdArray)==0){//if there is not yet any teacher learn this course on site...on early level.
-							echo '<div id="noResult">
-							עוד אין מורים בתחום הזה שנבחר</div>';
+							echo '<div id="noResult">עוד אין מורים בתחום הזה שנבחר</div>';
 						}else{//for each teacher show image, name, price and status.
 							$j=0;$TeacherID=0;$D=array();$DCounter=0;
-							echo '<div class="container"><div class="row" style=\'direction:rtl;\'>';
+							echo '<div class="container">
+							<div class="row" style=\'direction:rtl;\'>';
 							while ($j<=$i){	
-								$price=-1;
-								echo '<div class="card w-100 mb-2"></div><div class="card w-100 mb-2"><div class="row">';
-								teacherImage($IdArray[$j]);//get the teacher image from above function
 								$D[$DCounter]=$IdArray[$j];$DCounter++;//insert the teacher id for using on click state. 	next teacher
-								$TeacherID=$IdArray[$j];								
-								$results = mysqli_query($con, "SELECT * FROM teachers");
-								echo'<div class="card-body text-right col-md-9">';
-								while ($rows=mysqli_fetch_array($results)){
-									if ($rows['id']==$IdArray[$j]){
-										echo '<h3 class="card-title rtl">'. "  שם:   "."" . $rows["fname"]. "  " . $rows["lname"].'</h3>';	
-										if($rows["status"]!=null && $rows["status"]!=" "){
-											echo $rows["status"]."".nl2br("\n");
-										}
-										if ($rows["price"]!=1){//insert the price, to use it for show later
-											$price=$rows["price"];
-										}
-									}
-								}
-								$CityName=returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],3);
-								if ($CityName!=null){
-									echo "" . $CityName."".nl2br("\n");
-								}
-								$CourseName=returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5);
-								if ($CourseName!=null){
-									echo "" . $CourseName."".nl2br("\n");
-								}
-								if ($price!=-1){
-									echo "מחיר לשעה:-"."₪" . $price."".nl2br("\n");
-								}	
-								echo '</p></div></div>';$j++;
-								echo"<button value=\"$Teacher\" id=\"$TeacherID\">הצגת פרופיל</button><input type=\"hidden\" id=\"$TeacherID\"></div>";
+										$TeacherID=$IdArray[$j];
+							echo"<button class=\"card mb-3\" id=\"$TeacherID\" style=\"max-width: 740px; direction: rtl;\">";
+								echo"<div class=\"row no-gutters\">
+										<div class=\"col-md-4\"><img src='img/".teacherImage($IdArray[$j])." 'class=\"card-img\"></div>";
+										echo'<div class="col-md-8">
+										<div class="card-body">';
+							$teacherInformation=getTeacherInformation($IdArray[$j]);
+							echo"<h5 class=\"card-title\">";
+							if($teacherInformation[1]=='female'){
+								echo "מורה פרטית ".$teacherInformation[0];
+							}else{
+								echo"מורה פרטי ".$teacherInformation[0];
 							}
-							echo '</div></div>';
+							echo"</h5>";
+							teacherRating($IdArray[$j]);
+							echo $teacherInformation[2]."₪לשעה<br>";
+							echo"קצת עלי&nbsp;\"". $teacherInformation[3]."\"";
+                            if($teacherInformation[1]=='female'){
+								echo"<p class=\"card-text\">מלמדת שיעור פרטי ב-&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5)."</p>";                        
+                            }else{
+								echo"<p class=\"card-text\"> מלמד שיעורים פרטים ב-&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5)."</p>";                        
+                            }
+                            echo"<p class=\"card-text\"><small class=\"text-muted\">עיר לימוד:&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],3)."</small></p></div></div></div></button>"; 
+							$j++;
+						}
+						echo '</div></div>';
 						}	
-					?>
-			<div class="ButtomSection col-sm-12">      
-		<div class="container">
-		<div class="row">        
-		<div class="col-sm-4">
-			עקובו אחרינו ב-פייסבוק:-
-				<a href="https://www.facebook.com/hakita.co.il/" class="fa fa-facebook"></a>
-			</div>
-			<div class="col-sm-3">
-			📚            
-		רשימת מקצועות לימוד
-		<br>
-		צור קשר איתנו📧
-			
-		<p >הוספת פרויפיל</p>
-			</div>
-			<div class="col-sm-5">
-			&copy;כל הזוכיות שמורות לאתר הכיתה
-				
-				<a href="https://www.jce.ac.il/">
-
-					</a><br>
-					קבוצת פיתוח: המכללה האקדמית להנדסה עזריאלי ירושלים
-					<img id="jceImg" src="img/jce2.png" href="https://www.jce.ac.il/">               
-			</div>
-		</div>
-		</div>
-		</div>		
+					?></div></div>
+					<footer class="w3-container w3-teal-black w3-center w3-margin-top">
+        <div class="row">
+        <div class="col-sm-5">
+          &copy;כל הזוכיות שמורות לאתר הכיתה
+          <a href="https://www.jce.ac.il/"></a><br>
+            קבוצת פיתוח: המכללה האקדמית להנדסה עזריאלי ירושלים
+          <img id="jceImg" src="img/jce2.png" href="https://www.jce.ac.il/">              
+        </div>        
+        <div class="col-sm-3"> 📚           
+          רשימת מקצועות לימוד<br>
+          צור קשר איתנו📧  
+        <br><p >הוספת פרויפיל</p>
+		</div><br/>
+        <div class="col-sm-4">        עקובו אחרינו ב-פייסבוק:-
+            <a href="https://www.facebook.com/hakita.co.il/" class="fa fa-facebook"></a>
+        </div><br/>
+      </div>
+    </footer>	
     </body>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>		
 </html>
+
+<!---
+
+
+
+
+check window.location.href without parameters
+
+
+
+--->
 <script>//next section will be for the up button
 	var btn = $('#button');
     $(window).scroll(function() {
@@ -225,7 +330,7 @@
 				if(userId){//redirect with login user
 					window.location.href = "viewTeacherProfile.php?id=" + x + "&studentID="+userId;
 				}else{//redirect without login user
-					window.location.href = "viewTeacherProfile.php?id=" + x;
+				  window.location.href = "viewTeacherProfile.php?id=" + x;
 				}				
 			});
 		}

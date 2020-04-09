@@ -13,13 +13,15 @@
  * will be the first wrong iinsert case we alread delete it after one hour automaticly.
  * this happen on the next section.*/   
  // this section for delete invalid inputs from last times( over than one hour, that's mean user insert a wrong password once or twice and try againg after more than one hour)
-    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+
     $resultOfValidPassOnPast = mysqli_query($con, "SELECT * FROM invailedPassword");
     /**for time zone */
     date_default_timezone_set('Asia/Jerusalem');     $script_tz = date_default_timezone_get();
     $date=date("Y-m-d"); $hour = date('H:i');//today date + current hour
     while($resultRowOFValidPass=mysqli_fetch_assoc($resultOfValidPassOnPast)){//go through table to check if there any old wrong insert
-        if( $resultRowOFValidPass['dateOfInvaild'] < $date || $resultRowOFValidPass['hourOfEnterPass'] < $hour ){//found any row on table
+        if( $resultRowOFValidPass['dateOfInvaild'] < $date || ($resultRowOFValidPass['hourOfEnterPass']+1) < $hour ){//found any row on table
             $deleteUsername=$resultRowOFValidPass['id'];
            $sql = "DELETE FROM invailedPassword WHERE id=$deleteUsername";//delete it
            if ($con->query($sql) === TRUE){
@@ -59,8 +61,9 @@
         if($_POST["username"]==$_POST["Password"]){//if username equal to password
             $invailedPassword=1; $invailedUsername=1; $usernameAndPasswordEqaul=1; 
         }else if($invailedUsername==-1&& $invailedPassword==-1){//if all aboves conditions are wrongs--> usernamer&&password&&confirmPassword are valid
-           $db = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-           $results = mysqli_query($db, "SELECT * FROM teachers");
+           //$db=mysqli_connect("Localhost","id13199818_id11176973aki1","{4jXlXc1>dkm+tIg","id13199818_haki1");
+            $db=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+           $results = mysqli_query($db, "SELECT * FROM users");
            $OtherAccount=-1;           
             while ($row=mysqli_fetch_assoc($results)){//check if there is already a username same to the new username
                 if ($row['username']==$_POST["username"]){
@@ -72,8 +75,11 @@
             }else{// enter inputs and create a new row on DB if all inputs are valid
                 $USERNAME=$_POST["username"];$PASSWORD=$_POST["Password"];//get the password and username
                 $todayDate=date('Y-m-d');//date of create account...used for dsiplay it on profile
-                $query="INSERT INTO `teachers`(`fname`,`lname`,`password`,`email`,`price`,`status`,`username`,`phone`,`createAccount`,`gender`,`setUserAs`) VALUES ('first name','last name','$PASSWORD','email','1','status','$USERNAME','phone','$todayDate','not','not')";
-                $result = mysqli_query($db,$query); header('location: secondLogin.php');
+                $query="INSERT INTO `users`(`id`,`username`,`fname`,`lname`,`password`,`email`,`price`,`priceTwo`,`status`,`phone`,`phoneTwo`,`createAccount`,`gender`,`setUserAs`,`old`) VALUES 
+                ('','$USERNAME','first name','last name','$PASSWORD','email','1','2','status','phone','phoneTwo','$todayDate','not','not','0')";
+                if($result = mysqli_query($db,$query)){                    
+                header('location: secondLogin.php');
+                }
             }
         }//invalid inputs messages  {used alert}    
         if($invailedUsername==1&&$invailedPassword==1){
@@ -105,22 +111,50 @@
     }/*   next section for :=>    login for an active account*/
     $invailedLoginPassword=-1;
     if(isset($_POST["usernameLogin"])){
-        $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-        $results = mysqli_query($con, "SELECT * FROM teachers");
+        //$con=mysqli_connect("Localhost","id13199818_id11176973aki1","{4jXlXc1>dkm+tIg","id13199818_haki1");
+            //$con=mysqli_connect("Localhost","epiz_25492203","","epiz_25492203_Hakita");
+            $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+            $results = mysqli_query($con, "SELECT * FROM users");
   		while($row=mysqli_fetch_assoc($results)){
             if($row['password']==$_POST['PasswordLogin']&&
                 ($row['username']==$_POST['usernameLogin']||
                 $row['email']==$_POST['usernameLogin']||
                 $row['phone']==$_POST['usernameLogin']
             )){//user can insert his {username/ email/ phone number} as a username.
-			    $ID=$row['id'];
+                $ID=$row['id'];
+                
+                /*
+                $_SESSION['id']=$ID;
+                */
                 if($row['setUserAs']=='Admin'||$row['username']=='AdminEliEssiak'){
                     header('location: AdminPage.php?id='.$ID);
+                    /*
+                    
+                    header("Location: AdminPage.php");
+
+
+                    */
                 }
                 elseif($row['setUserAs']=='student'){//if account for a student go to student profile
                    header('location: studentProfile.php?id='.$ID);
+
+                   /*
+                    
+                    header("Location: studentProfile.php");
+
+
+                    */
+
                 }else{//if account for a teacher go to teacher profile
                     header('location: profile.php?id='.$ID);
+
+                    /*
+                    
+                    header("Location: profile.php");
+
+
+                    */
                 }
             }// else if user enter a right username or right phone number or right email and unright password
             elseif(($row['username']==$_POST['usernameLogin']||
@@ -128,7 +162,7 @@
             $row['phone']==$_POST['usernameLogin']
             )&&$row['password']!=$_POST['PasswordLogin']){
                 $message=" הסיסמה לא נכונה ";
-                $resultOfRightUserName=mysqli_query($con, "SELECT * FROM teachers");
+                $resultOfRightUserName=mysqli_query($con, "SELECT * FROM users");
                 while($row=mysqli_fetch_assoc($resultOfRightUserName)){
                     if($row['username']==$_POST['usernameLogin']||
                     $row['email']==$_POST['usernameLogin']||
@@ -137,7 +171,10 @@
                     }
                 }//next section for insert wrong password
                 $invailedLoginPassword=1;$isItNotFirstTimeToEnterInvailPassword=-1;$round;$datrOfInvalidPass;
-                $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                //$con=mysqli_connect("Localhost","id13199818_id11176973aki1","{4jXlXc1>dkm+tIg","id13199818_haki1");
+                    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
+                   // $con=mysqli_connect("Localhost","epiz_25492203","","epiz_25492203_Hakita");
                 $resultOFValidPass=mysqli_query($con, "SELECT * FROM invailedPassword");
                 while ($resultRowOFValidPass=mysqli_fetch_assoc($resultOFValidPass)){
                     if($resultRowOFValidPass['username']==$USERNAME){//check how many times, user insert wrong password
@@ -156,11 +193,13 @@
                         $round=3;
                         $upDate="UPDATE `invailedPassword` SET `manyTimes`='$round'WHERE id=$ID";
                         $resultOfValidPass=mysqli_query($con,$upDate);
-                    }else if($round>=3){//more than three times
-                        header('location: ForgetPassword.php?id='.$ID);
+                    }elseif($round>=3){//more than three times
+                        header('location: forgetPassword.php');
+                        $message="הכנסת סיסמה שגויה כמה פעמים, יש אפשרות לעדכן אותה דרך לחיצה על כפתור {שכחתי סיסמה } למטה";
+                        echo"<script type='text/javascript'>alert('$message');</script>";
                     }
                 }else{//if it's first time user insert wrong password, create a row on table.
-                    $resultOfRightUsername=mysqli_query($con, "SELECT * FROM teachers");
+                    $resultOfRightUsername=mysqli_query($con, "SELECT * FROM users");
                     while ($row=mysqli_fetch_assoc($resultOfRightUsername)){
                         if($row['username']==$_POST['usernameLogin']||
                         $row['email']==$_POST['usernameLogin']||
@@ -168,11 +207,15 @@
                             $USERNAME=$row['username'];$ID=$row['id'];
                         }
                     }
+                    date_default_timezone_set('Asia/Jerusalem'); //Europe/Istanbul   
+                    $script_tz = date_default_timezone_get();
                     $hour=date('H:i');$date=date("Y/m/d");
-                    $db=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                    //$db=mysqli_connect("Localhost","id13199818_id11176973aki1","{4jXlXc1>dkm+tIg","id13199818_haki1");
+                        $db=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+
                     $resultsOfInsert=mysqli_query($db, "SELECT * FROM invailedPassword");
-                    $query="INSERT INTO `invailedPassword`(`username`,`manyTimes`,`hourOfEnterPass`,`dateOfInvaild`,`id`) VALUES
-                    ('$USERNAME','1','$hour','$date','$ID')";
+                    $query="INSERT INTO `invailedPassword`(`username`,`manyTimes`,`hourOfEnterPass`,`dateOfInvaild`,`id`,`dateOfSendResetRequest`,`hourOfSendResetRequest`) VALUES
+                    ('$USERNAME','1','$hour','$date','$ID','0000-00-00','00:00:00')";
                     $resultsOfInsert=mysqli_query($db,$query);
                     echo"<script type='text/javascript'>alert('$message');</script>";   
                 }
@@ -239,7 +282,7 @@
                             ?>
                         </div><br><br><br><br>
                         <div class="text-center">
-                            <p><a href="ForgetPassword.php">שחכתי סיסמה</a></p><!--re define password section-->
+                            <p><a href="forgetPassword.php">שחכתי סיסמה</a></p><!--re define password section-->
                         </div><br>
                         <div class="text-center">
                             <input type="submit" class="logSignButton btn btn-lg btn-primary" value="כניסה" title="כפתור כניסה למערכת">
