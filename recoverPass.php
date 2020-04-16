@@ -5,116 +5,37 @@
  * else rediredt to user profile. 
  */
 session_start();
-/*
-	*  $userId=$_SESSION['id']
-	*   $_SESSION['id']=$userId;
-
-
-
-
-	*/
+//get the local time, case on sending message to mail we use the local time here also we need to check that, for check the validete of the URL
     date_default_timezone_set('Asia/Jerusalem');  
     $script_tz = date_default_timezone_get();
     $date=date("Y-m-d"); $hour = date('H:i');
-    $time=$_GET['time'];  $EMAIL= $_GET['email'];$ID=$_GET['id'];// these two variable we get it from the Link that sent to email
-    $validUrl=-1;
-//    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+    $time=$_GET['time'];  $EMAIL= $_GET['email'];
 
+    include 'userData.php';//call userData.php for the check validate of password
+
+    $validUrl=-1;
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
     $resultOfValidPassOnPast = mysqli_query($con, "SELECT * FROM invailedPassword");
     while($resultRowOFValidPass=mysqli_fetch_assoc($resultOfValidPassOnPast)){//go through table to check if there any old wrong insert
-        if(($resultRowOFValidPass['hourOfEnterPass']+1) >= $hour&& $resultRowOFValidPass['id']==$ID){//found any row on table
-            $validUrl=1;break;
+        if(($resultRowOFValidPass['hourOfEnterPass']+1) >= $hour&& $resultRowOFValidPass['email']==$EMAIL){//found any row on table
+          $ID=$resultRowOFValidPass['id'];
+          $validUrl=1;break;
         }
     }
     if(isset($_POST["Password"])){//check the password valide
       $validUrl=1;
-        $ID=$_POST['id'];
-        $passwordHaveChar=-1;$invailedPassword=-1;$tooShortPassword=-1; $tooLongPassword=-1;  $diffPasswords=-1;$invailedUsername=-1;/*variables use to check if user insert a valid password or not*/ 
-        //let password include a big and small letters and numbers
-        $uppercase=preg_match('@[A-Z]@',$_POST["Password"]);
-        $lowercase=preg_match('@[a-z]@',$_POST["Password"]);
-        $number=preg_match('@[0-9]@',$_POST["Password"]);
-        if(strlen($_POST["Password"])<8){//if the password string is less than 8 chars
-            $invailedPassword=1;$tooShortPassword=1;
-            if(!$uppercase||!$lowercase||!$number){$passwordHaveChar=1;}
-        }elseif(strlen($_POST["Password"])>16){//if the password string is bigger than 16 chars
-            $invailedPassword=1;$tooLongPassword=1;
-            if(!$uppercase||!$lowercase||!$number){$passwordHaveChar=1;}
-        }else{
-          if(!$uppercase || !$lowercase || !$number){//wrong insert password
-              echo "<script type='text/javascript'>alert('הסיסמה אמורה להכיל אותיות גדולות וקטנות ומספרים');</script>";
-              $invailedPassword=1;
-            }
-        }//if password not equal to confirmPassword
-        if(strcmp($_POST["Password"], $_POST["confirmPassword"])!=0){$invailedPassword=1; $diffPasswords=1;}
-        //// need to check that username is not a part of password or oppesite
-        if($invailedPassword==-1){//if all aboves conditions are wrongs--> password&&confirmPassword are valid
-            $isATeacher=-1;//variable use to redirect to user profile, after update on DB
-//            $db = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-            $db=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
-            $results = mysqli_query($db, "SELECT * FROM users");          
-            while($row=mysqli_fetch_assoc($results)){
-                if(($row["username"]==$_POST["Password"])||(strpos($row["username"], $_POST["Password"]) !== false)||(strpos( $_POST["Password"],$row["username"]) !== false)){//if username equal to password
-                    $invailedPassword=1; $invailedUsername=1;break;//invalid password, break and return wrong input message on alert for user
-                }
-                if($row['id']==$ID&&$row['setUserAs']=='student'){$isATeacher=1;break;}
-            }
-            if($invailedPassword==-1){
-                // enter inputs and create a new row on DB if all inputs are valid
-                $PASSWORD=$_POST["Password"];//get the password
-                $upDate="UPDATE `teachers` SET `password`='$PASSWORD'WHERE id=$ID";
-                $result=mysqli_query($db,$upDate);    
-                //redirect to profile
-                $sql = "DELETE FROM invailedPassword WHERE id=$ID";
-                if ($db->query($sql) === TRUE){
-                }else{// delete user and back to admin main page
-                    echo "Error deleting record: " . $con->error;
-                }
-
-
-                /*
-                  $_SESSION['id']=$ID;
-
-                */
-                if($isATeacher=-1){
-                                   
-                  
-                  header('location: profile.php?id='.$ID);
-                /*
-                header("location: profile.php");
-
-                */
-                
-                }
-                else{
-                  
-                  
-                  header('location: studentProfile.php?id='.$ID);
-
-
-                  /*
-                header("location: studentProfile.php");
-
-                */
-                
-                } 
-            }                           
-        }//invalid inputs messages  {used alert}    
-        if($invailedUsername==1&&$invailedPassword==1){
-            if($usernameAndPasswordEqaul==1){echo "<script type='text/javascript'>alert('שם המשתמש והסיסמה אמורים להיות שונים');</script>";}
-            else{echo "<script type='text/javascript'>alert('שם המשתמש לא תקין');</script>";}
-        }elseif($invailedUsername==1&&$invailedPassword!=1){
-            if($chooseOtherUsername==1){echo "<script type='text/javascript'>alert('שם המשתמש כבר קיים נא לבחור שם משתמש אחר');</script>";}
-            else{echo "<script type='text/javascript'>alert('שם המשתמש אינו תקין נא לבחור אחר');</script>";}
-        }elseif($invailedUsername!=1&&$invailedPassword==1){
-            if($diffPasswords==1){echo "<script type='text/javascript'>alert('הסיסמאות שונות');</script>";}
-            elseif($tooShortPassword==1&&$passwordHaveChar==-1){echo "<script type='text/javascript'>alert('סיסמה קצרה מדי');</script>";}
-            elseif($tooLongPassword==1&&$passwordHaveChar==-1){echo "<script type='text/javascript'>alert('סיסמה ארוכה מדי');</script>";}
-            elseif($tooShortPassword==1&&$passwordHaveChar==1){echo "<script type='text/javascript'>alert('סיסמה קצרה מדי, הסיסמה אמורה להכיל אותיות גדולות וקטנות ומספרים');</script>";}
-            elseif($tooLongPassword==1&&$passwordHaveChar==1){echo "<script type='text/javascript'>alert('סיסמה ארוכה מדי, הסיסמה אמורה להכיל אותיות גדולות וקטנות ומספרים');</script>";}
+      $invalidPass=Password($ID, $_POST['Password'], $_POST['confirmPassword']);
+      if($invalidPass==-1){
+        $_SESSION['id']=$ID;//used on redirect to user profile
+        if(checkUserDefineAs($ID)==-1){
+           header("location: profile.php");//redirect to teacher profile
         }
+        elseif(checkUserDefineAs($ID)==1){
+          header("location: studentProfile.php");//redirect to student profile
+        }else{
+          header("location: AdminPage.php");//redirect to ADMIN
+        } 
+      }
     }
 ?>
 <!DOCTYPE html>

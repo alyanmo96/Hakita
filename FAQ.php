@@ -1,13 +1,11 @@
 <?php
   /*
-		FAQ page  {feedbak/about site/ contact admin}
+    FAQ page this page include three pages main FAQ page, feedbak, about site. it's also 
+    include a section on the main section to send message to Admin.
   */
   session_start();
-
-  
-//    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
+  include 'userData.php';  
+  $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
     $feedbackCommentResult = mysqli_query($con, "SELECT * FROM feedback");
     $feedbackLastResult = mysqli_query($con, "SELECT * FROM feedback");
     $lastFeedback=" ";
@@ -52,21 +50,12 @@
                 $result = mysqli_query($con,$query);
         }      
     }
-
-
-    /*
-	*  $ID=$_SESSION['id']
-	*   $_SESSION['id']=$ID;
-
-
-
-
-	*/
-  $ID = ($_GET['id']) ? $_GET['id'] : $_POST['id'];
-  if(isset($_POST['feedback'])){//
+  $ID=$_SESSION['id'];//get user id, if login.
+	$_SESSION['id']=$ID;
+  if(isset($_POST['feedback'])){
     $feedback=1;
   }
-  elseif(isset($_POST['siteUse'])){//siteUse
+  elseif(isset($_POST['siteUse'])){//site Use, section of question and answer how to use site.
     $usingSite=1;
   }
 ?>
@@ -74,341 +63,48 @@
 <html>
   <head>
     <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	  <title>הכיתה</title>
-	  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-<style>
-.navbar-nav .nav-link {
-    padding-right: 0;
-    padding-left: 40%;
-}
-  body, html {
-    height: 100%;
-    margin: 0;
-    font: 400 15px/1.8 "Lato", sans-serif;
-    color: #777;
-    direction: rtl;
-  }
-
-  .bgimg-1, .bgimg-2, .bgimg-3 {
-    position: relative;
-    opacity: 0.65;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-
-  }
-  .bgimg-1 {
-    background-image: url("./img/FAQ1.jpg");
-    min-height: 100%;
-  }
-
-  .bgimg-2 {
-    background-image: url("./img/FAQ2.jpg");
-    min-height: 400px;
-  }
-
-  .bgimg-3 {
-    background-image: url("./img/FAQ3.jpg");
-    min-height: 400px;
-  }
-
-  .caption {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 100%;
-    text-align: center;
-    color: #000;
-  }
-
-  .caption span.border {
-    background-color: #111;
-    color: #fff;
-    padding: 18px;
-    font-size: 25px;
-    letter-spacing: 10px;
-  }
-
-  h3 {
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    font: 20px "Lato", sans-serif;
-    color: #111;
-  }
-
-  /* Turn off parallax scrolling for tablets and phones */
-  @media only screen and (max-device-width: 1024px) {
-    .bgimg-1, .bgimg-2, .bgimg-3 {
-      background-attachment: scroll;
-    }
-  }
-  .fa {
-  padding: 20px;
-  font-size: 30px;
-  width: 30px;
-  text-align: center;
-  text-decoration: none;
-  margin: 5px 2px;
-  border-radius: 50%;
-}
-
-.fa:hover {
-    opacity: 0.7;
-}
-
-.fa-facebook {
-  background: #3B5998;
-  color: white;
-}
-#jceImg{
-  max-width: 75px;
-  max-height: 50px;
-}
-    .fa {
-width: 13px;
-text-align: center;
-text-decoration: none;
-border-radius: 50%;
-}
-.footer
-{
-	max-height: 80px;
-    padding: 0%;
-    background-color: black;
-    margin-top: -50px;
-    direction: rtl;
-}
-w3-teal, .w3-hover-teal:hover {
-    background-color:black;
-}
-.w3-container, .w3-panel {
-    background-color: black;
-    color: white;
-}
-.ImageSection{
-    background-color:gray;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 50%;
-}
-@media only screen and (min-device-width: 1000px) {
-  .col-sm-4 {
-    float:left;
-    padding-right: 64px;
-    }
-  }
-body {font-family: Arial, Helvetica, sans-serif;}
-* {box-sizing: border-box;}
-
-input[type=text], select, textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  margin-top: 6px;
-  margin-bottom: 16px;
-  resize: vertical;
-}
-
-input[type=submit] {
-  background-color: #4CAF50;
-  color: white;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-input[type=submit]:hover {
-  background-color: #45a049;
-}
-
-.containe {
-  border-radius: 5px;
-  background-color: #f2f2f2;
-  padding: 20px;
-}
-.commentCard
-        {
-            background:url('../img/2.jpg');
-            margin-right: 5%;
-            border-radius: 300px;
-        }
-        .checked {
-            color: orange;
-          }
-          
-#button 
-        {
-            display: inline-block;
-            background-color: #4cae4c;
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            border-radius: 4px;
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            transition: background-color .3s, 
-                opacity .5s, visibility .5s;
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1000;
-         }
-            #button::after {
-            content: "\f077";
-            font-family: FontAwesome;
-            font-weight: normal;
-            font-style: normal;
-            font-size: 2em;
-            line-height: 50px;
-            color: #fff;
-            }
-            #button:hover {
-            cursor: pointer;
-            background-color: #333;
-            }
-            #button:active {
-            background-color: #555;
-            }
-            #button.show {
-            opacity: 1;
-            visibility: visible;
-            }
-
-            /* Styles for the content section */
-
-            .content {
-            width: 77%;
-            margin: 50px auto;
-            font-family: 'Merriweather', serif;
-            font-size: 17px;
-            color: #6c767a;
-            line-height: 1.9;
-            }
-            @media (min-width: 600px) {
-              .content {
-                  width: 43%;
-              }
-              #button {
-                  margin: 30px;
-              }
-            } 
-            .card{
-              margin-right: auto;
-              margin-left: auto;
-            }
-            .usingSite{
-              background-image: url("./img/FAQ1.jpg");
-              min-height: 500px;
-              background-attachment: fixed;
-              background-position: center;
-              background-repeat: no-repeat;
-              background-size: cover;
-            }
-            #btn{
-              line-height: 2.5;
-            }
-            #bttn{
-              line-height: 2.5;
-            }
-            #btttn{
-              line-height: 2.5;
-            }
-            #bttttn{
-              line-height: 2.5;
-            }
-  </style>
+    <?php include 'header.php';?>  
+    <link rel="stylesheet" type="text/css" href="css/FAQStyle.css">  
   </head>
   <body>
-  <a id="button"></a>
-  <section><!--navbar section-->
+    <a id="button"></a><!--up button-->
+    <section><!--navbar section-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>            
             <?php
-            if($ID){
-              $isStudent=-1; 
-              $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-              $IdResults = mysqli_query($con, "SELECT * FROM teachers");
-              while ($rows=mysqli_fetch_array($IdResults)){
-                if ($rows['id']==$ID && $rows['setUserAs']=='student'){
-                    $isStudent=1;
-                    break;
-                }
+              if($ID){//navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
+                echo"<a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>";
+                echo'<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">';
+                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php\"> עמוד הבית</a></li>";
+                        if(checkUserDefineAs($IDOfStudent)==1){
+                          echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
+                        }else{// if the login user was a teacher, then he want to access to his profile
+                          echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
+                        }
+                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php\">חיפוש מורה</a></li>";
+              echo'<li class="nav-item active">
+              <a class="nav-link" href="logout.php"> יציאה<span class="sr-only">(current)</span></a>
+            </li>';
+              }else{
+                //navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
+                echo '<a class="navbar-brand" href="Hakita.php">הכיתה</a>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                        <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>  
+                        <li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>';
               }
-               //navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
-               echo "<a class=\"navbar-brand\" href=\"Hakita.php?id=$ID\">הכיתה</a>";
-               echo '<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                   <ul class="navbar-nav mr-auto mt-2 mt-lg-0">';
-                       echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php?id=$ID\"> עמוד הבית</a></li>";
-                       if($isStudent==1){
-                         echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php?id=$ID\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
-                       }else{// if the login user was a teacher, then he want to access to his profile
-                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php?id=$ID\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
-                       }
-                       echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php?id=$ID\">חיפוש מורה</a></li>";
-             echo'<li class="nav-item active">
-             <a class="nav-link" href="Hakita.php"> יציאה<span class="sr-only">(current)</span></a><!--exit-->
-           </li>';
-
-
-/*
-
-
-
-echo "<a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>";
-               echo '<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                   <ul class="navbar-nav mr-auto mt-2 mt-lg-0">';
-                       echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php\"> עמוד הבית</a></li>";
-                       if($isStudent==1){
-                         echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
-                       }else{// if the login user was a teacher, then he want to access to his profile
-                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
-                       }
-                       echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php">חיפוש מורה</a></li>";
-             echo'<li class="nav-item active">
-             <a class="nav-link" href="logout.php"> יציאה<span class="sr-only">(current)</span></a><!--exit-->
-           </li>';
-
-
-
-
-*/
-
-            }else{
-               //navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
-               echo '<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-               <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                   <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                      <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>  
-                      <li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה</a></li>
-                       <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>';
-            }
-              ?>               
+          ?>               
               </ul>
             </div>
           </nav>
     </section>
     <?php
-   if($feedback==1){
-
-    echo "
-    <section class=\"feedbackSection\">		
+   if($feedback==1){//next section, to let users write there feedback about the site, to improve it
+    echo"<section class=\"feedbackSection\">		
         <h1> כל תגובה עוזרת לנו לשפר את האתר, להרגיש חופשי. נא לצרף Email</h1>	
-        <button  class=\"addCommentButton btn btn-warning\" alt=\"work 1\" data-toggle=\"modal\" data-target=\"#myModalc\" title=\"כפתור הוספת תגובה על המורה\"> <h5>הוספת תגובה חדשה</h5></button>
-                      
+        <button  class=\"addCommentButton btn btn-warning\" alt=\"work 1\" data-toggle=\"modal\" data-target=\"#myModalc\" title=\"כפתור הוספת תגובה על המורה\"> <h5>הוספת תגובה חדשה</h5></button>                   
         <div id=\"comments\" class=\"tabcontent\">
                   <li>
                       <div class=\"modal fade\" id=\"myModalc\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabelv\">
@@ -448,110 +144,80 @@ echo "<a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>";
                                   </form>
                               <br>
                                   <button type=\"submit\" class=\"btn btn-info\" data-dismiss=\"modal\">יציאה ללא הוספת </button>
-                              </div>
-                              </div>
-                          </div>
-                          </div>
-                  </li>";                   
-                          $feedbackCommentResult = mysqli_query($con, "SELECT * FROM feedback");
-                          while ($commentRow=mysqli_fetch_assoc($feedbackCommentResult)) //get comments if there any comments
-                          {  
-                            $getRatingOfEachComment=$commentRow['rating'];
-                            $dateOfComment=$commentRow['dateOfFeedback']; 
-                            echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-                          echo'<div class="row no-gutters">';
-                        
-                        echo'<div class="col-md-8">';
-                            echo'<div class="card-body">';
-                            $textOfComment=$commentRow['textOfFeedback'];
-                            echo"<p class=\"card-text\">".$textOfComment."</p>";  
-                        for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
-                            echo ' <span class="fa fa-star checked"></span>';
-                        }
-                        $emptyStars=5-$getRatingOfEachComment;$e=0;
-                        while($e<$emptyStars){//the empty star's
-                            $e++;echo '<span class="fa fa-star"></span>';
-                        }echo"&nbsp;&nbsp;&nbsp;".$dateOfComment."</h5>";                                              
-                        echo "</div></div></div></div>"; 
-
-                          }
-                      echo"
-                      <br><br>
-                  </div>
-                  <br><br>
+                    </div></div></div></div>
+                  </li>";//insert the new feedback                   
+                  $feedbackCommentResult = mysqli_query($con, "SELECT * FROM feedback");
+                  while ($commentRow=mysqli_fetch_assoc($feedbackCommentResult)) //get comments if there any comments
+                  {  
+                    $getRatingOfEachComment=$commentRow['rating'];
+                    $dateOfComment=$commentRow['dateOfFeedback']; 
+                    echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
+                  echo'<div class="row no-gutters">';                        
+                echo'<div class="col-md-8">';
+                    echo'<div class="card-body">';
+                    $textOfComment=$commentRow['textOfFeedback'];
+                    echo"<p class=\"card-text\">".$textOfComment."</p>";  
+                for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
+                    echo ' <span class="fa fa-star checked"></span>';
+                }
+                $emptyStars=5-$getRatingOfEachComment;$e=0;
+                while($e<$emptyStars){//the empty star's
+                    $e++;echo '<span class="fa fa-star"></span>';
+                }echo"&nbsp;&nbsp;&nbsp;".$dateOfComment."</h5>";                                              
+                echo"</div></div></div></div>"; 
+                  }
+              echo"<br><br></div><br><br>
     </section>";
-   }
-   elseif($usingSite==1){
-    echo '<div class="usingSite">';
-    
+   }elseif($usingSite==1){//next section for the question/answer how to use site.
+    echo'<div class="usingSite">';    
     echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right">עבור כל בעיה, תקלה במערכת יש לפנות בהודעה לאדמין האתר.</h3>';
-        echo "</div></div>
-      </div>";  
-
-
+        echo"</div></div></div>";  
     echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right"><i class="fa fa-question-circle"></i> איך ליצור חשבון באתר, ואיזה סוג חשבון אני צריך ליצור</h3><hr><br>
         <h3 align="right">למעלה בכל העמודים , במצב של לא מחובר יש את האופציה של {כניסה/הרשמה}. בלחיצה תעבור/י לעמוד אחר שם יש לצור שם משתמש וסיסמה חדשים. לגבי סוג החשבון:- אם המטרה היא ללמד וללמוד אז יש לצור חשבון של מורה במידה ורק ללמוד אז יש לצור חשבון של סטודנט, חשוב לדעת שאפשר לעבור מחשבון של סטודנט לחשבון של מורה אחרי יצירת החשבון זה יהיה בעמוד של עדכון הנתונים.</h3>';
-        echo "</div></div>
-      </div>";    
-
-
+        echo "</div></div></div>";    
       echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right"><i class="fa fa-question-circle"></i> איך לקבוע שיעור בתור סטודנט</h3><hr><br>
         <h3 align="right">אחרי שנכנסים לפרופיל של המורה, במידה ומופיע יומן שיעורים תהיה אפשרות ללחוץ לפי הזמן המתאים אחרת אם לא יש צורך לשלוח הודעה למורה.</h3>';
-        echo "</div></div>
-      </div>";  
-
-
+        echo"</div></div></div>"; 
       echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right"><i class="fa fa-question-circle"></i>איך משחזרים סיסמה</h3><hr><br>
         <h3 align="right">בעמוד של הכניסה מעל כפתור הכניסה רשום " שכחתי סיסמה", בלחיצה עוברים לעמוד אחר, שם יש למלא את המייל או שם משתמש ואז ללחוץ את הכפתור שלחיה. ואז מקבלים קישור כהודעה במייל. לחיצה על הקישור תעביר אותך לעמוד של כתיבה סיסמה חדשה.</h3>';
-        echo "</div></div>
-      </div>";  
-      
+        echo "</div></div></div>";        
       echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right"><i class="fa fa-question-circle"></i> מה זה הכפתור שנמצא בעמוד של יומן שיעורים בפרופיל של המחרה</h3><hr><br>
         <h3 align="right">כשהכפתור יהיה אפור אז יומן השיעורים שלך לא יופיע אצל אחרים, במידה והיה כחול אז זה כן יופיע.</h3>';
-        echo "</div></div>
-      </div>"; 
-
+        echo "</div></div></div>"; 
       echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right"><i class="fa fa-question-circle"></i> הפרופיל שלי לא מופיע בחיפוש</h3><hr>
         <h3 align="right">ככל שהמורה מחובר לאתר לא ימצא את עצמו כמורה אחר.</h3>';
-        echo "</div></div>
-      </div>";  
-
-      echo " </div>"; 
+        echo "</div></div></div>"; 
+      echo"</div>"; 
    }else{
-
     echo"<div class=\"bgimg-1\">
       <div class=\"caption\">
         <span class=\"border\">הכיתה - אינדקס המורים הפרטיים הגדול של ישראל</span>
-      </div>
-    </div><br><br>
+      </div></div><br><br>
     <div style=\"color: #777;background-color:white;text-align:center;padding:50px 80px;text-align: justify;\">
     <div class=\"container\">
 					<div class=\"row\">
       <div class=\"col-sm-12\">
-        <div class=\"col-sm-4\">
-          <a type=\"button\" class=\"btn btn-light\" href=\"#containe\">הודעה ל-אדמין</a>
-          </div>
+        <div class=\"col-sm-4\"><a type=\"button\" class=\"btn btn-light\" href=\"#containe\">הודעה ל-אדמין</a></div>
           <div class=\"col-sm-4\">
-            <form action=\"FAQ.php\" method=\"POST\">
-             ";
+            <form action=\"FAQ.php\" method=\"POST\">";
                 if($ID){
                   echo"<input type=\"hidden\" name=\"id\" value=\"$ID\">";
                   echo"<button type=\"submit\" name=\"siteUse\" class=\"btn btn-light\" id=\"bttttn\">שאלות של שימוש באתר</button>
@@ -564,12 +230,8 @@ echo "<a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>";
                   <div class="col-sm-4">
                   <button type="submit"  name="feedback" class="btn btn-light"  id="btn">פיידבאק</button><br><br>';
                 }
-              echo"
-          </form>
-        </div>
-    </div>
-  </div>
-  </div>
+              echo"</form>
+        </div></div></div></div>
       <h3 style=\"text-align:center;\">מה זה בכלל אתר הכיתה? מה חדש בו?</h3>
       <p>אתר הכיתה מהווה זירת מפגש בין מורים פרטיים לתלמידים, בו המורה יכול לקבוע מתי, כמה ואיך לפרסם את עצמו.
       האתר בנוי כך, שכמה שיותר מורים ייחשפו ברגע נתון, ומאחוריו אלגוריתמיקה המאפשרת מגוון אמצעי חשיפה ופרסום, שנועדו לתת כלים מגוונים וחדשניים לחשיפה אופטימלית וחכמה באתר.
@@ -643,43 +305,10 @@ echo "<a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>";
             <textarea id=\"subject\" name=\"subject\" placeholder=\"תוכן ההודעה\" style=\"height:100px\"></textarea>
             <input type=\"submit\" value=\"שליחתה הודעה\">
           </form>
-        </div>
-        </div>
-        </div>
-      </div>
-    </div><br><br><br><br><br><br><br><br><br>
-
-             "; }?>
-    <footer class="w3-container w3-teal-black w3-center w3-margin-top">
-        <div class="row" style="max-width:99%;">
-        <div class="col-sm-5">
-          &copy;כל הזוכיות שמורות לאתר הכיתה
-          <a href="https://www.jce.ac.il/"></a><br>
-            קבוצת פיתוח: המכללה האקדמית להנדסה עזריאלי ירושלים
-          <img id="jceImg" src="img/jce2.png" href="https://www.jce.ac.il/">              
-        </div>        
-        <div class="col-sm-3"> 📚           
-          רשימת מקצועות לימוד<br>
-          צור קשר איתנו📧  
-        </div><br/>
-        <div class="col-sm-4">        עקובו אחרינו ב-פייסבוק:-
-            <a href="https://www.facebook.com/hakita.co.il/" class="fa fa-facebook"></a>
-        </div><br/>
-      </div>
-    </footer>
+        </div></div></div></div>
+    </div><br><br><br><br><br><br><br><br><br>";
+    }?>
+    <?php include_once 'footer.php';/*get the bottom footer*/?>
   </body>
 </html>
-<script>
-  var btn = $('#button');
-  $(window).scroll(function() {
-  if ($(window).scrollTop() > 300) {
-      btn.addClass('show');
-  } else {
-      btn.removeClass('show');
-  }
-  });
-  btn.on('click', function(e) {
-  e.preventDefault();
-  $('html, body').animate({scrollTop:0}, '300');
-  });
-</script>
+<?php include 'script.php';/*call the up button function*/?>    

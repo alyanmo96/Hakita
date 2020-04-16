@@ -1,4 +1,6 @@
 <?php
+/*this is the logout file, to unset id or any username.
+then redirect to the main page*/
 session_start();
 session_destroy();
     if($_SESSION['username']){

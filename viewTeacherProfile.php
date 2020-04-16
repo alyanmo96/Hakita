@@ -7,39 +7,41 @@
  */
     session_start();
     // get the id of teacher, and get the id of the login user on login state
+    $IDOfTeacher=$_SESSION['teacher'];//get teacher id 
+    $IDOfUser=$_SESSION['id'];//get login id t=if there is    
+    if($IDOfTeacher==$IDOfUser||!$IDOfTeacher){//if the student he is also the teacher do not let him contiune
+        header('Location: logout.php');//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
+    }
+    include 'userData.php';//calling to use fuction like get image of user
+
+    $_SESSION['teacher']=$IDOfTeacher;//share teacher id used after login user write a feedback, choose a lesson time.
+
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");//connect with DB
     
-    
-    /** case of window.location.href() */
-    $IDOfTeacher=($_GET['id']) ? $_GET['id'] : $_POST['id'];
-
-
-
-
-
-
-/*
-
-$IDOfUser=$_SESSION['id']
-	*   $_SESSION['id']=$IDOfUser;
-*/
-
-    $IDOfUser=($_GET['studentID']) ? $_GET['studentID'] : $_POST['studentID'];
-    //$con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");//connect to DB
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
+    $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
+    date_default_timezone_set('Asia/Jerusalem');$script_tz = date_default_timezone_get();$todayDate=date("Y-m-d");//delete all lasted lessons time from DB. accourding to local time.
+    while($row=mysqli_fetch_assoc($scheduleResult)){        
+        if($row['lessonDate']<$todayDate){
+            /*
+            $idOfLesson=$row['idOfLesson'];
+            $sql = "DELETE FROM teacherSchedule WHERE idOfLesson=$idOfLesson";
+            if ($con->query($sql) === TRUE){
+            } */
+            
+        }
+    }    
     $IdResults=mysqli_query($con, "SELECT * FROM users");   
     if(isset($_POST['usernameLogin'])&&isset($_POST['PasswordLogin'])){//if the student was not login then he ask for a lesson so he need to login
         while($row=mysqli_fetch_assoc($IdResults)){ //check student validate account
             if($row['password']==$_POST['PasswordLogin']&&
                 $row['username']==$_POST['usernameLogin']){
-                $dashboardSection=1;$IDOfUser=$row['id'];/*student id*/ break;
+                $dashboardSection=1;$IDOfUser=$row['id'];/*student id, if he was not login*/ break;
 			}
         }   
     }
-    if($IDOfTeacher==$IDOfUser||!$IDOfTeacher){//if the student he is also the teacher do not let him contiune
-        header('Location: Hakita.php');
-    }
-    if (isset($_POST["comments"])) { // if any student write a comment about this teacher 
+    $_SESSION['id']=$IDOfUser;//he we write the _SESSION of login id, case user can get to this page without needed to login and then he can if want.
+
+    if(isset($_POST["comments"])) { // if any student write a comment about this teacher 
         $commentNav=1;//this variable for the second navbar
         $getComment=$_POST["comments"];
         $_POST["comments"]=null;$rating=-1;
@@ -52,7 +54,7 @@ $IDOfUser=$_SESSION['id']
         $query="INSERT INTO `dBOfComments`(`idOfTeacher`,`idOfCommentWriter`,`dateOfComment`,`textOfComment`,`rating`) VALUES ('$IDOfTeacher','$commentWriterId','$todayDate','$getComment','$rating')";
         $result=mysqli_query($con,$query);
     }//next function take the city or the course and insert into array to display them as a button
-    //for eaxmple on Jerusalem nutton on this page redirect user to all teachers on Jerusalem...
+//for eaxmple on Jerusalem nutton on this page redirect user to all teachers on Jerusalem...
     function insertCitiesAndCoursesOnArray($subject,$arrayOfTeacherCoursesOrCities){
         $subject.=",ADD";//adding space to string
         $IndexOfArrayOfTeacher=0;
@@ -72,24 +74,11 @@ $IDOfUser=$_SESSION['id']
                 $counterOfDigits++;
             }   
         }return $arrayOfTeacherCoursesOrCities;
-    }function getToggleButtonStatus($ID){//function use to check the status of toggle button
-//        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
-        $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
-        while($rows=mysqli_fetch_assoc($scheduleResult)){
-            if($rows['idOfTeacher']==$ID&&$rows['checkbox']==1){//display board time
-                return 1;
-            }elseif($rows['idOfTeacher']==$ID&&$rows['checkbox']==-1){//not
-                return -1;
-            }
-        }return -1;
     }
+    
     function returnTeacherCitiesOrCoursesIntoArray($id,$whatToReturn){//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
         $returnData="";//data{cities or courses want to return}
-//        $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
         $CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");
         if($whatToReturn==5){//for courses
             while ($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
@@ -108,23 +97,20 @@ $IDOfUser=$_SESSION['id']
                     }			
                 }		
             }
-        }return $returnData; // return data     
+        }return $returnData;//return data     
     }
-	$ImgSource=" ";
+    
     $teacherArrayInformation=array();
-//    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
-    $IdResults=mysqli_query($con, "SELECT * FROM users");
-    while($row=mysqli_fetch_assoc($IdResults)){
+    $IdResult=mysqli_query($con, "SELECT * FROM users");
+    while($row=mysqli_fetch_assoc($IdResult)){
         if($row['id']==$IDOfTeacher){ //get variables to use on HTML view
             $teacherArrayInformation[0]=$row['username'];
-            $teacherArrayInformation[1]=$row['fname'];
-            $teacherArrayInformation[2]=$row['lname'];
-            $teacherArrayInformation[3]=$row['phone'];
-            $teacherArrayInformation[4]=$row['email'];
+            $teacherArrayInformation[1]=$row['fname'];$teacherArrayInformation[2]=$row['lname'];
+            $teacherArrayInformation[3]=$row['phone'];$teacherArrayInformation[4]=$row['email'];
             $teacherArrayInformation[5]=$row['price'];
-            $teacherArrayInformation[6]=$row['status'];          
+            if(strcmp($row['status'],'status')!=0){
+                $teacherArrayInformation[6]=$row['status']; 
+            }         
 		}
     }
     $teacherArrayInformation[7]=getToggleButtonStatus($IDOfTeacher);//to display board time or not
@@ -133,104 +119,25 @@ $IDOfUser=$_SESSION['id']
     $Courses=returnTeacherCitiesOrCoursesIntoArray($IDOfTeacher,5);//courses 
     $arrayOfTeacherCourses=array();
     $arrayOfTeacherCourses=insertCitiesAndCoursesOnArray($Courses,$arrayOfTeacherCourses);
+    if(count($arrayOfTeacherCourses)==0){
+        $arrayOfTeacherCourses=array();	
+    } 
+    
+    
+    
     $Cities=returnTeacherCitiesOrCoursesIntoArray($IDOfTeacher,3);//cities
     $arrayOfTeacherCities=array();	
-    $arrayOfTeacherCities=insertCitiesAndCoursesOnArray($Cities,$arrayOfTeacherCities);
-    function  getImage($id){// function to return image for teacher name and comments wirters
-//        $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
-        $resultsOfImageTable = mysqli_query($con, "SELECT * FROM images");
-        $ImgSource=" ";
-        while($rowOfCommentWriter=mysqli_fetch_array($resultsOfImageTable)){
-            if($rowOfCommentWriter['id']==$id){//found the image by id
-                $ImgSource=$rowOfCommentWriter['image'];
-                return $ImgSource;
-            }
-        }
+    $arrayOfTeacherCities=insertCitiesAndCoursesOnArray($Cities,$arrayOfTeacherCities);  
+    if(count($arrayOfTeacherCities)==0){
+        $arrayOfTeacherCities=array();	
     } 
-    $ImgSource=getImage($IDOfTeacher);    
-    function getName($id){// function used to return first name and seconde name as one name. use on teacher name and on names of comments wirters
-//        $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
-        $IdResults=mysqli_query($con, "SELECT * FROM users");
-        $name=" ";
-        while($row=mysqli_fetch_assoc($IdResults)){
-            if ($row['id']==$id){//when we found the name on the table of DB            
-                $name.=$row['fname'];
-                $name.='&nbsp;';
-				$name.=$row['lname'];
-                return $name;
-			}
-		}
-    }
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>הכיתה</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>    
-        <link rel="stylesheet" type="text/css" href="css/profileStyle.css">
-        <style>
-            body {font-family: Arial;}
-            /* Style the tab */
-            .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-            }
-            /* Style the buttons inside the tab */
-            .tab button {
-            background-color: inherit;
-            float: left;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            font-size: 17px;
-            }
-            /* Change background color of buttons on hover */
-            .tab button:hover {
-            background-color: #ddd;
-            }
-            /* Create an active/current tablink class */
-            .tab button.active {
-            background-color: #ccc;
-            }
-            /* Style the tab content */
-            .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            border-top: none;
-            }
-            .row {
-            max-width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            margin-right: auto;
-            margin-left: auto;
-        }
-        .col-sm-6 {
-            float: right;
-        }
-        .card{margin-right: auto;
-            margin-left: auto;
-        }
-        #profileLink{
-            background-color:orange;
-        }
-        </style>
+        <?php include_once 'header.php';?>
+        <link rel="stylesheet" type="text/css" href="css/viewTeacherStyle.css">
         <?php
             if(isset($_POST['chooseLessonButton'])||$_POST['chooseLesson']){//ask for a lesson with teacher 
                 $dashboardSection=1;
@@ -239,26 +146,22 @@ $IDOfUser=$_SESSION['id']
                     $hour;$day;//two variable to save data on DB, saving data use day of lesson and hour of lesson
                     if($lessonTime<100){
                         $hour=$lessonTime%10;
-                        $d=$lessonTime/10;
-                        $day=floor($d);
+                        $d=$lessonTime/10;$day=floor($d);
                     }else{
                         $hour=$lessonTime%100;
-                        $d=$lessonTime/100;
-                        $day=floor($d);
+                        $d=$lessonTime/100;$day=floor($d);
                     }//form _POST['chooseLessonButton'] we get the number of day on current week, for example we get the number 3 as a day variable that mean tuesday and this week start as a date 8/3 on sunday so the date on tuesday will be 10/8
                     $firstday = date('d/m/Y', strtotime("this week")); 
                     $intDateOfFirstDayOnWeek=intval($firstday);
                     $day+=$intDateOfFirstDayOnWeek;$day-=2;//next script for showing the window
                     if(!$IDOfUser){
                         echo "<script>$(document).ready(function(){ $('#myModall').modal('show');});</script> ";
-                        echo "
-                        <li>
+                        echo "<li>
                             <div class=\"modal fade\" id=\"myModall\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\">
                                 <div class=\"modal-dialog\" role=\"document\">
                                     <div class=\"modal-content\">
                                         <div class=\"modal-header\"><h4 class=\"modal-title\" id=\"myModalLabel\">  כניסה לחשבון </h4></div>
-                                        <form  name=\"feedbackForm\" action=\"viewTeacherProfile.php\" method=\"post\">";   
-                                            echo"<input name=\"id\" type=\"hidden\" value=\"$IDOfTeacher\">"; 
+                                        <form  name=\"feedbackForm\" action=\"viewTeacherProfile.php\" method=\"post\">";
                                             echo"<div class=\"modal-body\">
                                             <div class=\"input-group\"><span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-user\"></i></span>
                                                 <input type=\"text\" class=\"form-control\" name=\"usernameLogin\" placeholder=\"שם משתמש\" title=\"הזנת שם משתמש \" required>
@@ -268,32 +171,23 @@ $IDOfUser=$_SESSION['id']
                                                 <input type=\"password\" class=\"form-control\" name=\"PasswordLogin\" placeholder=\"סיסמה\" title=\"הזנת סיסמה\"required >
                                             </div>
                                             <fieldset> 
-                                                <div class=\"text-center\">
-                                                    <input type=\"submit\" class=\"logSignButton btn btn-info btn-primary text-center\"  value=\"כניסה למערכת \">
-                                                </div>
+                                                <div class=\"text-center\"><input type=\"submit\" class=\"logSignButton btn btn-info btn-primary text-center\"  value=\"כניסה למערכת \"></div>
                                             </fieldset>
                                         </form><br>
                                         <button type=\"submit\" class=\"btn btn-info\" data-dismiss=\"modal\">יציאה</button>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
+                            </div></div></div></div>
                         </li>";
-                    }else{
-                        echo "<script> $(document).ready(function(){ $('#myModalOfCheckTeacherInformation').modal('show'); }); </script>";
-                    }
+                    }else{echo "<script> $(document).ready(function(){ $('#myModalOfCheckTeacherInformation').modal('show'); }); </script>";}
                }else{//student after sure about the information above, will get to this section, to insert data on DB.
                     $dashboardSection=1;
                     $lessonTime=$_POST['chooseLessonButton'];
                     $hour;$day;//two variable to save data on DB, saving data use day of lesson and hour of lesson
                     if($lessonTime<100){
                         $hour=$lessonTime%10;
-                        $d=$lessonTime/10;
-                        $day=floor($d);
+                        $d=$lessonTime/10; $day=floor($d);
                     }else{
                         $hour=$lessonTime%100;
-                        $d=$lessonTime/100;
-                        $day=floor($d);
+                        $d=$lessonTime/100;$day=floor($d);
                     }//form _POST['chooseLessonButton'] we get the number of day on current week, for example we get the number 3 as a day variable that mean tuesday and this week start as a date 8/3 on sunday so the date on tuesday will be 10/8
                     date_default_timezone_set('Asia/Jerusalem');  
                     $script_tz = date_default_timezone_get();
@@ -318,89 +212,24 @@ $IDOfUser=$_SESSION['id']
         <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
         <section><!--navbar section// for login user and unlogin user-->
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>  
+                <a class="navbar-brand" href="Hakita.php">הכיתה</a>
+                        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                        <li class="nav-item active"><a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only"></span></a></li>
+                        <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה <span class="sr-only"></span></a></li>  
                     <?php
                         if(!$IDOfUser){//navbar for user without login
-                                echo '
-                                <a class="navbar-brand" href="Hakita.php">הכיתה</a>
-                                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                                <li class="nav-item active"><a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a></li>
-                                <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה <span class="sr-only">(current)</span></a></li>                        
-                                <li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה <span class="sr-only">(current)</span></a></li> 
-                                <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';
+                            echo'<li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה <span class="sr-only"></span></a></li> 
+                            <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';
                             }else{//navbar for user with login
-                                echo "
-                                <a class=\"navbar-brand\" href=\"Hakita.php?id=$IDOfUser\">הכיתה</a>
-                                <div class=\"collapse navbar-collapse\" id=\"navbarTogglerDemo03\">
-                                <ul class=\"navbar-nav mr-auto mt-2 mt-lg-0\">
-                                <li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php?id=$IDOfUser\">עמוד הבית <span class=\"sr-only\">(current)</span></a></li>
-                                <li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php?id=$IDOfUser\">חיפוש מורה <span class=\"sr-only\">(current)</span></a></li>";
-                                
-                                
-                                
-                                /*
-                                echo "
-                                <a class=\"navbar-brand\" href=\"Hakita.php\">הכיתה</a>
-                                <div class=\"collapse navbar-collapse\" id=\"navbarTogglerDemo03\">
-                                <ul class=\"navbar-nav mr-auto mt-2 mt-lg-0\">
-                                <li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php\">עמוד הבית <span class=\"sr-only\">(current)</span></a></li>
-                                <li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php\">חיפוש מורה <span class=\"sr-only\">(current)</span></a></li>";
-                                
-                                
-
-                                */
-                                
-                                
-                                
-                                $isStudent=-1; //for redirect login user to teacher or student profile
-//                                $con = mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
-                                $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-
-                                $IdResults = mysqli_query($con, "SELECT * FROM users");
-                                while ($rows=mysqli_fetch_array($IdResults)){
-                                    if ($rows['id']==$IDOfUser && $rows['setUserAs']=='student'){//found the required id
-                                        $isStudent=1;break;//change the flag to one, and break, no need to continue.
-                                    }
-                                }
-                                if($isStudent==1){//redirect to student profile
-                                    echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php?id=$IDOfUser\">פרופיל שלי <span class=\"sr-only\">(current)</span></a></li>";
-                                
-                                  /*
-
-                                        echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"studentProfile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a></li>";
-                                
-                                */
-                                
-                                
+                                if(checkUserDefineAs($IDOfStudent)==1){//redirect to student profile
+                                    echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only"></span></a></li>';
                                 }else{//redirect to teacher profile
-                                    echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php?id=$IDOfUser\">פרופיל שלי <span class=\"sr-only\">(current)</span></a></li>";
-                                
-                                
-                                /*
-
-    echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php">פרופיל שלי <span class=\"sr-only\">(current)</span></a></li>";
-                                
-
-
-                                */
+                                    echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only"></span></a></li>';
                                 }
-                                echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"FAQ.php?id=$IDOfUser\">שאלות ותשובות</a></li>
-                                <li class=\"nav-item active\"><a class=\"nav-link\" href=\"Hakita.php\">יציאה </a></li>";
-
-
-
-                                /*
-
- echo"<li class=\"nav-item active\"><a class=\"nav-link\" href=\"FAQ.php\">שאלות ותשובות</a></li>
-                                <li class=\"nav-item active\"><a class=\"nav-link\" href=\"logout.php\">יציאה </a></li>";
-
-
-
-
-                                */
+                                echo'<li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
+                                <li class="nav-item active"><a class="nav-link" href="logout.php">יציאה </a></li>';
                             }
                         ?> 
                     </ul>
@@ -418,28 +247,23 @@ $IDOfUser=$_SESSION['id']
                         <form action="viewTeacherProfile.php" method="post">
                             <?php
                                 $chooseLessonButton=$_POST['chooseLessonButton'];//get information about lesson/teacher/student...to insert on DB
-                               $teacherName=getName($IDOfTeacher);
+                                $teacherName=name($IDOfTeacher);
                                 echo "שיעור עם המורה:".$teacherName."<br>";
                                 echo "תאריך השיעור: ".$day." לחודש הזה <br>";
                                 echo "שעת השיעור: ".$hour.":00<br>";//also send id of teacher and student to continue on process
-                                echo"<input name=\"chooseLessonButton\" type=\"hidden\" value=\"$chooseLessonButton\" id=\"$chooseLessonButton\">";                                        
-                                echo"<input name=\"id\" type=\"hidden\" value=\"$IDOfTeacher\" id=\"$IDOfTeacher\">"; 
-                                echo"<input name=\"studentID\" type=\"hidden\" value=\"$IDOfUser\" id=\"$IDOfUser\">"; 
+                                echo"<input name=\"chooseLessonButton\" type=\"hidden\" value=\"$chooseLessonButton\" id=\"$chooseLessonButton\">";
                             ?>                                    
                             <button type="submit" class="btn btn-primary">המשך</button>
                             <button type="button" class="close btn-info" data-dismiss="modal" aria-hidden="true">יציאה</button>
                         </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </div></div></div></div>
         <section class="z">        
             <div class="container">
                 <div class="span3 well">
                     <center>
                     <a href="#aboutModal" data-toggle="modal" data-target="#myModal">
                     <?php
-                        echo "<img src='img/".$ImgSource."' height=140  width=140 class='img-circle'></a>";			
+                        echo "<img src='img/".Image($IDOfTeacher)."' height=140  width=140 class='img-circle'></a>";			
                         echo "<h3>" . $teacherArrayInformation[1]."&nbsp;". $teacherArrayInformation[2]."</h3>";
                         $countRatingOfTeacher=0;$totalCountRatingOfTeacher=0;
                         $commentResult = mysqli_query($con, "SELECT * FROM dBOfComments");
@@ -477,21 +301,21 @@ $IDOfUser=$_SESSION['id']
                             <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'comments')\"id=\"defaultOpen\">תגובות </button>"; 
 
                         }elseif($dashboardSection==1){echo"
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'aboutTeacher')\">  קורסים ועירים של המורה</button>
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'dashboardSection')\"id=\"defaultOpen\">יומן שיעורים</button>
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'Links')\">צור קשר ושיתוף</button>
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'comments')\">תגובות </button>";
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'aboutTeacher')\">  קורסים ועירים של המורה</button>
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'dashboardSection')\"id=\"defaultOpen\">יומן שיעורים</button>
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'Links')\">צור קשר ושיתוף</button>
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'comments')\">תגובות </button>";
                         }else{echo"
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'aboutTeacher')\"id=\"defaultOpen\">  קורסים ועירים של המורה</button>
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'dashboardSection')\">יומן שיעורים</button>
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'Links')\">צור קשר ושיתוף</button>
-                            <button class=\"tablink col-sm-3\" onclick=\"openPage(event, 'comments')\">תגובות </button>";
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'aboutTeacher')\"id=\"defaultOpen\">  קורסים ועירים של המורה</button>
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'dashboardSection')\">יומן שיעורים</button>
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'Links')\">צור קשר ושיתוף</button>
+                            <button class=\"tablink col-sm-3\" onclick=\"openPageSection(event, 'comments')\">תגובות </button>";
                         }                        
                     }else{
                         echo"
-                        <button class=\"tablink col-sm-4\" onclick=\"openPage(event, 'aboutTeacher')\"id=\"defaultOpen\"> קורסים ועירים של המורה</button>
-                        <button class=\"tablink col-sm-4\" onclick=\"openPage(event, 'Links')\">צור קשר ושיתוף</button>
-                        <button class=\"tablink col-sm-4\" onclick=\"openPage(event, 'comments')\">תגובות </button>
+                        <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'aboutTeacher')\"id=\"defaultOpen\"> קורסים ועירים של המורה</button>
+                        <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'Links')\">צור קשר ושיתוף</button>
+                        <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'comments')\">תגובות </button>
                         ";
                     }
                 ?>
@@ -500,25 +324,22 @@ $IDOfUser=$_SESSION['id']
             <br><br>     
            <div id="aboutTeacher" class="tabcontent">
                 <?php
-                    echo '<div class="row"><div class="container">';
-                    $D=array();
-                    $D[0]=$courseResultArray[$IDOfTeacher];    
-                    echo "<form action=\"searchTeachers.php\" method=\"post\">";
-                    echo "<div class=\"col-sm-6\" id=\"courseButtons\">";
+                    echo'<div class="row"><div class="container">';   
+                    echo"<form action=\"searchTeachers.php\" method=\"post\">";                   
                     if(count($arrayOfTeacherCourses)>0){//print courses that teacher learn as a buttons, that click on it redirect student to show more teachers learn the same subject
+                        echo"<div class=\"col-sm-6\" id=\"courseButtons\">";
                         for($ci=0;$ci<count($arrayOfTeacherCourses);$ci++){
                             $r=$arrayOfTeacherCourses[$ci];
-                            echo "<input  class=\"courseButtons\" type=\"submit\" name=\"hidden_framework_courses\" value=\"$arrayOfTeacherCourses[$ci]\"  önclick=\" goToSearchPage()\" >";
-                        }
-                    }
-                    echo"</div>
-                    <div class=\"col-sm-6\" id=\"cityButtons\">";
+                            echo"<input  class=\"courseButtons\" type=\"submit\" name=\"hidden_framework_courses\" value=\"$arrayOfTeacherCourses[$ci]\"  önclick=\" goToSearchPage()\" >";
+                        }echo"</div>";
+                    }                 
                     if(count($arrayOfTeacherCities)>0) {//print cities that teacher live in as a buttons, that click on it redirect student to show more teachers on the same city
-                            for($ci=0;$ci<count($arrayOfTeacherCities);$ci++){
+                        echo"<div class=\"col-sm-6\" id=\"cityButtons\">";
+                        for($ci=0;$ci<count($arrayOfTeacherCities);$ci++){
                                 echo "<input  class=\"courseButtons\" type=\"submit\" name=\"hidden_framework\" value=\"$arrayOfTeacherCities[$ci]\"  önclick=\" goToSearchPage()\" >";
                             }
-                        }
-                    echo "</div></form></div></div>";
+                        }echo"</div>";
+                    echo "</form></div></div>";
                 ?>
             </div>
             <div id="dashboardSection" class="tabcontent"><!--section times lessons for teacher,
@@ -527,17 +348,14 @@ $IDOfUser=$_SESSION['id']
             then he could choose}-->
                 <?php
                     if(!$IDOfUser){//user not login----> click sign in then insert username & password to continue or EXIT                                    
-                        echo ' <button  class="addCommentButton btn btn-warning" alt="work 1" data-toggle="modal" data-target="#myModal"> <h5>  רשום כדי לקבוע שיעור</h5></button>';
-                        echo '
-                        <li>
+                        echo'<button  class="addCommentButton btn btn-warning" alt="work 1" data-toggle="modal" data-target="#myModal"> <h5>  רשום כדי לקבוע שיעור</h5></button>';
+                        echo'<li>
                             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header"><h4 class="modal-title" id="myModalLabel">  כניסה לחשבון על מנת לקבוע שיעור </h4></div>
                                         <form  name="feedbackForm" action="viewTeacherProfile.php" method="post">';  
                                             echo"<input name=\"chooseLesson\" type=\"hidden\" value=\"$chooseLesson\">"; 
-                                            echo"<input name=\"id\" type=\"hidden\" value=\"$IDOfTeacher\">";                                             
-                                             echo"<input name=\"studentID\" type=\"hidden\" value=\"$IDOfUser\" id=\"$IDOfUser\">"; 
                                             echo'<div class="modal-body">
                                             <div class="input-group"><span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                                                 <input type="text" class="form-control" name="usernameLogin" placeholder="שם משתמש" title="הזנת שם משתמש " required>
@@ -547,27 +365,25 @@ $IDOfUser=$_SESSION['id']
                                                 <input type="password" class="form-control" name="PasswordLogin" placeholder="סיסמה" title="הזנת סיסמה"required >
                                             </div>
                                             <fieldset> 
-                                                <div class="text-center">
-                                                    <input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="כניסה למערכת ">
-                                                </div>
+                                                <div class="text-center"><input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="כניסה למערכת "></div>
                                             </fieldset>
                                         </form><br>
                                         <button type="submit" class="btn btn-info" data-dismiss="modal">יציאה</button>
-                                    </div>
-                                    </div>
-                                </div>
-                            </div>
+                            </div></div></div></div>
                         </li>';
                     }                    
                 ?>
-            <section class="board">         
+            <section class="board"><!--display the time board if the teacher alredy choose to display it on student side-->         
                 <table class="table table-sm table-dark">
                     <thead>                                
                     <?php 
                         $todayIndex;// case the time is according to where the server location, we need to check that time is right according israel
                         date_default_timezone_set('Asia/Jerusalem');  $script_tz = date_default_timezone_get();
                         $todayOnWeek=date('d-m-Y');$day_of_week=date('N', strtotime($todayOnWeek));
-                        $todayIndex=$day_of_week+1;$currentHour=date('H');$currentHour+=1;
+                        $todayIndex=$day_of_week+1;$currentHour=date('H');$currentHour+=1;                        
+                        $firstdayDateType=date('d', strtotime("this week")); 
+                        $firstday=intval($firstdayDateType); 
+                        $firstday-=1;  
                         if($todayIndex>7){
                             $todayIndex=1;  
                         }                      
@@ -594,8 +410,6 @@ $IDOfUser=$_SESSION['id']
                    <form action="viewTeacherProfile.php" method="post">                               
                         <?php
                             echo"<input name=\"openModel\" type=\"hidden\" value=\"1\" id=\"1\">"; //hidden teacher id, for logic
-                            echo"<input name=\"id\" type=\"hidden\" value=\"$IDOfTeacher\" id=\"$IDOfTeacher\">"; //hidden teacher id, for logic
-                            echo"<input name=\"studentID\" type=\"hidden\" value=\"$IDOfUser\" id=\"$IDOfUser\">"; //hidden student id, for logic
                             for($hours=7;$hours<=22;$hours++){//show time's
                                 if($hours%2==0){
                                     echo "<tr class=\"bg-info\">";
@@ -608,7 +422,8 @@ $IDOfUser=$_SESSION['id']
                                     echo "<th>".$hours.":00"."</th>";
                                 }
                                 for($Days=0;$Days<7;$Days++){
-                                    $con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                                    //$con=mysqli_connect("Localhost","id11176973_haki1","haki321","id11176973_haki");
+                                    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
                                     $scheduleResult = mysqli_query($con, "SELECT * FROM teacherSchedule");
                                     $DaysId=$Days+1; 
                                     $addAsString=strval($DaysId);
@@ -618,10 +433,9 @@ $IDOfUser=$_SESSION['id']
                                     while($scheduleRow=mysqli_fetch_assoc($scheduleResult)){
                                         if($scheduleRow['idOfTeacher']==$IDOfTeacher){
                                            for($r=0;$r<5;$r++){//check if on this day and on this hour, teacher want to be a lesson, or yes he wanted and somebody already ask for a lesson on this time
-                                                $t=$r*7;
-                                                if(($scheduleRow['dayOfLesson']==$DaysId+$t) && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==-1){//teacher want to learn on this time and no body yet ask for a lesson on this time 
+                                                if(($scheduleRow['dayOfLesson']==$Days+$firstday) && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==-1){//teacher want to learn on this time and no body yet ask for a lesson on this time 
                                                     $alreadyInsert=1;
-                                                }elseif(($scheduleRow['dayOfLesson']==$DaysId+$t) && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==1){//teacher want to learn on this time and somebody already asked for a lesson on this time
+                                                }elseif(($scheduleRow['dayOfLesson']==$Days+$firstday) && $scheduleRow['hourOFLesson']==$hours && $scheduleRow['fullOrFree']==1){//teacher want to learn on this time and somebody already asked for a lesson on this time
                                                     $alreadyInsert=2;
                                                 }
                                            }
@@ -651,7 +465,7 @@ $IDOfUser=$_SESSION['id']
                 </table>
             </section> 
             </div>
-            <div id="Links" class="tabcontent">
+            <div id="Links" class="tabcontent"><!--linke relative to teacher profile, like share page-->
             <div class="row">
                     <div class="form-group col-sm-6">
                         <h3>שיתוף פרופיל של המורה ב-</h3>
@@ -676,7 +490,7 @@ $IDOfUser=$_SESSION['id']
                     </form>
                 </div></div>
             </div>
-            <div id="comments" class="tabcontent">
+            <div id="comments" class="tabcontent"><!--feedback section, login user can add feedback else no-->
                 <li>
                     <?php
                         if($IDOfUser){// for login user, let them to write comment, later it will be  avilable just after get a lesson
@@ -687,8 +501,6 @@ $IDOfUser=$_SESSION['id']
                                 <div class=\"modal-content\">
                                 <div class=\"modal-header\"><h4 class=\"modal-title\" id=\"myModalLabelv\">הוספת תגובה</h4></div>
                                 <form  name=\"feedbackForm\" action=\"viewTeacherProfile.php\" method=\"post\">
-                                   <input name=\"id\" type=\"hidden\" value=\"$IDOfTeacher\" id=\"$IDOfTeacher\">
-                                    <input name=\"studentID\" type=\"hidden\" value=\"$IDOfUser\" id=\"$IDOfUser\"> 
                                     <div class=\"modal-body\">
                                         <div class=\"pleaseAddFeedback\"> אנא ספק/י את המשוב שלך להלן: </div><hr>
                                         <div class=\"feedbackValueTitle\">
@@ -719,9 +531,9 @@ $IDOfUser=$_SESSION['id']
                             $dateOfComment=$commentRow['dateOfComment']; $textOfComment=$commentRow['textOfComment'];
                             echo"<div class=\"card mb-3\" style=\"max-width: 740px; direction: rtl;\">";
                             echo'<div class="row no-gutters"><div class="col-md-4">';
-                            echo"<img src='img/".getImage($commentRow['idOfCommentWriter'])." 'class=\"card-img\">";
+                            echo"<img src='img/".Image($commentRow['idOfCommentWriter'])." 'class=\"card-img\">";
                             echo'</div><div class="col-md-8"><div class="card-body">';
-                            echo"<h5 class=\"card-title\">".getName($commentRow['idOfCommentWriter'])."";//get the name of comment writter to display it
+                            echo"<h5 class=\"card-title\">".name($commentRow['idOfCommentWriter'])."";//get the name of comment writter to display it
                             for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
                                 echo'<span class="fa fa-star checked"></span>';
                             }
@@ -733,67 +545,12 @@ $IDOfUser=$_SESSION['id']
                             echo"<p class=\"card-text\"><small class=\"text-muted\">".$dateOfComment."</small></p></div></div></div></div>";        
                         }
                     }
-                    if($thereIsAnyComment==-1){
+                    if($thereIsAnyComment==-1){//if there is no feedback yet
                         echo" <h1>אין עוד תגובות</h1>";
                     }
                 ?>
-            </div>              
-            <footer class="w3-container w3-teal-black w3-center w3-margin-top">
-        <div class="row" style="max-width:99%;">
-        <div class="col-sm-5">
-          &copy;כל הזוכיות שמורות לאתר הכיתה
-          <a href="https://www.jce.ac.il/"></a><br>
-            קבוצת פיתוח: המכללה האקדמית להנדסה עזריאלי ירושלים
-          <img id="jceImg" src="img/jce2.png" href="https://www.jce.ac.il/">              
-        </div>        
-        <div class="col-sm-3"> 📚           
-          רשימת מקצועות לימוד<br>
-          צור קשר איתנו📧  
-        </div><br/>
-        <div class="col-sm-4">        עקובו אחרינו ב-פייסבוק:-
-            <a href="https://www.facebook.com/hakita.co.il/" class="fa fa-facebook"></a>
-        </div><br/>
-      </div>
-    </footer>
-        </body>
+            </div><br><br><br><br>              
+        <?php include_once 'footer.php';/*bottom footer*/?>
+    </body>
 </html>
-<script>
-            function openPage(evt, pageName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            document.getElementById(pageName).style.display = "block";
-            evt.currentTarget.className += " active";
-            }
-            document.getElementById("defaultOpen").click();
-            
-            var btn = $('#button');
-            $(window).scroll(function() {
-            if ($(window).scrollTop() > 300) {
-                btn.addClass('show');
-            } else {
-                btn.removeClass('show');
-            }
-            });
-            btn.on('click', function(e) {
-            e.preventDefault();
-            $('html, body').animate({scrollTop:0}, '300');
-            });
-            function myFunction(){//script for copy the profile link, plus show a message.
-                var x = document.createElement("INPUT");
-                x.setAttribute("type", "text");
-                var userId = <?PHP echo (!empty($IDOfTeacher) ? json_encode($IDOfTeacher) : '""'); ?>;
-                var url="https://hakitaproject.000webhostapp.com/study/study/viewTeacherProfile.php?id=";
-                url = url.concat(userId);
-                x.setAttribute("value", url);
-                document.body.appendChild(x);
-                x.select();
-                x.setSelectionRange(0, 99999)
-                document.execCommand("copy"); 
-                alert('קישור הפרופיל הועתק');
-                x.setAttribute("type", "hidden");
-                }
-        </script>
+<?php include_once 'script.php';/*some scrtipts like copy URL of this page*/?>
