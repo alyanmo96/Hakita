@@ -74,9 +74,9 @@ session_start();
   $userMakeChange=-1;//variable used to know if the user make any update on his information if yes--> let the admin know.
   //get any update data (by POST) to save it on table.{first/last name,phone number, email, password....}
   if(isset($_POST['first_name'])||isset($_POST['last_name'])||
-  isset($_POST['email'])||isset($_POST['phone'])||
+  isset($_POST['email'])||isset($_POST['phone'])||$_POST['phoneTwo']||
   isset($_POST['password'])||isset($_POST['verifyPassword'])||
-  isset($_POST['price'])||isset($_POST['status'])||
+  isset($_POST['price'])||$_POST['priceTwo']||isset($_POST['status'])||
   isset($_POST['hidden_framework'])||isset($_POST['hidden_framework_courses'])){
         $userMakeChange=1;//user yes make update
         if($_POST['first_name']){//if user update his first name
@@ -94,11 +94,17 @@ session_start();
         if($_POST['phone']){//if user update his phone number
           updatePhoneNumber($ID, $_POST['phone']);
         }  
+        if($_POST['phoneTwo']){//if user update his phone number
+          updatePhoneNumberTwo($ID, $_POST['phoneTwo']);
+        }  
         if($_POST['status']){//if user update his status.
           updateStatus($ID,$_POST['status']);//new status          
         }          
         if($_POST['price']){//if user update his price.
           updatePrice($ID,$_POST['price']);//new price            
+        } 
+        if($_POST['priceTwo']){//if user update his price.
+          updatePriceTwo($ID,$_POST['priceTwo']);//new price            
         }          
         if($_POST['hidden_framework']){//when user add a new, we get teacher cities and add the new city
             $UploadCityOrCourse=1;//for navbar
@@ -167,7 +173,7 @@ session_start();
     updateImage($ID, $image,$_POST['image_text']);
   }/// to get the details about user and show them. start by getting. 
   //varibales to use and show 
-  $userFirstName=" ";$userLastName=" ";$email=" ";$teacherPrice=" ";$teacherStatus=" ";$Phone=" ";
+  $userFirstName=" ";$userLastName=" ";$teacherStatus=" ";$PhoneTwo=" ";
   if(!$ID){//no user, logout
     header('location: Logout.php');
   }else{
@@ -176,8 +182,8 @@ session_start();
     while($row=mysqli_fetch_assoc($results)){//get the details from user table
       if($row['id']==$ID){
         $userFirstName=$row['fname'];$userLastName=$row['lname'];//teacher name
-        $teacherPrice=$row['price'];
-        $teacherStatus=$row['status'];        
+        $teacherStatus=$row['status'];    
+        $PhoneTwo=$row['phoneTwo'];   
       }
     }
   }
@@ -186,7 +192,7 @@ session_start();
 <!DOCTYPE html>
 <html>
     <head><!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-    <?php include 'header.php';?>        
+      <?php include 'header.php';?>        
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -264,25 +270,33 @@ session_start();
             <div class="form-group"><!--Bootstrap desgin-->
                 <div class="col-sm-6"><!--Bootstrap desgin--> 
                     <label for="phone"><h4  class="inputTitle">   מספר טלפון    </h4></label>
+                    <input type="text" class="form-control" name="phoneTwo" id="phoneTwo" placeholder="<?php echo $PhoneTwo?>" title="מספר טלפון ">
+                </div>
+            </div>
+            <div class="form-group"><!--Bootstrap desgin-->
+                <div class="col-sm-6"><!--Bootstrap desgin--> 
+                    <label for="phone"><h4  class="inputTitle">   מספר טלפון    </h4></label>
                     <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo phoneNumber($ID)?>" title="מספר טלפון ">
                 </div>
             </div>
           <div class="form-group"><!--Bootstrap desgin-->
             <div class="col-sm-6"><!--Bootstrap desgin-->
-                    <label for="email"><h4  class="inputTitle">Email</h4></label>
-                    <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo email($ID)?>" title=" דואר אלקטרוני">                   
+              <label for="email"><h4  class="inputTitle">Email</h4></label>
+              <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo email($ID)?>" title=" דואר אלקטרוני">                   
             </div>
-          </div>                  
-          <?php
-              echo"<div class=\"form-group\"><div class=\"col-sm-6\"> 
-                    <label for=\"status\"><h4 class=\"inputTitle\">סטטוס</h4></label>
-                    <input type=\"text\" class=\"form-control\" name=\"status\" id=\"status\" placeholder=\"$teacherStatus\">
-                  </div></div>";
-              echo "<div class=\"form-group\"><div class=\"col-sm-6\"> 
-                  <label for=\"price\"><h4  class=\"inputTitle\">מחיר לשעה</h4></label>
-                  <input type=\"number\" class=\"form-control\" name=\"price\" placeholder=\"$teacherPrice\">                   
-                </div></div>";
-          ?>                
+          </div>   
+          <div class="form-group"><div class="col-sm-6"> 
+            <label for="status"><h4 class="inputTitle">סטטוס</h4></label>
+            <input type="text" class="form-control" name="status" id="status" placeholder="מחיר מתחיל">
+          </div></div>
+          <div class="form-group"><div class="col-sm-6"> <!--price of lesson until-->
+              <label for="price"><h4  class="inputTitle">מחיר עד</h4></label>
+              <input type="number" class="form-control" name="priceTwo" placeholder="מחיר עג">                   
+          </div></div>  
+          <div class="form-group"><div class="col-sm-6"> <!--price of lesson start with coast-->
+              <label for="price"><h4  class="inputTitle">מחיר מתחיל לשעה</h4></label>
+              <input type="number" class="form-control" name="price" placeholder="<?php echo $teacherPrice ?>">                   
+          </div></div>                      
         <div class="form-group"><br>
           <label for="Save"><h4></h4></label>
           <input class="btn btn-primary" type="submit" name="Save" value="שמור">

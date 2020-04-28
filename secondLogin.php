@@ -23,7 +23,7 @@
     //before that page we insert a temporary information, so here we need to update the new information
     updateFirstName($ID, $first_name);
     updateLastName($ID, $last_name);
-    updateEmail($ID, $email);
+    $updateEmail=updateEmail($ID, $email);
     if($gender!='male'){//the defaul gender for user is male, this going to user for the default image of user  
       $ImgSource="womanDefaultImage.png";//female account, update his image also
     }else{//male account, update his image also
@@ -108,7 +108,13 @@
                     <div class="form-group"><!--lable for Email-->
                       <div class="email col-sm-12">
                         <label for="email"><h4 class="inputWords">Email</h4></label>
-                        <input type="email" class="inputWordsInside form-control" name="email" id="email" placeholder="your.email@email.com" title="דואר אלקטרוני"required>
+                      <?php
+                        if($updateEmail==-1){                          
+                          echo' <input type="email" class="inputWordsInside form-control  border-danger" name="email" id="email" placeholder="המייל כבר רשום במערכת" title="דואר אלקטרוני"required>';
+                        }else{
+                          echo' <input type="email" class="inputWordsInside form-control" name="email" id="email" placeholder="your.email@email.com" title="דואר אלקטרוני"required>';
+                        }
+                      ?>
                       </div>
                     </div>
                     <div class="form-group"><!--lable for define the account of user as a teacher or a student-->

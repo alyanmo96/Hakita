@@ -82,8 +82,9 @@
 					<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
 						<li class="nav-item"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>';
 					if(!$ID){//for the unlogin user will display (signin/sign up) search for a teacher and FAQ page
-						echo'
-							<li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה </a></li>
+						echo'  
+                        	<li class="nav-item active"><a class="nav-link" href="login.php">כניסה</a></li>
+                        	<li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
 							<li class="nav-item"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
 							<li class="nav-item"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';
 					}else{/*for the login user, first we check if the login user is a student or a teacher

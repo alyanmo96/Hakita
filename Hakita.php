@@ -203,8 +203,9 @@
           }else{
             //navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
             echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03"><ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                  <li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה</a></li>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo03"><ul class="navbar-nav mr-auto mt-2 mt-lg-0"> 
+                <li class="nav-item active"><a class="nav-link" href="login.php">כניסה</a></li>
+                <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
                   <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
                   <li class="nav-item active"><a class="nav-link" href="FAQ.php"> שאלות ותשובות </a></li>  ';
           }

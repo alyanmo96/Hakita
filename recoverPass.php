@@ -10,9 +10,7 @@ session_start();
     $script_tz = date_default_timezone_get();
     $date=date("Y-m-d"); $hour = date('H:i');
     $time=$_GET['time'];  $EMAIL= $_GET['email'];
-
     include 'userData.php';//call userData.php for the check validate of password
-
     $validUrl=-1;
     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
     $resultOfValidPassOnPast = mysqli_query($con, "SELECT * FROM invailedPassword");
@@ -41,28 +39,46 @@ session_start();
 <!DOCTYPE html>
 <html>
   <head>
-    <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-    <meta charset="utf-8">
-    <title>הכיתה</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:500" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:700,900" rel="stylesheet">
-    <link rel="stylesheet" href="css/form-elements.css">
-    <link rel="stylesheet" href="css/forgetStyle.css">
-    <link type="text/css" rel="stylesheet" href="css/notFoundStyle.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/forget.css">
   </head>
-  <body><!--next section{the HTML display has two section in deffernt status
-        1- user get a valid URL link, that's mean user get into link in less than two hour
-        2- after two hours the link will not be valid}--->
-      <?php
-        if($validUrl==1){//valid URL, let user insert the new password
-              echo"<div class=\"top-content\">
+  <body>
+  <div id="highlighted" class="hl-basic hidden-xs">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">
+        <h1>הגדרת סיסמה חדשה</h1>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="content" class="interior-page">
+  <div class="container-fluid">
+    <div class="row">
+      <!--Sidebar-->
+      <div class="col-sm-3 col-md-3 col-lg-2 sidebar equal-height interior-page-nav hidden-xs">
+        <div class="dynamicDiv panel-group" id="dd.0.1.0">
+          <div id="subMenu" class="panel panel-default">
+            <ul class="subMenuHighlight panel-heading"><li class="subMenuHighlight panel-title" id="subMenuHighlight"><a id="li_291" class="subMenuHighlight" href="Hakita.php"><span>הכיתה</span></a></li></ul>
+            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="forgetPassword.php"><span class="subMenuHighlight">שליחת מייל מחדש</span></a></li></ul>
+            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="Signup.php"><span>הרשמה</span></a></li></ul>
+          </div>
+          <div class="item item-nopad item-noborder item-gold"><a style="padding: 5% 0px;" href="FAQ.php" class="btn btn-primary btn-block" role="button">שאלות ותשובות </a></div>
+        </div>
+      </div>
+        <?php        
+        if($validUrl!=1){
+          echo"<div id=\"notfound\">
+          <div class=\"notfound\">
+            <div class=\"notfound-404\"><h1>404</h1></div>
+            <h2>אופס! לא ניתן היה למצוא דף זה</h2>
+            <p>מצטערים אבל הדף שאתה מחפש לא קיים, הוסר. שם השתנה או שהוא בלתי אפשרי לזמן מזמן</p>
+            <a href=\"forgetPassword.php\">שחזור סיסימה</a>
+          </div></div>"; 
+          }else{
+            echo"<div class=\"top-content\">
               <div class=\"inner-bg\">
               <div class=\"container\" id=\"cen\">
                     <div class=\"col-sm-6 col-sm-offset-3 text\"><div class=\"form-box\"><div class=\"form-top\"><div class=\"form-top-left\">
@@ -81,16 +97,8 @@ session_start();
                       <button type=\"submit\" class=\"btn col-sm-12\">ריסט סיסמה</button><br><br>
                     </form></fieldset> 
                   </div></div></div></div></div></div>";
-        }else{//unvalid URL, let user to insert his email again on forgetPassword page
-           echo"
-          <div id=\"notfound\">
-          <div class=\"notfound\">
-            <div class=\"notfound-404\"><h1>404</h1></div>
-            <h2>אופס! לא ניתן היה למצוא דף זה</h2>
-            <p>מצטערים אבל הדף שאתה מחפש לא קיים, הוסר. שם השתנה או שהוא בלתי אפשרי לזמן מזמן</p>
-            <a href=\"forgetPassword.php\">שחזור סיסימה</a>
-          </div></div>";
-        }
-      ?>
+          }
+        ?>      
+    </div></div></div>     
   </body>
 </html>

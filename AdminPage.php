@@ -97,60 +97,38 @@
         if($rows['id']!=211){/*not the admin*/$IdArray[$i]=$rows['id'];$i++;}
     }$i-=1;//we use it to know how many users there is, in this case after the loop we eill get then count of users + one, so we minus one
     
-    function displayFunction($arrayOfId,$relatedNumber,$returnArray,$i){
+    function displayFunction($arrayOfId,$relatedNumber,$i){
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $j=0;$arrayIdCounter=0;
-        echo"<form method=\"post\" action=\"AdminPage.php\">";
-        while($j<=count($arrayOfId)&&count($arrayOfId)>0){//diplay all users
+        echo'<div class="teacher col-sm-12">';
+        echo"<form id=\"fform\"  class=\"col-sm-12\" method=\"post\" action=\"AdminControlPageEditOnUser.php\">";
+        while($j<count($arrayOfId)&&count($arrayOfId)>0){//diplay all users
             if(1==1){//true section
                     if(checkUserDefineAs($arrayOfId[$j])==1&&$relatedNumber==14444){$j++; continue;}
                     elseif(checkUserDefineAs($arrayOfId[$j])==-1&&$relatedNumber==18888){$j++;continue;}
-                if($j%3==0&&count($returnArray)>2){//for display, each three cards at the same line
-                    echo'<div class="teacher col-sm-12"><hr><hr></div>';
-                }
+                
                 $results=mysqli_query($con, "SELECT * FROM images");
                 while($rows=mysqli_fetch_array($results)){
                     if($rows['id']==$arrayOfId[$j]){
-                        $returnArray[$arrayIdCounter]=$arrayOfId[$j]+$relatedNumber;
-                        $arrayIdCounter++;//insert id , forward index next
-                        $id=$arrayOfId[$j]+$relatedNumber;
-                        echo"<div class=\"teacher col-sm-4\" id=\"$id\">
-                        <button name=\"$arrayOfId[$j]\">";
+                        echo"<div class=\"col-sm-4\">
+                        <button name=\"user\" value=\"$arrayOfId[$j]\">";
                         if($rows['image']!='image'&&$rows['image']!=null){//display image
                             echo"<img src='img/".$rows['image']."'class='teacherImg img-rounded img-responsive'>";
-                            echo"<p>".name($arrayOfId[$j])."<br/></p>";//print name
-                            echo "</button></div><br><br>";
+                            echo"<p>".name($arrayOfId[$j])."</p>";//print name
+                            echo"</button></div>";
                         }
                     }
                 }
             }$j++;//help with diplay as we said above.
         }
         echo"</form>";
-        return $returnArray;
+        echo'</div>';
     }
-    for($e=1;$e<200000;$e++){
-        if(array_key_exists($e, $_POST)) { 
-          redirectFunction($e); 
-        } 
-      } 
-      function redirectFunction($id){
-        $_SESSION['AdminPutId']=$id;
-        header('location: AdminControlPageEditOnUser.php');
-      }
 ?>
 <!DOCTYPE html>
 <html>
-    <head>
-    <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>הכיתה</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
+    <head><!--import bootstrap for (STYLE)-->
+        <?php include 'header.php';?>
         <link rel="stylesheet" type="text/css" href="css/AdminStyle.css">
     </head>
     <body>
@@ -202,25 +180,26 @@
         can click on any card to redirect to edit on choosen card, or choos from list-->              
         <div id="allUSers" class="tabcontent">
             <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
-            <div class="col-sm-6"></div>
-            <div class="col-sm-6">
-                <?php                                
-                    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                    $allUsersArrayId=array();//array using to redirect (insert id users on array)
-                    echo"<SELECT name=\"searchAllChangedUsersByName\" id=\"searchAllChangedUsersByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
-                    $results = mysqli_query($con, "SELECT * FROM users");
-                    echo'<option >בחר שם</option>';
-                    while($rows=mysqli_fetch_array($results)){
-                        if($rows['id']!=211){echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';}           
-                    }
-                    echo"</SELECT><input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\"/>";
-                ?>
-            </div><br><hr><!--create line and down a line for display-->   
+                <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
+                    <?php
+                        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                        echo"<SELECT name=\"frameworkAllUsers\"  id=\"frameworkAllUsers\" class=\"selectpicker\" data-live-search=\"true\">";
+                        $resuls=mysqli_query($con, "SELECT * FROM users");
+                        while($rows=mysqli_fetch_array($resuls)){
+                            if($rows['id']!=211){
+                                echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
+                            }
+                        }echo"</SELECT>";
+                    ?>                                      
+                    <input type="hidden" name="hidden_framework_allUsers" id="hidden_framework_allUsers"/><br/>
+                    <label for="Save"></label><input id="searchButton" type="submit" name="Save" value="עדכן">
+                </form>
+            <br><hr><!--create line and down a line for display-->   
             <section class="work">
                 <div class="container">
                     <div class="row">
                         <?php     
-                            $allUsersArrayId=displayFunction($IdArray,155555,$allUsersArrayId,$i);//call this function to display all users
+                           displayFunction($IdArray,155555,$i);//call this function to display all users
                         ?>
                     </div>
                 </div>
@@ -230,28 +209,29 @@
         can click on any card to redirect to edit on choosen card, or choos from list-->                  
         <div id="students" class="tabcontent">
             <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
-            <div class="col-sm-6"></div>
-            <div class="col-sm-6">
-                <?php                                
-                    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                    $studentArrayId=array();
-                    echo"<SELECT name=\"searchStudentByName\" id=\"searchStudentByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
-                    $results=mysqli_query($con, "SELECT * FROM users");
-                    echo'<option>בחר שם</option>';
-                    while($rows=mysqli_fetch_array($results)){//search student on list(search by name)
-                        if($rows['id']!=211 && $rows['setUserAs']=='student'){echo'<option value="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';}           
-                    }echo"</SELECT><input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\"/>";
-                ?>
-            </div><br><hr>   
+                <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
+                    <?php
+                        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                        echo"<SELECT name=\"frameworkStudent\"  id=\"frameworkStudent\" class=\"selectpicker\" data-live-search=\"true\">";
+                        $resuls=mysqli_query($con, "SELECT * FROM users");
+                        while($rows=mysqli_fetch_array($resuls)){
+                            if($rows['id']!=211&& $rows['setUserAs']=='student'){
+                                echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
+                            }
+                        }echo"</SELECT>";
+                    ?>                                      
+                    <input type="hidden" name="hidden_framework_student" id="hidden_framework_student"/><br/>
+                    <label for="Save"></label><input id="searchButton" type="submit" name="Save" value="עדכן">
+                </form><br><hr>   
             <section class="work">
                 <div class="container">
                     <div class="row"><!--for display -->
                         <?php
-                           $studentArrayId=displayFunction($IdArray,18888,$studentArrayId,$i);//call this function to display all students
+                            displayFunction($IdArray,18888,$i);//call this function to display all students
                         ?>
                     </div>
-                </div>
-            </section> 
+                </div>        
+            </section>
         </div> <!--next section for user who made changed on last month, 
         on this section we can show all users on a cards include image and name. 
         can click on any card to redirect to edit on choosen card, or choos from list-->                          
@@ -275,8 +255,7 @@
                 <div class="container">
                     <div class="row">
                         <?php
-                            $madeChangeIdArray=array(); //array that will include the display people
-                            $madeChangeIdArray=displayFunction($IdArray,17777,$madeChangeIdArray,$i);//call this function to display all users made changes
+                            displayFunction($IdArray,17777,$i);//call this function to display all users made changes
                         ?>
                     </div>
                 </div>
@@ -286,26 +265,25 @@
         can click on any card to redirect to edit on choosen card, or choos from list-->  
         <div id="teachers" class="tabcontent">
             <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
-            <div class="col-sm-6"></div>
-            <div class="col-sm-6"><!--search teach by name(show as a list of names)-->
-                <?php
-                    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                    $teacherIdArray=array();//array teachers id
-                    echo "<SELECT  name=\"searchByName\" id=\"searchByName\" class=\"form-control selectpicker\" data-live-search=\"true\">";
-                    $results=mysqli_query($con, "SELECT * FROM users");
-                    echo'<option >בחר שם</option>';
-                    while ($rows=mysqli_fetch_array($results)){//show every teacher
-                        if($rows['id']!=211&&$rows['setUserAs']!='student'){
-                            echo'<option value="'.$rows['id'].'" name="'.$rows['id'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
-                        }           
-                    }echo"</SELECT><input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />";
-                ?>
-            </div><br><hr>   
+                <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
+                    <?php
+                        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                        echo"<SELECT name=\"frameworkTeacher\"  id=\"frameworkTeacher\" class=\"selectpicker\" data-live-search=\"true\">";
+                        $resuls=mysqli_query($con, "SELECT * FROM users");
+                        while($rows=mysqli_fetch_array($resuls)){
+                            if($rows['id']!=211&&$rows['setUserAs']!='student'){
+                                echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
+                            }
+                        }echo"</SELECT>";
+                    ?>                                      
+                    <input type="hidden" name="hidden_framework_teacher" id="hidden_framework_teacher"/><br/>
+                    <label for="Save"></label><input id="searchButton" type="submit" name="Save" value="עדכן">
+                </form><br><hr>   
             <section class="work">
                 <div class="container">
                     <div class="row">
                         <?php
-                            $teacherIdArray=displayFunction($IdArray,14444,$teacherIdArray,$i);//call this function to display all teachers
+                           displayFunction($IdArray,14444,$i);//call this function to display all teachers
                         ?>
                     </div>
                 </div>
@@ -380,7 +358,7 @@
                 <div class="container">
                     <div class="row">
                         <?php
-                            $newUsersIdArray=displayFunction($newUsersIdArray,19999,$newUsersIdArray,$i);//call this function to display all new users (new account less than one month)
+                            displayFunction($newUsersIdArray,19999,$i);//call this function to display all new users (new account less than one month)
                         ?>
                     </div>
                 </div>
@@ -456,4 +434,4 @@
             </div></div></div></div>
     </body>
 </html>
-<?php include 'script.php';/*call script file for some functions like up button*/?>  
+<?php include 'script.php';/*user script like the select list/ up button*/?>  

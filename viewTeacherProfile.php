@@ -22,12 +22,9 @@
     date_default_timezone_set('Asia/Jerusalem');$script_tz = date_default_timezone_get();$todayDate=date("Y-m-d");//delete all lasted lessons time from DB. accourding to local time.
     while($row=mysqli_fetch_assoc($scheduleResult)){        
         if($row['lessonDate']<$todayDate){
-            /*
             $idOfLesson=$row['idOfLesson'];
             $sql = "DELETE FROM teacherSchedule WHERE idOfLesson=$idOfLesson";
-            if ($con->query($sql) === TRUE){
-            } */
-            
+            if ($con->query($sql) === TRUE){}          
         }
     }    
     $IdResults=mysqli_query($con, "SELECT * FROM users");   
@@ -220,7 +217,9 @@
                         <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה <span class="sr-only"></span></a></li>  
                     <?php
                         if(!$IDOfUser){//navbar for user without login
-                            echo'<li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה <span class="sr-only"></span></a></li> 
+                            echo'  
+                            <li class="nav-item active"><a class="nav-link" href="login.php">כניסה</a></li>
+                            <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
                             <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';
                             }else{//navbar for user with login
                                 if(checkUserDefineAs($IDOfStudent)==1){//redirect to student profile

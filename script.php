@@ -67,6 +67,16 @@ $(document).ready(function(){
  $('#frameworkCourse').change(function(){
   $('#hidden_framework_courses').val($('#frameworkCourse').val());
  });
+ $('#frameworkAllUsers').change(function(){
+  $('#hidden_framework_allUsers').val($('#frameworkAllUsers').val());
+ });
+ $('#frameworkStudent').change(function(){
+  $('#hidden_framework_student').val($('#frameworkStudent').val());
+ });
+ $('#frameworkTeacher').change(function(){
+  $('#hidden_framework_teacher').val($('#frameworkTeacher').val());
+ });
+
  $('#multiple_select_form').on('Save', function(event){
   event.preventDefault();
   if($('#framework').val() != ''){
@@ -96,7 +106,53 @@ $(document).ready(function(){
      alert(data);
     }
    })
-  }else{
+  }
+  else if($('#frameworkAllUsers').val() != ''){
+   var form_data = $(this).serialize();
+   $.ajax({
+    url:"secondEditPage.php",
+    method:"POST",
+    data:form_data,
+    success:function(data)
+    {
+     $('#hidden_framework_allUsers').val('');
+     $('.selectpicker').selectpicker('val', '');
+     alert(data);
+    }
+   })
+  }
+  else if($('#frameworkStudent').val() != ''){
+   var form_data = $(this).serialize();
+   $.ajax({
+    url:"secondEditPage.php",
+    method:"POST",
+    data:form_data,
+    success:function(data)
+    {
+     $('#hidden_framework_student').val('');
+     $('.selectpicker').selectpicker('val', '');
+     alert(data);
+    }
+   })
+  }
+
+  else if($('#frameworkTeacher').val() != ''){
+   var form_data = $(this).serialize();
+   $.ajax({
+    url:"secondEditPage.php",
+    method:"POST",
+    data:form_data,
+    success:function(data)
+    {
+     $('#hidden_framework_teacher').val('');
+     $('.selectpicker').selectpicker('val', '');
+     alert(data);
+    }
+   })
+  }
+
+
+  else{
    alert("נא לבחור עיר");
    return false;
   }
@@ -111,67 +167,6 @@ jQuery(function ($) {//
         $inputs.not(this).prop('required', !$(this).val().length);
     });
 });
-
-$(document).ready(function(){
-    $("#searchStudentByName").on('change',function(){
-    var id =$(this).val();
-    if(id){window.location.href = "AdminControlPageEditOnUser.php?AdminPutId=" + id;}
-    });
-    $("#searchByName").on('change',function(){
-    var id =$(this).val();
-    if(id){window.location.href = "AdminControlPageEditOnUser.php?AdminPutId=" + id;}
-    });
-    $("#searchAllChangedUsersByName").on('change',function(){
-    var id =$(this).val();
-    if(id){window.location.href = "AdminControlPageEditOnUser.php?AdminPutId=" + id;}
-    });
-});
-
-    var teachesIdArrayLength = <?PHP echo (!empty(end($teacherIdArray)) ? json_encode(end($teacherIdArray)) : '""'); ?>;
-    $(document).ready(function(){
-        for(var i = 14444; i <= teachesIdArrayLength; i++){ 
-            let x=i;
-            let n = x.toString();
-            $("#"+n).click(function(){x-=14444;
-               if(x>0){window.location.href = "AdminControlPageEditOnUser.php?id=" + x;}
-            });
-        }
-        var studentsIdArrayLength = <?PHP echo (!empty(end($studentArrayId)) ? json_encode(end($studentArrayId)) : '""'); ?>;
-        for(var i = 18888; i <= studentsIdArrayLength; i++){ 
-            let x=i;
-            let n = x.toString();
-            $("#"+n).click(function(){x-=18888;
-                if(x>0){window.location.href = "AdminControlPageEditOnUser.php?id=" + x;}
-            });
-        }
-        var madeChangeIdArrayLength = <?PHP echo (!empty(end($madeChangeIdArray)) ? json_encode(end($madeChangeIdArray)) : '""'); ?>;
-        for(var i = 17777; i <= madeChangeIdArrayLength; i++){ 
-            let x=i;
-            let n = x.toString();
-            $("#"+n).click(function(){ x-=17777;
-            if(x>0){window.location.href = "AdminControlPageEditOnUser.php?id=" + x;}
-            });
-        }
-        var allUsersArrayId = <?PHP echo (!empty(end($allUsersArrayId)) ? json_encode(end($allUsersArrayId)) : '""'); ?>;
-        for(var i = 155555; i <= allUsersArrayId; i++){ 
-            let x=i;
-            let n = x.toString();
-            $("#"+n).click(function(){                
-                x-=155555;
-            if(x>0){
-                 window.location.href = "AdminControlPageEditOnUser.php?id=" + x;
-            }
-            });
-        }
-        var newUsersSiteIdArray = <?PHP echo (!empty(end($newUsersSiteIdArray)) ? json_encode(end($newUsersSiteIdArray)) : '""'); ?>;
-        for(var i = 19999; i <= newUsersSiteIdArray; i++){ 
-            let x=i;
-            let n = x.toString();
-            $("#"+n).click(function(){x-=19999;
-            if(x>0){window.location.href = "AdminControlPageEditOnUser.php?id=" + x;}
-            });
-        }
-    });
 </script>
 <script>
     function myFunction(){//script for copy the profile link, plus show a message.

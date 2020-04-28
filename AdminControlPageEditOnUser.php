@@ -2,11 +2,26 @@
 /**
  *  this file let ADMIN to update details or delete user.
  */
-  session_start();
-  if($_GET['AdminPutId']){//start with get the user id.
-    $AdminPutId=$_GET['AdminPutId'];
-  }else{
-    $AdminPutId=$_SESSION['AdminPutId'];
+    session_start();
+    //start with get the user id.
+    if($_POST['frameworkAllUsers']){
+      $AdminPutId=$_POST['frameworkAllUsers'];  
+    }elseif($_POST['frameworkStudent']){
+      $AdminPutId=$_POST['frameworkStudent'];  
+    }elseif($_POST['frameworkTeacher']){
+      $AdminPutId=$_POST['frameworkTeacher']; 
+    }elseif($_POST['user']){
+    $AdminPutId=$_POST['user'];
+  }
+  $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+  if(is_string($AdminPutId)){//if we get an username, case on AdminPage the same user will display on alluser and on other section so we cant use the same id for same person as a different persons
+    $getUserID=mysqli_query($con, "SELECT * FROM users");
+    while($row=mysqli_fetch_assoc($getUserID)){
+        if($row['username']==$AdminPutId){
+          $AdminPutId=$row['id'];
+        break;
+        }
+    }
   }
   include 'userData.php';//call userData file, to use function like update password,...
   // if the admin update password/ email/ name// phone number / courses/ cities of user. function of userData file.
@@ -23,7 +38,10 @@
       }        
       if($_POST['price']){//if ADMIN update user price
         updatePrice($AdminPutId,$_POST['price']);//new price 
-      }        
+      }         
+      if($_POST['priceTwo']){//if user update his price.
+        updatePriceTwo($ID,$_POST['priceTwo']);//new price            
+      }       
       if($_POST['status']){//if ADMIN update user status
         updateStatus($AdminPutId,$_POST['status']);//new status  
       }
@@ -36,21 +54,21 @@
       if($_POST['phone']){//if ADMIN update user phone
           updatePhoneNumber($AdminPutId, $_POST['phone']);
       }  
+      if($_POST['phoneTwo']){//if user update his phone number
+        updatePhoneNumberTwo($ID, $_POST['phoneTwo']);
+      } 
       if($_POST['hidden_framework']){//if ADMIN update user cities
         $Cities=$_POST['hidden_framework'];
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $upDate="UPDATE `teacher_cities` SET `cities`='$Cities'WHERE id=$AdminPutId";//update it on table
         $result=mysqli_query($con,$upDate);
       } 
       if ($_POST['hidden_framework_courses']){// if ADMIN update user courses
         $Courses=$_POST['hidden_framework_courses']; 
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $upDate="UPDATE `teachers_courses` SET `subject`='$Courses'WHERE id=$AdminPutId";//update it on table
         $result=mysqli_query($con,$upDate);
       }
   }
   if(isset($_POST['changeFromStudentAccountToTeacherAccount'])){//ADMIN going to change student account to teacher account
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
     $results=mysqli_query($con, "SELECT * FROM users");
     $upDate="UPDATE `users` SET `setUserAs`='teacher'WHERE id=$AdminPutId";//update it on table
     $results=mysqli_query($con,$upDate);
@@ -151,9 +169,23 @@
                         <div class="form-group">                         
                           <div class="col-xs-6">
                             <label for="phone"><h4>מספר טלפון</h4></label><!--lable use to  update phone-->
+                            <input type="text" class="form-control" name="phoneTwo" id="phoneTwo" placeholder="<?php echo phoneNumber($AdminPutId)?>">
+                          </div>
+                        </div>
+                        <div class="form-group">                         
+                          <div class="col-xs-6">
+                            <label for="phone"><h4>מספר טלפון</h4></label><!--lable use to  update phone-->
                             <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo phoneNumber($AdminPutId)?>">
                           </div>
                         </div>
+                        
+                        <div class="form-group">
+                          <div class="col-xs-6">
+                            <label for="mobile"><h4>סטטוס</h4></label>
+                            <input type="text" class="form-control" name="status" id="status" placeholder="<?php echo $status?>" >
+                          </div>
+                        </div>
+
                         <div class="form-group">
                           <div class="col-xs-6">
                             <label for="email"><h4>Email</h4></label><!--lable use to  update email-->
@@ -162,8 +194,8 @@
                         </div>
                           <?php
                             if(checkUserDefineAs($AdminPutId)==-1){//display just for teahers account <!---lable use to  update status and price-->
-                              echo" <div class=\"form-group\"><div class=\"col-xs-6\"><label for=\"mobile\"><h4>סטטוס</h4></label><input type=\"text\" class=\"form-control\" name=\"status\" id=\"status\" placeholder=\" $status\" ></div></div>";
-                              echo"<div class=\"form-group\"><div class=\"col-xs-6\"><label for=\"price\"><h4>מחיר לשעה</h4></label><input type=\"number\" class=\"form-control\" name=\"price\" placeholder=\" $price\"></div></div>";
+                              echo" <div class=\"form-group\"><div class=\"col-xs-6\"><label for=\"price\"><h4>מחיר עד</h4></label><input type=\"text\" class=\"form-control\" name=\"priceTwo\" id=\"priceTwo\"></div></div>";
+                              echo"<div class=\"form-group\"><div class=\"col-xs-6\"><label for=\"price\"><h4>מחיר מתחיל לשעה</h4></label><input type=\"number\" class=\"form-control\" name=\"price\" placeholder=\" $price\"></div></div>";
                             }
                           ?>
                           <div class="form-group">                          

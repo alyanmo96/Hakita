@@ -190,7 +190,8 @@
               <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
               <li class="nav-item active"><a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a></li>
-              <li class="nav-item active"><a class="nav-link" href="loginSignUP.php">כניסה/הרשמה </a></li>
+              <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה </a></li>
+              <li class="nav-item active"><a class="nav-link" href="login.php">כניסה </a></li>
               <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';                
             }
         ?>     

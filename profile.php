@@ -158,6 +158,7 @@
                         <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>
                         <li class="nav-item active"><a class="nav-link" href="chat.php">הודעות</a></li>
                         <li class="nav-item active"><a class="nav-link" href="EditPage.php">עדכן פרופיל</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="Lessons.php"> שיעורים</a></li>
                         <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
                         <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה </a></li>             
                         <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>

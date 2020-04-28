@@ -56,6 +56,12 @@
         $upDate="UPDATE `users` SET `price`='$price'WHERE id=$id";//update new data on DB
         $IdResults = mysqli_query($con,$upDate);
         return;
+    }      
+    function updatePriceTwo($id,$price){//function to update teacher lesson price.
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $upDate="UPDATE `users` SET `priceTwo`='$price'WHERE id=$id";//update new data on DB
+        $IdResults = mysqli_query($con,$upDate);
+        return;
     } 
     function status($id){//function to return status.
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
@@ -181,13 +187,25 @@
     }
     function updateEmail($id, $newEmail){//function to update user email.
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $IdResults=mysqli_query($con, "SELECT * FROM users");
+        while($row=mysqli_fetch_assoc($IdResults)){
+            if($row['email']==$newEmail){
+                return -1;
+            }
+        }
         $upDate="UPDATE `users` SET `email`='$newEmail'WHERE id=$id";//update new data on DB
         $IdResults = mysqli_query($con,$upDate);  
-        return;
+        return 1;
     }
     function updatePhoneNumber($id, $newPhone){//function to update user phone number.
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $upDate="UPDATE `users` SET `phone`='$newPhone'WHERE id=$id";//update new data on DB
+        $IdResults = mysqli_query($con,$upDate);  
+        return;
+    }
+    function updatePhoneNumberTwo($id, $newPhone){//function to update user phone number.
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $upDate="UPDATE `users` SET `phoneTwo`='$newPhone'WHERE id=$id";//update new data on DB
         $IdResults = mysqli_query($con,$upDate);  
         return;
     }
