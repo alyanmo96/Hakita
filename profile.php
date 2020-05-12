@@ -10,6 +10,7 @@
     session_start();      
     $ID=$_SESSION['id'];//get the teacher id.
     $_SESSION['id']=$ID;
+    include 'userData.php';//call userData, to use some function from
     $defaultNavBar=-1;   
 
     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");//connection with DB
@@ -21,7 +22,7 @@
         if($con->query($sql)===TRUE){
         }                
     }
-    //variables will used on HTML	//(username,status,email,first name, last name, phone number, cities, courses,img,price)
+    //variables will used on HTML   //(username,status,email,first name, last name, phone number, cities, courses,img,price)
     $teacherImforamtionArray=array();//this array will include main information about login teacher as like as first name,.... check next
     function returnTeacherInformationIntoArray($id,$teacherImforamtionArray){
         $thereIsNoAccountLikeThis=1;
@@ -29,15 +30,15 @@
         $IdResults=mysqli_query($con, "SELECT * FROM users");
         while($row=mysqli_fetch_assoc($IdResults)){
             if($row['id']==$id){//get variables to use on HTML view 
-				$teacherImforamtionArray[1]=$row['fname'];//first name
-				$teacherImforamtionArray[2]=$row['lname'];//last name
-				$teacherImforamtionArray[3]=$row['email'];//email
-				$teacherImforamtionArray[4]=$row['price'];//price
-				$teacherImforamtionArray[5]=$row['status'];//teacher status
+                $teacherImforamtionArray[1]=$row['fname'];//first name
+                $teacherImforamtionArray[2]=$row['lname'];//last name
+                $teacherImforamtionArray[3]=$row['email'];//email
+                $teacherImforamtionArray[4]=$row['price'];//price
+                $teacherImforamtionArray[5]=$row['status'];//teacher status
                 $teacherImforamtionArray[6]=$row['phone'];//teacher phone number
                 $thereIsNoAccountLikeThis=-1;
                 return $teacherImforamtionArray;
-			}
+            }
         }
         if($thereIsNoAccountLikeThis==1){
             header('location: Logout.php');
@@ -54,7 +55,7 @@
                     if($rows['subject']!='subject'){
                         $returnData.=$rows['subject'];break;
                     }
-                }	
+                }   
             }
         }else{//for cities
             $resultOFTeachersCity=mysqli_query($con, "SELECT * FROM teacher_cities"); 
@@ -62,8 +63,8 @@
                 if($rows['id']==$id){
                     if($rows['cities']!='cities'){
                         $returnData.=$rows['cities'];break;
-                    }			
-                }		
+                    }           
+                }       
             }
         }return $returnData;//return data     
     }
@@ -90,7 +91,7 @@
                 if($scheduleRow['dayOfLesson']==$day && $scheduleRow['hourOFLesson']==$hour){
                     $alreadyInsert=1;break;
                 }
-			}
+            }
         }
         if($alreadyInsert==1){//if was clicked, teacher was choice this time as an hour he wanted to learn on it, then he not.
             $alreadyInsert=-1;
@@ -104,8 +105,9 @@
             $month = date('m');
             $checkDay.=(string)$day;
             $TotalDate =  $year.'-'. $month  .'-'. $checkDay;
-            $query="INSERT INTO `teacherSchedule`(`idOfTeacher`,`hourOFLesson`,`idOfStudent`,`fullOrFree`,`dayOfLesson`,`lessonDate`,`checkbox`) 
-            VALUES ('$ID','$hour','000','-1','$day','$TotalDate','1')";
+            $lessonsAmount=getTeacherTeachedLessonsAmount($ID);
+            $query="INSERT INTO `teacherSchedule`(`idOfTeacher`,`hourOFLesson`,`idOfStudent`,`fullOrFree`,`dayOfLesson`,`lessonDate`,`checkbox`,`lessonsAmount`) 
+            VALUES ('$ID','$hour','000','-1','$day','$TotalDate','1','$lessonsAmount')";
             $result = mysqli_query($con,$query);
         } 
     }
@@ -127,7 +129,6 @@
         }
     }  
     if($ID){//after get the id from login or by update on profile page, check teacher main information by above function
-        include 'userData.php';//call userData, to use some function from
         $teacherImforamtionArray=returnTeacherInformationIntoArray($ID,$teacherImforamtionArray);
     }else{//if there is no id, redirect to logout page to forget eacher id/username and then to redirect to the main page
         header('location: logout.php');
@@ -158,7 +159,7 @@
                         <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>
                         <li class="nav-item active"><a class="nav-link" href="chat.php">הודעות</a></li>
                         <li class="nav-item active"><a class="nav-link" href="EditPage.php">עדכן פרופיל</a></li>
-                        <li class="nav-item active"><a class="nav-link" href="Lessons.php"> שיעורים</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="Lesson.php"> שיעורים</a></li>
                         <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
                         <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה </a></li>             
                         <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>
@@ -174,7 +175,7 @@
                     //main teacher information
                         echo"<a href=\"#aboutModal\" data-toggle=\"modal\"><img src='img/".$teacherImforamtionArray[10]."' height=140  width=140 class='img-circle'></a>";
                         echo"<h2>".$teacherImforamtionArray[1]." ".$teacherImforamtionArray[2]."</h2>";//teacher name
-                        echo"<h5>"."מחיר לשעה: ".$teacherImforamtionArray[4]."₪</h5>";	
+                        echo"<h5>"."מחיר לשעה: ".$teacherImforamtionArray[4]."₪</h5>";  
                         echo"<h5>".$teacherImforamtionArray[5]."</h5>";//teacher status
                         echo"<p>".teacherRating($ID)."</p>";//from userData.php              
                     ?>
@@ -258,7 +259,7 @@
                     echo "<h1>אין תגובות</h1>";
                 }
             ?>
-		</div>
+        </div>
         <div id="Links" class="tabcontent">
             <div class="form-group">
                 <?php

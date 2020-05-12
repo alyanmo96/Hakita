@@ -4,6 +4,11 @@
  * get to his profile if he login//.
  * write a cooment, ask for a lesson, send message, get information about teacher
  * can get to this page by two ways as a login user or as a normal user (without login)
+ * 
+ * 
+ * change on teacher lessons table check it
+ * 
+ * 
  */
     session_start();
     // get the id of teacher, and get the id of the login user on login state
@@ -24,7 +29,7 @@
         if($row['lessonDate']<$todayDate){
             $idOfLesson=$row['idOfLesson'];
             $sql = "DELETE FROM teacherSchedule WHERE idOfLesson=$idOfLesson";
-            if ($con->query($sql) === TRUE){}          
+            if ($con->query($sql) === TRUE){}   
         }
     }    
     $IdResults=mysqli_query($con, "SELECT * FROM users");   

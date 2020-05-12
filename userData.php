@@ -261,4 +261,46 @@
             if($rows['idOfTeacher']==$ID&&$rows['checkbox']==1){return 1;}
         }return -1;//dont display board time lesson
     }
+
+    function getTeacherTeachedLessonsAmount($ID){
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $scheduleResult=mysqli_query($con, "SELECT * FROM teacherSchedule");
+        while($rows=mysqli_fetch_assoc($scheduleResult)){
+            if($rows['idOfTeacher']==$ID){return $rows['lessonsAmount'];}
+        }return 0;//dont display board time lesson
+    }
+
+    function getTeacherLaterLessonsAmount($ID){
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $scheduleResult=mysqli_query($con, "SELECT * FROM teacherSchedule");
+        $lessonsCounter=0;
+        while($rows=mysqli_fetch_assoc($scheduleResult)){
+            if($rows['idOfTeacher']==$ID&&$rows['fullOrFree']==1){$lessonsCounter++;}
+        }return $lessonsCounter;//dont display board time lesson
+    }
+
+    function getLessonTime($teacherID,$studentId){
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $scheduleResult=mysqli_query($con, "SELECT * FROM teacherSchedule");
+        $lessonsCounter=0;
+        while($rows=mysqli_fetch_assoc($scheduleResult)){
+            if($rows['idOfTeacher']==$teacherID&&$rows['idOfStudent']==$studentId)
+            {
+                return $rows['hourOFLesson'];
+            }
+        }
+    }
+    
+
+    function getLessonDate($teacherID,$studentId){
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $scheduleResult=mysqli_query($con, "SELECT * FROM teacherSchedule");
+        $lessonsCounter=0;
+        while($rows=mysqli_fetch_assoc($scheduleResult)){
+            if($rows['idOfTeacher']==$teacherID&&$rows['idOfStudent']==$studentId)
+            {
+                return $rows['lessonDate'];
+            }
+        }
+    }
 ?>
