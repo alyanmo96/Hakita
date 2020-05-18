@@ -1,5 +1,5 @@
 
-**** note:{for using attached code you need to change the connection with DB you used}
+**** note:{for using attached code you have to change the connection with DB you used}
 
 # Hakita
 hakite which mean class on hebrew language
