@@ -12,6 +12,8 @@
       $AdminPutId=$_POST['frameworkTeacher']; 
     }elseif($_POST['user']){
     $AdminPutId=$_POST['user'];
+  }elseif($_POST['id']){
+    $AdminPutId=$_POST['id'];
   }
   $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
   if(is_string($AdminPutId)){//if we get an username, case on AdminPage the same user will display on alluser and on other section so we cant use the same id for same person as a different persons
@@ -78,6 +80,21 @@
     DeleteAccount($deleteUserId);unset($deleteUserId);
     header('location: AdminPage.php');
   }    
+
+  //sendMessageUserButton
+  if(isset($_POST['sendMessageUserButton'])){//ADMIN going to delete the choosen user
+     //send a message automaticly from student to teacher
+     
+     $message_date = date("y-m-d h:i");
+     $message_text='';
+     $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
+     ('211',' $AdminPutId','$message_text','$message_date')";
+     $messageResults = mysqli_query($con,$query);
+ 
+     $_SESSION['id']=211;//redirect to message room chat
+     header("Location: adminMessageRoom.php");
+  } 
+
   if ($_POST['ImgId']){ // any changed on user IMAGE
     $image=$_FILES['image']['name'];
     updateImage($AdminPutId, $image,$_POST['image_text']);
@@ -254,11 +271,18 @@
                   <div class="chooseImg"><input class="file-path validate" type="file" name="image"></div>
                   <div><button type="submit" name="upload">שמור תמונה</button></div>
               </form><br><br>
+              <form method="POST" action="AdminControlPageEditOnUser.php" enctype="multipart/form-data">
+                <button name="sendMessageUserButton" class="btn btn-info">שלח הודעה למשתמש </button>
+                <div class="form-group">
+                    <div class="col-xs-12"><label for="id"></label>
+                        <input type="hidden" class="form-control" name="id" value="<?php echo $AdminPutId?>">
+                    </div></div>
+            </form><br><br>
             <form method="POST" action="AdminControlPageEditOnUser.php" enctype="multipart/form-data">
                 <button name="deleteUserButton" class="btn btn-danger">מחק משתמש</button>
                 <div class="form-group">
                     <div class="col-xs-12"><label for="id"></label>
-                        <input type="hidden" class="form-control" name="id">
+                        <input type="hidden" class="form-control" name="id"value="<?php echo $AdminPutId?>">
                     </div></div>
             </form><br><br>
             <?php

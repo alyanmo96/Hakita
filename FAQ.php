@@ -58,6 +58,27 @@
   elseif(isset($_POST['siteUse'])){//site Use, section of question and answer how to use site.
     $usingSite=1;
   }
+
+  //sendMessageUserButton
+  if(isset($_POST['subject'])){//ADMIN going to delete the choosen user
+    //send a message automaticly from student to teacher
+    
+    if($_POST['id']){//check if the message sent bu a site user or unlogin user
+      $id=$_POST['id'];//if yes sent the id 
+    }else{//else sent id as 0
+      $id=0;
+    }
+    $name=$_POST['name'];
+    $message_text='שם: '.$name.'\n';
+    $email=$_POST['email'];
+    $message_text.='email: '.$email.'\n';   
+    $message_date = date("y-m-d h:i");
+    $message_text.=$_POST['subject'];
+    $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
+    ('$id',' 211','$message_text','$message_date')";
+    $messageResults = mysqli_query($con,$query);
+ } 
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -82,7 +103,8 @@
                         }else{// if the login user was a teacher, then he want to access to his profile
                           echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"profile.php\">פרופיל שלי <span class=\"sr-only\">(current)</span></a> </li> ";
                         }
-                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php\">חיפוש מורה</a></li>";
+                        echo "<li class=\"nav-item active\"><a class=\"nav-link\" href=\"messageRoom.php\">הודעות</a></li>
+                        <li class=\"nav-item active\"><a class=\"nav-link\" href=\"searchTeachers.php\">חיפוש מורה</a></li>";
               echo'<li class="nav-item active">
               <a class="nav-link" href="logout.php"> יציאה<span class="sr-only">(current)</span></a>
             </li>';
@@ -297,13 +319,17 @@
         <div class=\"containe\" id=\"containe\" name=\"containe\">
         <div class=\"row\">
         <div class=\"col-sm-12\">
-          <form action=\"FAQ.php\" method=\"POST\">
+          <form action=\"FAQ.php\" method=\"POST\">";
+          if($ID){
+            echo"<input type=\"hidden\" name=\"id\" value=\"$ID\">";
+          }
+          echo"
             <label for=\"name\"></label>
-            <input type=\"text\" id=\"name\" name=\"name\" placeholder=\"שם שלך\">
+            <input type=\"text\" id=\"name\" name=\"name\" placeholder=\"שם שלך\" required>
             <label for=\"email\"></label>
-            <input type=\"text\" id=\"email\" name=\"email\" placeholder=\"דואר אלקטרוני\">
+            <input type=\"text\" id=\"email\" name=\"email\" placeholder=\"דואר אלקטרוני\" required>
             <label for=\"subject\"></label>
-            <textarea id=\"subject\" name=\"subject\" placeholder=\"תוכן ההודעה\" style=\"height:100px\"></textarea>
+            <textarea id=\"subject\" name=\"subject\" placeholder=\"תוכן ההודעה\" style=\"height:100px\" srequired></textarea>
             <input type=\"submit\" value=\"שליחתה הודעה\">
           </form>
         </div></div></div></div>

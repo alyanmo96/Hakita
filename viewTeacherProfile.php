@@ -133,6 +133,27 @@
     if(count($arrayOfTeacherCities)==0){
         $arrayOfTeacherCities=array();	
     } 
+
+    //sendMessageUserButton
+  if(isset($_POST['messageSubmit'])){//ADMIN going to delete the choosen user
+    //send a message automaticly from student to teacher
+    if($_POST['id']){//check if the message sent bu a site user or unlogin user
+      $id=$_POST['id'];//if yes sent the id 
+    }else{//else sent id as 0
+      $id=0;
+    }
+    $name=$_POST['name'];
+    $message_text='שם: '.$name.'\n';
+    $email=$_POST['email'];
+    $message_text.='email: '.$email.'\n';   
+    $message_date = date("y-m-d h:i");
+    $message_text.=$_POST['subject'];
+    $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
+    ('$id',' $IDOfTeacher','$message_text','$message_date')";
+    $messageResults = mysqli_query($con,$query);
+ }
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -203,6 +224,65 @@
                                 $upDate="UPDATE `teacherSchedule` SET `fullOrFree`='1' , `idOfStudent`=$IDOfUser
                                 WHERE idOfTeacher=$IDOfTeacher  and hourOFLesson=$hour  and dayOfLesson=$day";
                                 $result = mysqli_query($con,$upDate);
+
+                                //send EMAIL for (student + teacher)
+                                $teacherEmail=email($IDOfTeacher);
+                                $to = $teacherEmail;//sending to teacher email address
+                                $from ="HakitaSite";// from
+                                /*date_default_timezone_set('Asia/Jerusalem');  
+                                $script_tz = date_default_timezone_get();
+                                $date=date("Y-m-d"); $hour = date('H:i');//today date + current hour ...to invalid the URL after hour of sending time
+                                */
+                                $subject="שיעור באתר הכיתה";//subject of message
+                                $message="<p>שלום </p>";
+                                $teacherName=name($IDOfTeacher);
+                                $message.=$teacherName;
+                                $message.=",<br>";
+                                $message.="סטודנט רוצה לקבוע איתך שיעור בתאריך ".$day." בשעה ".$hour."";
+                                $message.="<br>";
+                                $message.="לעוד פרטים, נפתחה פינת הודעות לכם בתאר, נא לבדוק בתיבת ההודעת שלך.";
+                                $message.="<br><br>";
+                                $message.="<p>המשך יום נעים. </p>";
+                                $headers="From:".$from."\r\n";
+                                $headers.="Content-type: text/html\r\n";
+                                if(mail($to,$subject,$message,$headers)){
+                                }else{//if there any connection problem
+                                echo "בעית תקשורת בשליחת ההודעה למייל";
+                                echo "<script type='text/javascript'>alert('בעית תקשורת בשליחת ההודעה למייל');</script>";
+                                }
+                                
+                                $studentEmail=email($IDOfUser);
+                                $to = $studentEmail;//sending to student email address
+                                $from ="HakitaSite";// from
+                                /*date_default_timezone_set('Asia/Jerusalem');  
+                                $script_tz = date_default_timezone_get();
+                                $date=date("Y-m-d"); $hour = date('H:i');//today date + current hour ...to invalid the URL after hour of sending time
+                                */
+                                $subject="שחזר סיסמה";//subject of message
+                                $message="<p>שלום </p>";
+                                $message.=name($IDOfUser);
+                                $message.=",<br>";
+                                $message.="קבעת שיעור עם המורה ".$teacherName.", בשעה".$hour.", ביום".$day."";
+                                $message.="<br>";
+                                $message.="לעוד פרטים, נפתחה פינת הודעות לכם בתאר, נא לבדוק בתיבת ההודעת שלך.";
+                                $message.="<br><br>";
+                                $message.="<p>המשך יום נעים. </p>";
+                                $headers="From:".$from."\r\n";
+                                $headers.="Content-type: text/html\r\n";
+                                if(mail($to,$subject,$message,$headers)){
+                                }else{//if there any connection problem
+                                echo "בעית תקשורת בשליחת ההודעה למייל";
+                                echo "<script type='text/javascript'>alert('בעית תקשורת בשליחת ההודעה למייל');</script>";
+                                }        
+                                
+                                
+                                //send a message automaticly from student to teacher
+                                $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                                $message_date = date("y-m-d h:i");
+                                $message_text='הודעה אוטומתית, שלום רב, אני רוצה לקבוע איתך שיעור בזמן ההוא '.$message_date.'';
+                                $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
+                                ('$IDOfUser',' $IDOfTeacher','$message_text','$message_date')";
+                                $messageResults = mysqli_query($con,$query);
                         }
                     }
                 }
@@ -227,12 +307,13 @@
                             <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
                             <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';
                             }else{//navbar for user with login
-                                if(checkUserDefineAs($IDOfStudent)==1){//redirect to student profile
+                                if(checkUserDefineAs($IDOfUser)==1){//redirect to student profile
                                     echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only"></span></a></li>';
                                 }else{//redirect to teacher profile
                                     echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only"></span></a></li>';
                                 }
-                                echo'<li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
+                                echo'<li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
+                                <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
                                 <li class="nav-item active"><a class="nav-link" href="logout.php">יציאה </a></li>';
                             }
                         ?> 
@@ -486,11 +567,17 @@
                             echo"<h4>".$teacherArrayInformation[4]."</h4>";        
                         ?>             
                     <h1 class="letters"> הודעה למורה</h1>
-                    <form action="">
-                        <input type="text" name="" placeholder="שם" class="form-control">
-                        <input type="email" name="" placeholder="מייל לצור קשר" class="form-control">
-                        <input type="text" name="" placeholder="תוכן ההודעה" class="form-control">
-                        <input type="submit" value="שלח/י" class="btn btn-success text-center">
+                    <form action="viewTeacherProfile.php" method="POST">
+                        <input type="text" name="name" placeholder="שם" class="form-control" required>
+                        <?php
+                            if($IDOfUser){
+                                echo"<input type=\"hidden\" name=\"id\" value=\"$IDOfUser\">";
+                            }else{
+                                echo'<input type="email" name="email" placeholder="מייל לצור קשר" class="form-control" required>';
+                            }
+                        ?>
+                        <input type="text" name="subject" placeholder="תוכן ההודעה" class="form-control" required>
+                        <input type="messageSubmit" value="שלח/י" class="btn btn-success text-center">
                     </form>
                 </div></div>
             </div>
