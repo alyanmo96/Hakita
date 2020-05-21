@@ -157,7 +157,7 @@
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                         <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>
-                        <li class="nav-item active"><a class="nav-link" href="chat.php">הודעות</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
                         <li class="nav-item active"><a class="nav-link" href="EditPage.php">עדכן פרופיל</a></li>
                         <li class="nav-item active"><a class="nav-link" href="Lesson.php"> שיעורים</a></li>
                         <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
@@ -269,10 +269,32 @@
             </div><hr><hr>
             <div class="form-group">
                 <h3>שיתוף את הפרופיל שלי ב-</h3>
-                <label for="facebook"><div class="fa fa-facebook"></div></label>
-                <label for="linkedin"><div class="fa fa-linkedin"></div></label>   
-                <label for="whatsapp"><div class="fa fa-whatsapp"></div></label> 
+                <?php include 'socialLinks.php';
+                    $IDOfTeacher=$ID;
+                ?>
+                <div id="share"></div>
+                <script src="jquery.js"></script>
+                <script src="jssocials.min.js"></script>
+                <script>
+                    //first number said the length of the id
+                    //after that we will take the digits
+                    let url="http://hakita.rf.gd/viewTeacherProfile.php?view=";
+                    let IDOfTeacher = <?PHP echo (!empty($IDOfTeacher) ? json_encode($IDOfTeacher) : json_encode($ID));?>;
+                    let digits =IDOfTeacher.toString().length;
+                    url = url.concat(digits);
+                    url = url.concat(IDOfTeacher);     
+                    url = url.concat('3f23$3487#ff');                   
+                    $("#share").jsSocials({
+                        shares: ["email", "twitter", "facebook", "googleplus", "linkedin", "whatsapp"],
+                        url,
+                        text: "עמוד של המורה",
+                        showLabel: true,
+                        showCount: true,
+                        shareIn: "popup"
+                    });
+                </script>
             </div><!---copy my profile link---->
+            <br>
             <button class="btn btn-info btn-lg" onclick="myFunction()"><span class="glyphicon glyphicon-paperclip">קישור לפרופיל שלי</span></button>           
         </div><!--next section for the time board lessons, include a button for display the board on the student side or not. and include the board with button for each hour on week 07:00-22:00-->
         <div id="dashboardSection" class="tabcontent">

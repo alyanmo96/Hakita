@@ -190,12 +190,13 @@
             echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">';
-                    if(checkUserDefineAs($IDOfStudent)==1){
+                    if(checkUserDefineAs($ID)==1){
                       echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only">(current)</span></a> </li>';
                     }else{// if the login user was a teacher, then he want to access to his profile
                       echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a> </li>';
                     }
-                    echo'<li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
+                    echo'<li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
                     <li class="nav-item active"><a class="nav-link" href="FAQ.php"> שאלות ותשובות </a></li>
                     <li class="nav-item active">
                     <a class="nav-link" href="logout.php"> יציאה<span class="sr-only">(current)</span></a>
@@ -293,6 +294,8 @@
       </div></div>
     <div class="bgimg-1"><div class="caption"><div class="containe" id="containe" name="containe"><div class="row"><div class="col-sm-12">
     </div></div></div></div></div><br><br><br><br>
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ec53990697c2288"></script>
+                        
     <?php include_once 'footer.php';?><!--get the bottom footer-->
   </body>
 </html>

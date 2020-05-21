@@ -3,9 +3,11 @@
     FAQ page this page include three pages main FAQ page, feedbak, about site. it's also 
     include a section on the main section to send message to Admin.
   */
-  session_start();
-  include 'userData.php';  
-  $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+    session_start();
+    include 'userData.php';  
+
+    //DB connection
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
     $feedbackCommentResult = mysqli_query($con, "SELECT * FROM feedback");
     $feedbackLastResult = mysqli_query($con, "SELECT * FROM feedback");
     $lastFeedback=" ";
@@ -13,61 +15,49 @@
     {
         $lastFeedback=$commentRow['textOfFeedback'];
     }
-    if (isset($_POST["comments"])) {    
+    if(isset($_POST["comments"])){    
         if($_POST["comments"]!=$lastFeedback)
         {
-            $getComment=$_POST["comments"];
-            $rating=-1;
-            if($_POST["teacherValue"]=="oneValue")
-            {
-                $rating=1;
-            }
-            else if($_POST["teacherValue"]=="twoValue")
-            {
-                $rating=2;
-            }
-            else if($_POST["teacherValue"]=="threeValue")
-            {
-                $rating=3;
-            }
-            else if($_POST["teacherValue"]=="fourValue")
-            {
-                $rating=4;
-            }
-            else if($_POST["teacherValue"]=="fiveValue")
-            {
-                $rating=5;
-            }
-            $_POST["teacherValue"]=null; 
-            
-            $ID=$_POST['id'];   
-                
+          $getComment=$_POST["comments"];
+          $rating=-1;
+          if($_POST["teacherValue"]=="oneValue"){
+              $rating=1;
+          }elseif($_POST["teacherValue"]=="twoValue"){
+              $rating=2;
+          }elseif($_POST["teacherValue"]=="threeValue"){
+              $rating=3;
+          }elseif($_POST["teacherValue"]=="fourValue"){
+              $rating=4;
+          }elseif($_POST["teacherValue"]=="fiveValue"){
+              $rating=5;
+          }
+            $_POST["teacherValue"]=null;             
+            $ID=$_POST['id'];                   
             $commentWriterId=267;
             $todayDate=date('Y-m-d');
             $query="INSERT INTO `feedback`(`dateOfFeedback`,`textOfFeedback`,`rating`) 
-            VALUES
-                ('$todayDate','$getComment','$rating')";
-                $result = mysqli_query($con,$query);
+            VALUES('$todayDate','$getComment','$rating')";
+            $result = mysqli_query($con,$query);
         }      
     }
-  $ID=$_SESSION['id'];//get user id, if login.
-	$_SESSION['id']=$ID;
-  if(isset($_POST['feedback'])){
-    $feedback=1;
-  }
-  elseif(isset($_POST['siteUse'])){//site Use, section of question and answer how to use site.
-    $usingSite=1;
-  }
 
-  //sendMessageUserButton
-  if(isset($_POST['subject'])){//ADMIN going to delete the choosen user
-    //send a message automaticly from student to teacher
-    
+    $ID=$_SESSION['id'];//get user id, if login.
+    $_SESSION['id']=$ID;
+    if(isset($_POST['feedback'])){
+      $feedback=1;
+    }
+    elseif(isset($_POST['siteUse'])){//site Use, section of question and answer how to use site.
+      $usingSite=1;
+    }
+
+  //send messsgae to admin
+  if(isset($_POST['subject'])){    
     if($_POST['id']){//check if the message sent bu a site user or unlogin user
       $id=$_POST['id'];//if yes sent the id 
     }else{//else sent id as 0
       $id=0;
     }
+
     $name=$_POST['name'];
     $message_text='שם: '.$name.'\n';
     $email=$_POST['email'];
@@ -82,10 +72,9 @@
 ?>
 <!DOCTYPE html>
 <html>
-  <head>
-    <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-    <?php include 'header.php';?>  
-    <link rel="stylesheet" type="text/css" href="css/FAQStyle.css">  
+  <head><!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
+    <?php include 'header.php';?><!--some addition CSS-->
+    <link rel="stylesheet" type="text/css" href="css/FAQStyle.css"><!--some addition CSS--> 
   </head>
   <body>
     <a id="button"></a><!--up button-->
@@ -320,6 +309,7 @@
         <div class=\"row\">
         <div class=\"col-sm-12\">
           <form action=\"FAQ.php\" method=\"POST\">";
+          //message send to admin section
           if($ID){
             echo"<input type=\"hidden\" name=\"id\" value=\"$ID\">";
           }
@@ -335,6 +325,7 @@
         </div></div></div></div>
     </div><br><br><br><br><br><br><br><br><br>";
     }?>
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ec53990697c2288"></script>
     <?php include_once 'footer.php';/*get the bottom footer*/?>
   </body>
 </html>

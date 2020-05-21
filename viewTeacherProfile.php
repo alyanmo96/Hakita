@@ -4,18 +4,19 @@
  * get to his profile if he login//.
  * write a cooment, ask for a lesson, send message, get information about teacher
  * can get to this page by two ways as a login user or as a normal user (without login)
- * 
- * 
- * change on teacher lessons table check it
- * 
- * 
  */
     session_start();
     // get the id of teacher, and get the id of the login user on login state
     $IDOfTeacher=$_SESSION['teacher'];//get teacher id 
     $IDOfUser=$_SESSION['id'];//get login id t=if there is    
-    if($IDOfTeacher==$IDOfUser||!$IDOfTeacher){//if the student he is also the teacher do not let him contiune
-        header('Location: logout.php');//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
+    
+    if($_GET['view']){
+        $view=$_GET['view'];
+        $gitHowManyDigitsForTheId=substr($view, 0, 1); 
+        $IDOfTeacher=substr($view, 1, $gitHowManyDigitsForTheId);
+    }    
+    elseif($IDOfTeacher==$IDOfUser){//if the student he is also the teacher do not let him contiune
+       header('Location: logout.php');//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
     }
     include 'userData.php';//calling to use fuction like get image of user
 
@@ -554,9 +555,9 @@
             <div class="row">
                     <div class="form-group col-sm-6">
                         <h3>שיתוף פרופיל של המורה ב-</h3>
-                        <label for="facebook"><h4 class="inputTitleIcon"></h4><div class="fa fa-facebook"></div></label>
-                        <label for="whatsapp"><h4 class="inputTitleIcon"></h4><div class="fa fa-whatsapp"></div></label><br>
-                        <button class="btn btn-info btn-lg" onclick="myFunction()" id="profileLink"><span class="glyphicon glyphicon-paperclip">קישור לפרופיל הזה</span></button>
+                        <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ec53990697c2288"></script>
+                        <br>
+                        <button class="btn btn-info btn-lg" onclick="myFunction()" id="profileLink"><span class="glyphicon glyphicon-paperclip">העתקת קישור לפרופיל הזה</span></button>
                     </div><hr>
                     <div class="form-group col-sm-6">
                         <h3>פרטי תקשורת</h3> 
