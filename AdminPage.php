@@ -18,7 +18,7 @@
             //to compare on next section(after loop) what user choose as a cities and what we have on DB
           } 
           for($t=0;$t<count($arrayOFAll);$t++){
-            if(stristr($city,$arrayOFAll[$t])){return 1;}
+            if((strcmp($city, $arrayOFAll[$t])==0)){return 1;}
           }return -1;
     }   
     function SiteCourses($course){//function to check if admin going to insert a course that is already on DB or not
@@ -31,7 +31,7 @@
             //to compare on next section(after loop) what user choose as a courses and what we have on DB
           }      
           for($t=0;$t<count($arrayOFAll);$t++){
-            if(stristr($course,$arrayOFAll[$t])){return 1;}
+            if(strcmp($course,$arrayOFAll[$t])==0){return 1;}
           }return -1;
     }   //delete City from DB
     if(isset($_POST['deleteCity'])&&$_POST['deleteCity']!=NULL){
@@ -44,30 +44,45 @@
         }   
         if($cityID){      
             $sql="DELETE FROM cities WHERE id=$cityID";
-            if($con->query($sql) === TRUE){$cityDeleted=1;}
+            if($con->query($sql) === TRUE){$cityDeleted=1;
+                echo"<script type='text/javascript'>alert('העיר נמחקה בהצלחה  ');</script>";//delete succues 
+            }
         }else{echo "אין עיר כזאת ברשימה<br>";}//when ADMIN want to delete a city that there is no city by this name
     } 
     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-    if(isset($_POST['newCity'])&&$cityDeleted!=1){//this section for adding a new city to site. statring by get the name of the new city, check that's really a new city, if yes add it else not
+    if(isset($_POST['newCity'])&&$_POST['newCity']!=''&&$cityDeleted!=1){//this section for adding a new city to site. statring by get the name of the new city, check that's really a new city, if yes add it else not
       $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
       $city=$_POST['newCity'];//get the name of the new city
       if(SiteCities($city)==-1){
         $query="INSERT INTO `cities`(`cityName`) VALUES ('$city')";//insert on DB
         $result=mysqli_query($con,$query); 
+        echo"<script type='text/javascript'>alert('העיר הוספה בהצלחה  ');</script>";//add succues
       }else{echo"<script type='text/javascript'>alert('העיר כבר קיימת במערכת');</script>";}//when ADMIN want to add anew city that there is already over city with this name
     }//delete City from DB 
     if(isset($_POST['deleteCourse'])&&$_POST['deleteCourse']!=NULL){
         $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
-        // $sql="DELETE FROM courses WHERE subject=$deleteUserId ";
-        if($con->query($sql) === TRUE){$courseDeleted=1;}
+        $deleteCourse=$_POST['deleteCourse'];
+        $resultsOfCourses=mysqli_query($con, "SELECT * FROM courses");
+        while($CourseRows=mysqli_fetch_array($resultsOfCourses)){
+            if(strcmp($CourseRows['subject'], $deleteCourse)==0){$courseID=$CourseRows['id'];}
+        } 
+        if($courseID){      
+            $sql="DELETE FROM courses WHERE id=$courseID";
+            if($con->query($sql) === TRUE){$courseDeleted=1;
+                echo"<script type='text/javascript'>alert('הקורס נמחק בהצלחה');</script>";//delete succues 
+            }else{
+            echo"<script type='text/javascript'>alert('הקורס לא קיים במערכת');</script>";//delete failed            
+        }
+    }
     }   
-    if(isset($_POST['newCourse'])&&$cityDeleted!=1){//this section for adding a new city to site. statring by get the name of the new course, check that's really a new course, if yes add it else not
+    if(isset($_POST['newCourse'])&&$_POST['newCourse']!=''&&$cityDeleted!=1){//this section for adding a new city to site. statring by get the name of the new course, check that's really a new course, if yes add it else not
         $course=$_POST['newCourse'];//get the name of the new course
         $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
         if(SiteCourses($course)==-1){
             $query="INSERT INTO `courses`(`subject`) VALUES ('$course')";//insert on DB
             $result = mysqli_query($con,$query);
-        }else{echo"<script type='text/javascript'>alert('הקורס כבר קיים במערכת');</script>";}
+            echo"<script type='text/javascript'>alert('הקורס הוסף בהצלחה  ');</script>";//add succues
+        }else{echo"<script type='text/javascript'>alert('הקורס כבר קיים במערכת');</script>";}//add faild
     }       
     if((isset($_POST['verifyPassword'])&&isset($_POST['password']))||
     isset($_POST['email'])||isset($_POST['phone'])||
@@ -90,7 +105,9 @@
         if($_POST['password']){
             $invalidPass=Password($adminId, $_POST['password'], $_POST['verifyPassword']);
         }  
-    }//get all user id's....not include admin id
+    }
+    
+    //get all user id's....not include admin id
     $IdResults = mysqli_query($con, "SELECT * FROM users");
     $i=0; $IdArray = array();
     while ($rows=mysqli_fetch_array($IdResults)){
@@ -124,12 +141,13 @@
         echo"</form>";
         echo'</div>';
     }
+
 ?>
 <!DOCTYPE html>
 <html>
     <head><!--import bootstrap for (STYLE)-->
         <?php include 'header.php';?>
-        <link rel="stylesheet" type="text/css" href="css/AdminStyle.css">
+        <link rel="stylesheet" type="text/css" href="css/AdminStyle.css"><!--some addition CSS-->
     </head>
     <body>
     <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
@@ -138,6 +156,7 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
                 <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>
               </ul>
             </div>
@@ -302,7 +321,7 @@
                         echo'<option>'.$rows['cityName'].'</option>';
                     }
                     echo"</SELECT><br><br>";
-                    echo'<input type="text" placeholder="הוספת עיר חדשה" name="newCity" id="newCity" required/>
+                    echo'<input type="text" placeholder="הוספת עיר חדשה" name="newCity" required/>
                     <input type="text" placeholder="מחיקת עיר" name="deleteCity" id="deleteCity" required/></div></div><br><br>';
                     echo'<div class="form-group"><div class="col-xs-6">';
                     echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
@@ -378,7 +397,7 @@
                     break;
                     }
                 }
-            ?><hr>
+            ?><hr><!--update admin details-->
             <div class="container">
                 <div class="row"><div class="col-sm-12"><h1>עדכון פרטים המנהל</h1></div></div>
                 <div class="row">
@@ -389,42 +408,42 @@
                         <div class="tab-pane active" id="home"><hr>
                             <form class="form" action="AdminPage.php" method="post" id="registrationForm">                                
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6"><!--update admin first name-->
                                         <label for="first_name"><h4>שם פרטי</h4></label>
                                         <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>" title="enter your first name if any.">
                                     </div>
                                 </div> 
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6"><!--update admin last name-->
                                         <label for="last_name"><h4>שם משפחה</h4></label>
                                         <input type="text" class="form-control" name="last_name" id="last_name" placeholder="<?php echo $lastName?>" >
                                     </div>
                                 </div>
                                 <div class="forme-group">                         
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6"><!--update admin phone number-->
                                         <label for="phone"><h4>   מספר טלפון    </h4></label>
                                         <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo $Phone?>">
                                     </div>
                                 </div>
                                 <div class="forme-group">
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6"><!--update admin email-->
                                         <label for="email"><h4>Email</h4></label>
                                         <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo $email?>">
                                     </div>
                                 </div>  
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6"><!--update admin password-->
                                         <label for="password"><h4>סיסמה</h4></label>
                                         <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
                                     </div>
                                 </div> 
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6">
+                                    <div class="col-xs-6"><!--update admin password-->
                                     <label for="verifyPassword"><h4>אימות סיסמה</h4></label>
                                         <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="אימות הסיסמה החדשה">
                                     </div>
                                 </div>
-                                <div class="forme-group">
+                                <div class="forme-group"><!--save admin details-->
                                     <div class="col-xs-12"><br>
                                         <label for="Save"><h4></h4></label>
                                         <input type="submit" name="Save" value="שמור">                                                        

@@ -84,7 +84,7 @@
       //on next section we compare between list of cities and where teachers found
       while($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResult)){
         for($t=0;$t<count($arrayOfChoosenCities);$t++){
-          if(stristr($teacherCitiesRows['cities'],$arrayOfChoosenCities[$t])){
+          if((strcmp($teacherCitiesRows['cities'], $arrayOfChoosenCities[$t]) == 0)||stristr($teacherCitiesRows['cities'],$arrayOfChoosenCities[$t])){
             $idArrayOfPeopleLiveOnChoosenCity[$CounterOfIdArrayOfPeopleLiveOnChoosenCity]=$teacherCitiesRows['id'];
             $CounterOfIdArrayOfPeopleLiveOnChoosenCity++;
             break;
@@ -109,14 +109,21 @@
         }
       }
       while($CourseRows=mysqli_fetch_array($teachers_coursesResult)){// check which teacher learn the specified course
-          for($t=0;$t<count($arrayOfChoosenCourse);$t++){
-            if(stristr($CourseRows['subject'],$arrayOfChoosenCourse[$t])){
+          for($t=0;$t<count($arrayOfChoosenCourse);$t++){            
+            if(strcmp('תוכנה', $arrayOfChoosenCourse[$t]) == 0){
+              if((strpos($CourseRows['subject'], 'JAVA') !== false)||(strpos($CourseRows['subject'], 'C') !== false)||(strpos($CourseRows['subject'], 'C++') !== false)||(strpos($CourseRows['subject'], 'Android') !== false)){
+                $idArrayOfPeopleLearnOfChoosenCourse[$CounterOfIdArrayOfPeopleLearnOfChoosenCourse]=$CourseRows['id'];
+                $CounterOfIdArrayOfPeopleLearnOfChoosenCourse++;
+              }
+            }
+            elseif(stristr($CourseRows['subject'],$arrayOfChoosenCourse[$t])){
               $idArrayOfPeopleLearnOfChoosenCourse[$CounterOfIdArrayOfPeopleLearnOfChoosenCourse]=$CourseRows['id'];
               $CounterOfIdArrayOfPeopleLearnOfChoosenCourse++;
               break;
             }
           }
-      }// last section on selected city + course....keep the same id        
+      }
+      // last section on selected city + course....keep the same id        
       for($t=0;$t<count($idArrayOfPeopleLiveOnChoosenCity);$t++){
         for($f=0;$f<count($idArrayOfPeopleLearnOfChoosenCourse);$f++){
           if($idArrayOfPeopleLiveOnChoosenCity[$t]==$idArrayOfPeopleLearnOfChoosenCourse[$f]){
@@ -128,7 +135,13 @@
       }
     }elseif($Courses!=null&&$Cities==null){ //if user selected course and not choosing any city, user can check just for one course
       while($CourseRows=mysqli_fetch_array($teachers_coursesResult)){
-        if(stristr($CourseRows['subject'],$Courses)){
+        if(strcmp('תוכנה', $Courses) == 0){
+          if((strcmp($CourseRows['subject'],'JAVA')==0)||(strcmp($CourseRows['subject'],'C')==0)||(strcmp($CourseRows['subject'],'Cpp')==0)||(strcmp($CourseRows['subject'],'Android')==0)){
+            $courseResultArray[$courseResultArrayCounter]=$CourseRows['id'];
+            $courseResultArrayCounter+=1;
+          }
+        }
+        elseif(stristr($CourseRows['subject'],$Courses)){
           $courseResultArray[$courseResultArrayCounter]=$CourseRows['id'];
           $courseResultArrayCounter+=1;
         }
@@ -183,7 +196,8 @@
               <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>'; 
               if(checkUserDefineAs($IDOfStudent)==-1){echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>';}
               else{echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>';}
-              echo'<li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
+              echo'<li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
+              <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
               <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>';
             }else{
               echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
