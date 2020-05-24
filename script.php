@@ -76,6 +76,9 @@ $(document).ready(function(){
  $('#frameworkTeacher').change(function(){
   $('#hidden_framework_teacher').val($('#frameworkTeacher').val());
  });
+ $('#send_framework').change(function(){
+  $('#hidden_send_framework').val($('#send_framework').val());
+ });
 
  $('#multiple_select_form').on('Save', function(event){
   event.preventDefault();
@@ -145,6 +148,21 @@ $(document).ready(function(){
     success:function(data)
     {
      $('#hidden_framework_teacher').val('');
+     $('.selectpicker').selectpicker('val', '');
+     alert(data);
+    }
+   })
+  }
+
+  else if($('#send_framework').val() != ''){
+   var form_data = $(this).serialize();
+   $.ajax({
+    url:"secondEditPage.php",
+    method:"POST",
+    data:form_data,
+    success:function(data)
+    {
+     $('#hidden_send_framework').val('');
      $('.selectpicker').selectpicker('val', '');
      alert(data);
     }

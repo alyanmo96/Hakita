@@ -1,21 +1,16 @@
 <?php
-//this going to be the chat page for all user also for admin
+//this going to be the chat page for admin
 	//start with check user validate
-	session_start();
-	$userId=$_SESSION['id'];
-	$_SESSION['id']=$userId;
-	
-	if(!$userId){//no user like this, redirect to logout file to dismiss details and redirect to main page
-		header("Location: logout.php");
-	}
-	include 'userData.php';//call userData, to use some function from
+	include 'userData.php';//call userData, to use some function from this file, like get name,...
 
+	//function to check that the id's of the two side of each chat are defferent 
     function checkId($peopleMessageArray, $id, $idOther){
 		if($id==$idOther){return -1;}
 		for($i=0;$i<count($peopleMessageArray);$i++){
 			if($peopleMessageArray[$i]==$idOther){return 1;}
 		}return -1;
 	}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,10 +22,10 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/profileStyle.css"><!--some addition CSS-->
-		<link rel="stylesheet" type="text/css" href="css/message.css">
+		<link rel="stylesheet" type="text/css" href="css/message.css"><!--some addition CSS-->
     </head>	
     <body>
-	<section><!--navbar section--><!--navbar include the main page of the site FAQ page, EXIT-->
+	<section><!--navbar section--><!--navbar include back to admin main page, EXIT-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>        
                 <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
@@ -117,7 +112,7 @@
 				}; 
 			});
 		}
-		$("#msg_history").empty();
+		$("#msg_history").empty();//to not duplecate messages
 		getMessage(idOwner, idOther);//redirect to this function to display the new message
 	}
 

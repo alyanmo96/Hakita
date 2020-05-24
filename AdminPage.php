@@ -142,11 +142,37 @@
         echo'</div>';
     }
 
+    if(isset($_POST['sendEmails'])){
+        //check the select option value
+        $to = "";//sending to email address
+        $from ="HakitaSite";// from
+        $kindOfUsers=$_POST['hidden_send_framework'];//for send EMAILS--->all users/teachers/students
+        $subject=$_POST['emailSubject'];//subject of message
+        $message=$_POST['emailInput'];        
+        $headers="From:".$from."\r\n";
+        $headers.="Content-type: text/html\r\n";
+        $results=mysqli_query($con, "SELECT * FROM users");
+        while($rows=mysqli_fetch_array($results)){
+            $to=$rows['email'];
+            if($kindOfUsers==0){//for all users
+                mail($to,$subject,$message,$headers);
+            }elseif($kindOfUsers==1&&checkUserDefineAs($rows['id'])==-1){//for teachers
+                mail($to,$subject,$message,$headers);
+            }elseif($kindOfUsers==2&&checkUserDefineAs($rows['id'])==1){//for students
+                mail($to,$subject,$message,$headers);
+            }
+        }      
+    }
 ?>
 <!DOCTYPE html>
 <html>
     <head><!--import bootstrap for (STYLE)-->
         <?php include 'header.php';?>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
         <link rel="stylesheet" type="text/css" href="css/AdminStyle.css"><!--some addition CSS-->
     </head>
     <body>
@@ -156,7 +182,7 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
+                <li class="nav-item active"><a class="nav-link" href="adminMessageRoom.php">הודעות</a></li>
                 <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>
               </ul>
             </div>
@@ -173,7 +199,8 @@
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newCC', this, 'orange')\"> הוספת עיר/מקוצע חדשים </button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'orange')\"> מי עשה שינוי </button>
-                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\"id=\"defaultOpen\">  פרטי המנהל </button>";
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\"id=\"defaultOpen\">  פרטי המנהל </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">  שליחת מייל </button>";
                 }elseif($cityAndCourseNavbar){//new course/city section on the main page
                     echo "                    
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\">לכל המשתמשים</button>
@@ -182,7 +209,8 @@
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newCC', this, 'orange')\"id=\"defaultOpen\"> הוספת עיר/מקוצע חדשים </button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'orange')\"> מי עשה שינוי </button>
-                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\">  פרטי המנהל </button>";
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\">  פרטי המנהל </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">שליחת מייל</button>";
                 }else{//default mode, display the all users section on the main page
                     echo "                    
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\"id=\"defaultOpen\">לכל המשתמשים</button>
@@ -191,7 +219,8 @@
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newCC', this, 'orange')\"> הוספת עיר/מקוצע חדשים </button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'orange')\"> מי עשה שינוי </button>
-                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\">  פרטי המנהל </button>";
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\">  פרטי המנהל </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">שליחת מייל</button>";
                }
             ?>
         </div><!--next section for all users, 
@@ -313,24 +342,24 @@
             <form action="AdminPage.php" method="post">  
                 <?php
                     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                    echo'<div class="form-group"><div class="col-xs-6">';
+                    echo'<div class="form-group"><div class="col-xs-12">';
                     echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
                     $results = mysqli_query($con, "SELECT * FROM cities");
-                    echo'<option >בדוק את הערים הקימות</option>';
+                    echo'<option>בדוק את הערים הקימות</option>';
                     while ($rows=mysqli_fetch_array($results)){//list of cities on DB
                         echo'<option>'.$rows['cityName'].'</option>';
                     }
-                    echo"</SELECT><br><br>";
+                    echo"</SELECT><br><br><br>";//
                     echo'<input type="text" placeholder="הוספת עיר חדשה" name="newCity" required/>
                     <input type="text" placeholder="מחיקת עיר" name="deleteCity" id="deleteCity" required/></div></div><br><br>';
-                    echo'<div class="form-group"><div class="col-xs-6">';
+                    echo'<br><br><div class="form-group"><div class="col-xs-12">';
                     echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
                     $results = mysqli_query($con, "SELECT * FROM courses");
-                    echo'<option >בדוק את המקצועות הקיימים  </option>';
+                    echo'<option>בדוק את המקצועות הקיימים  </option>';
                     while ($rows=mysqli_fetch_array($results)){//list of courses on DB
                         echo'<option>'.$rows['subject'].'</option>';
-                    }echo"</SELECT></div></div><br><br>";
-                    echo'<input type="text" placeholder="הוספת מקצוע חדש" name="newCourse" required>';
+                    }echo"</SELECT></div></div><br><br><br>";//
+                    echo'<br><br><input type="text" placeholder="הוספת מקצוע חדש" name="newCourse" required>';
                     echo'<input type="text" placeholder="מחיקת מקצוע " name="deleteCourse" required>
                     <fieldset> 
                         <div class="text-center"><input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="שמירת שינוי"></div>
@@ -401,44 +430,43 @@
             <div class="container">
                 <div class="row"><div class="col-sm-12"><h1>עדכון פרטים המנהל</h1></div></div>
                 <div class="row">
-                    <div><!--left col-->
                 <div class="col-sm-12">
                     <ul class="nav nav-tabs"><li class="active"><h1><?php echo $username ?></h1></li></ul>              
                     <div class="tab-content">
                         <div class="tab-pane active" id="home"><hr>
                             <form class="form" action="AdminPage.php" method="post" id="registrationForm">                                
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6"><!--update admin first name-->
+                                    <div class="col-xs-12"><!--update admin first name-->
                                         <label for="first_name"><h4>שם פרטי</h4></label>
                                         <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>" title="enter your first name if any.">
                                     </div>
                                 </div> 
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6"><!--update admin last name-->
+                                    <div class="col-xs-12"><!--update admin last name-->
                                         <label for="last_name"><h4>שם משפחה</h4></label>
                                         <input type="text" class="form-control" name="last_name" id="last_name" placeholder="<?php echo $lastName?>" >
                                     </div>
                                 </div>
                                 <div class="forme-group">                         
-                                    <div class="col-xs-6"><!--update admin phone number-->
+                                    <div class="col-xs-12"><!--update admin phone number-->
                                         <label for="phone"><h4>   מספר טלפון    </h4></label>
                                         <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo $Phone?>">
                                     </div>
                                 </div>
                                 <div class="forme-group">
-                                    <div class="col-xs-6"><!--update admin email-->
+                                    <div class="col-xs-12"><!--update admin email-->
                                         <label for="email"><h4>Email</h4></label>
                                         <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo $email?>">
                                     </div>
                                 </div>  
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6"><!--update admin password-->
+                                    <div class="col-xs-12"><!--update admin password-->
                                         <label for="password"><h4>סיסמה</h4></label>
                                         <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
                                     </div>
                                 </div> 
                                 <div class="forme-group">                          
-                                    <div class="col-xs-6"><!--update admin password-->
+                                    <div class="col-xs-12"><!--update admin password-->
                                     <label for="verifyPassword"><h4>אימות סיסמה</h4></label>
                                         <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="אימות הסיסמה החדשה">
                                     </div>
@@ -450,7 +478,27 @@
                                     </div>
                                 </div>
                             </form>
-            </div></div></div></div>
+            </div></div></div></div></div></div>
+            <div id="AdminSendEmails" class="tabcontent">
+               <form class="form" action="AdminPage.php" method="post">
+                    <div class="form-group col-sm-6">
+                    <br><br><br><br>
+                        <input name="emailSubject" type="text" placeholder="נושא המייל" class="form-control">
+                            <br>
+                        <input name="emailInput" type="text" placeholder="תוכן המייל" class="form-control" style="height: 100px;">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <p >שלח מייל ל-</p>
+                        <SELECT id="send_framework" class="selectpicker">
+                            <option value="0">לכל המשתמשים</option>
+                            <option value="1">לכל המורים</option>
+                            <option value="2">לכל התלמידים</option>
+                        </SELECT>                                   
+                        <input type="hidden" name="hidden_send_framework" id="hidden_send_framework"/><br/>
+                    </div>
+                    <div id="v"><label for="Save"></label><input id="sendEmails" type="submit" name="sendEmails" value="שלח"></div>
+                </form>
+            </div>
     </body>
 </html>
 <?php include 'script.php';/*user script like the select list/ up button*/?>  
