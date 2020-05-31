@@ -385,7 +385,30 @@ body{
             padding-left: 0;
             width:auto;      
         }
+        .displayOnSmallScreen{
+         display: none;   
+        }
     }    
     .bootstrap-select.btn-group .dropdown-toggle .filter-option {
         text-align: center;
-    }          
+    } 
+    #deleteCity{
+        border-radius:300px;
+    }   
+    #newCity{
+        border-radius:300px;        
+    }
+    #newCourse{
+        border-radius:300px;        
+    }
+    #deleteCourse{
+        border-radius:300px;        
+    }
+    @media only screen and (max-width: 400px) {
+        h1 {
+            font-size: 26px;
+        }
+        .navbar-light .navbar-toggler {
+            margin-left: auto;
+        }
+  }

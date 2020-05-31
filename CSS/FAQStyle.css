@@ -241,3 +241,23 @@ input[type=submit]:hover {
             #bttttn{
               line-height: 2.5;
             }
+            @media only screen and (min-width: 970px) {
+              #forSmallScreen{
+                display: none;
+              }
+            }
+            @media only screen and (max-width: 400px) {
+              .bgimg-1 {
+                min-height: 50%;
+              }
+              .btn-light {
+                border-color: #f8f9fa;
+              }
+              #jceImg{
+                max-width: 45px;
+                max-height: 38px;
+              }
+              .fa{
+                font-size: 20px;
+              }
+            }

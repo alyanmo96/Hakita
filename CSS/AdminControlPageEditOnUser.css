@@ -14,6 +14,24 @@ input[type=submit]
     border-radius: 4px;
     cursor: pointer;
   }
+  .navbar-nav .nav-link {
+    padding-right: 0;
+    padding-left: 40%;
+    }
+    .nav-link
+    {
+        font-size:13px;
+    }    
+    .nav-link:hover
+    {
+        font-size:23px;
+    }
+    @media only screen and (max-width: 450px) {
+        .navbar-light .navbar-brand {
+            color: rgba(0,0,0,.9);
+            margin-right: auto;
+        }
+    }  
 input[type=submit]:hover 
 {
     background-color: #45a049;
@@ -31,3 +49,15 @@ input[type=submit]:hover
   {
     height: 3rem; 
   }
+  @media only screen and (max-width: 400px) {
+    #img-circle {
+      max-width: 80px;
+  }
+  input[type=file] {
+    display: contents;
+  }
+  .chooseImg
+  {
+    display: contents;
+  }
+}

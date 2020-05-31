@@ -17,7 +17,7 @@ img
 {
   border: 1px solid #c4c4c4;
   clear: both;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 .top_spac
 { 
@@ -87,7 +87,9 @@ img
 }
 .chat_people
 { 
-	overflow:hidden; clear:both;
+  overflow:hidden; 
+  clear:both;
+  max-width: 100%;
 }
 .chat_list 
 {
@@ -211,7 +213,7 @@ body {
 }
 #msg_history {
   	overflow-y: auto;
-    height: 60vh;
+    height: 40vh;
     overflow: scroll;
     padding: 10px;
     background-color: bisque;
@@ -259,4 +261,18 @@ body{
 .nav-link:hover
 {
     font-size:23px;
+}
+@media only screen and (max-width: 400px) {
+  .inbox_people {
+    width: 100%;
+  }
+  .mesgs {
+    float: left;
+    padding: 30px 15px 0 25px;
+    width: 100%;
+  }
+  body {
+    margin: 0;
+    overflow: auto;
+  }
 }
