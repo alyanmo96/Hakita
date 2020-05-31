@@ -3,20 +3,27 @@
  *  this file let ADMIN to update details or delete user.
  */
     session_start();
-    //start with get the user id.
-    if($_POST['frameworkAllUsers']){
+    /*start with get the user id.
+      case on Admin.php there is more than one section for user {AllUser, teacher, student,..} 
+      so the same user will found on more than on section, that's mean user could found on AllUser section
+      and on teacher for example so we need a deffrent id for the same user. 
+    */
+    if($_POST['frameworkAllUsers']){//id from AllUser
       $AdminPutId=$_POST['frameworkAllUsers'];  
-    }elseif($_POST['frameworkStudent']){
+    }elseif($_POST['frameworkStudent']){//id from students
       $AdminPutId=$_POST['frameworkStudent'];  
-    }elseif($_POST['frameworkTeacher']){
+    }elseif($_POST['frameworkTeacher']){//id from teacher
       $AdminPutId=$_POST['frameworkTeacher']; 
-    }elseif($_POST['user']){
+    }elseif($_POST['user']){//id from AllUser
     $AdminPutId=$_POST['user'];
-  }elseif($_POST['id']){
+  }elseif($_POST['id']){//id from AllUser
     $AdminPutId=$_POST['id'];
   }
+
+  //DB connection
   $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-  if(is_string($AdminPutId)){//if we get an username, case on AdminPage the same user will display on alluser and on other section so we cant use the same id for same person as a different persons
+  //if we get an username, case on AdminPage the same user will display on alluser and on other section so we cant use the same id for same person as a different persons
+  if(is_string($AdminPutId)){
     $getUserID=mysqli_query($con, "SELECT * FROM users");
     while($row=mysqli_fetch_assoc($getUserID)){
         if($row['username']==$AdminPutId){
@@ -26,7 +33,7 @@
     }
   }
   include 'userData.php';//call userData file, to use function like update password,...
-  // if the admin update password/ email/ name// phone number / courses/ cities of user. function of userData file.
+  // if the admin update password/ email/ name/ phone number / courses/ cities of user. function of userData file.
   if((isset($_POST['verifyPassword'])&&isset($_POST['password']))||
     isset($_POST['email'])||isset($_POST['phone'])||isset($_POST['price'])||isset($_POST['status'])||
     isset($_POST['first_name'])||isset($_POST['last_name'])||
@@ -38,10 +45,10 @@
       if($_POST['last_name']){//if ADMIN update user last name
         updateLastName($AdminPutId, $_POST['last_name']);
       }        
-      if($_POST['price']){//if ADMIN update user price
+      if($_POST['price']){//if ADMIN update user min price
         updatePrice($AdminPutId,$_POST['price']);//new price 
       }         
-      if($_POST['priceTwo']){//if user update his price.
+      if($_POST['priceTwo']){//if user update his max price.
         updatePriceTwo($ID,$_POST['priceTwo']);//new price            
       }       
       if($_POST['status']){//if ADMIN update user status
@@ -56,15 +63,15 @@
       if($_POST['phone']){//if ADMIN update user phone
           updatePhoneNumber($AdminPutId, $_POST['phone']);
       }  
-      if($_POST['phoneTwo']){//if user update his phone number
+      if($_POST['phoneTwo']){//if admin update user second phone number
         updatePhoneNumberTwo($ID, $_POST['phoneTwo']);
       } 
-      if($_POST['hidden_framework']){//if ADMIN update user cities
+      if($_POST['hidden_framework']){//if ADMIN update teacher cities
         $Cities=$_POST['hidden_framework'];
         $upDate="UPDATE `teacher_cities` SET `cities`='$Cities'WHERE id=$AdminPutId";//update it on table
         $result=mysqli_query($con,$upDate);
       } 
-      if ($_POST['hidden_framework_courses']){// if ADMIN update user courses
+      if ($_POST['hidden_framework_courses']){// if ADMIN update teacher courses
         $Courses=$_POST['hidden_framework_courses']; 
         $upDate="UPDATE `teachers_courses` SET `subject`='$Courses'WHERE id=$AdminPutId";//update it on table
         $result=mysqli_query($con,$upDate);
@@ -81,17 +88,15 @@
     header('location: AdminPage.php');
   }    
 
-  //sendMessageUserButton
-  if(isset($_POST['sendMessageUserButton'])){//ADMIN going to delete the choosen user
-     //send a message automaticly from student to teacher
-     
+  //admin going to start a message with user
+  if(isset($_POST['sendMessageUserButton'])){     
      $message_date = date("y-m-d h:i");
      $message_text='';
      $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
      ('211',' $AdminPutId','$message_text','$message_date')";
      $messageResults = mysqli_query($con,$query);
  
-     $_SESSION['id']=211;//redirect to message room chat
+     $_SESSION['id']=211;//redirect to admin message room chat
      header("Location: adminMessageRoom.php");
   } 
 
@@ -103,13 +108,14 @@
   $db=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
   $results=mysqli_query($db, "SELECT * FROM users");
   //varibale use to display user information for ADMIN 
-  $firstName=" ";$lastName=" ";$price=" ";$status=" ";$username=" ";
+  $firstName=" ";$lastName=" ";$price=" ";$status=" ";$username=" ";$maxPrice;
   while($row=mysqli_fetch_assoc($results)){//get the details from teachers table
     if($row['id']==$AdminPutId){
       $username=$row['username'];
       $firstName=$row['fname'];$lastName=$row['lname'];      
-      $price=$row['price'];
+      $price=$row['price'];$maxPrice=$row['priceTwo'];
       $status=$row['status'];
+    break;
     }
   }
   $_SESSION['varname']=$username;
@@ -119,6 +125,7 @@
   <head><!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
     <title>הכיתה</title>
     <meta charset="utf-8">
+    <?php include_once 'header.php';?>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Cairo:400,700" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -130,24 +137,27 @@
     <link rel="stylesheet" type="text/css" href="css/AdminControlPageEditOnUser.css">
   </head>
   <body>
-    <nav class="navbar navbar-default"><!--navbar-->
-      <div class="container">
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav navbar-left">
-            <li><a href="logout.php">יציאה</a></li>
-            <li><a href="AdminPage.php">עמוד המנהל</a></li>
-          </ul>
-          <div class="navbar-header navbar-right"><button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"><span class="sr-only">Toggle navigation</span></button></div>
-        </div>
-      </div>
-    </nav><hr>
+  <section><!--navbar section// for login user and unlogin user-->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>  
+                <a class="navbar-brand" href=""></a>
+                        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                            <li class="nav-item active"><a class="nav-link" href="AdminPage.php">חזרה לעמוד המנהל</a></li>
+                            <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>
+                            
+                    </ul>
+                </div>
+            </nav>
+        </section>
+  <hr>
     <div class="container bootstrap snippet">
       <div class="row"><!--next section related to let ADMIN to update user information-->
-        <div class="col-sm-10"><h1>עדכון פרטים לשם משתמש <?php echo $username ?></h1></div>
+        <div class="col-sm-10"><h1>עדכון פרטים <?php echo $username ?></h1></div>
           <div class="col-sm-2">
           <a href="/users" class="pull-right">
             <?php
-              echo "<img src='img/".Image($AdminPutId)."'   class='img-circle img-responsive'>";
+              echo "<img id=\"img-circle\" src='img/".Image($AdminPutId)."'   class='img-circle img-responsive'>";
             ?>
           </a>
         </div>
@@ -159,17 +169,11 @@
             <div class="tab-content">
               <div class="tab-pane active" id="home"><hr>
                     <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
-                        <div class="form-group">
-                          <div class="col-xs-12">
-                            <label for="user_name"></label><!--hidden username use on update-->
-                            <input type="hidden" class="form-control" name="username" value="<?php echo $username?>">
-                          </div>
+                        <div class="form-group"><!--hidden username use on update-->
+                          <div class="col-xs-12"><label for="user_name"></label><input type="hidden" class="form-control" name="username" value="<?php echo $username?>"></div>
                         </div>
-                        <div class="form-group">
-                          <div class="col-xs-12">
-                            <label for="id"></label><!--hidden id use on update-->
-                            <input type="hidden" class="form-control" name="id" value="<?php echo $AdminPutId?>">
-                          </div>
+                        <div class="form-group"><!--hidden id use on update-->
+                          <div class="col-xs-12"><label for="id"></label><input type="hidden" class="form-control" name="id" value="<?php echo $AdminPutId?>"></div>
                         </div>
                         <div class="form-group">                          
                           <div class="col-xs-6">
@@ -194,15 +198,13 @@
                             <label for="phone"><h4>מספר טלפון</h4></label><!--lable use to  update phone-->
                             <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo phoneNumber($AdminPutId)?>">
                           </div>
-                        </div>
-                        
+                        </div>                        
                         <div class="form-group">
                           <div class="col-xs-6">
                             <label for="mobile"><h4>סטטוס</h4></label>
                             <input type="text" class="form-control" name="status" id="status" placeholder="<?php echo $status?>" >
                           </div>
                         </div>
-
                         <div class="form-group">
                           <div class="col-xs-6">
                             <label for="email"><h4>Email</h4></label><!--lable use to  update email-->
@@ -211,8 +213,7 @@
                         </div>
                           <?php
                             if(checkUserDefineAs($AdminPutId)==-1){//display just for teahers account <!---lable use to  update status and price-->
-                              echo" <div class=\"form-group\"><div class=\"col-xs-6\"><label for=\"price\"><h4>מחיר עד</h4></label><input type=\"text\" class=\"form-control\" name=\"priceTwo\" id=\"priceTwo\"></div></div>";
-                              echo"<div class=\"form-group\"><div class=\"col-xs-6\"><label for=\"price\"><h4>מחיר מתחיל לשעה</h4></label><input type=\"number\" class=\"form-control\" name=\"price\" placeholder=\" $price\"></div></div>";
+                              echo"<div class=\"form-group\"><div class=\"col-xs-12\"><label for=\"price\"><h4>מחיר לשעה</h4></label><input type=\"text\" class=\"form-control\" name=\"price\" placeholder=\" $price\"></div></div>";
                             }
                           ?>
                           <div class="form-group">                          
@@ -223,7 +224,7 @@
                           </div>  
                           <div class="form-group">                          
                             <div class="col-xs-6">
-                              <label for="password"><h4>סיסמה</h4></label><!--lable use to  update password-->
+                              <label for="password"><h4> סיסמה חדשה</h4></label><!--lable use to  update password-->
                               <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
                             </div>
                           </div> 
@@ -232,36 +233,36 @@
                               echo'<div class="form-group">
                                 <div class="col-xs-6">
                                   <div style=" padding-top: 2%;">  עירים ';
-                                            echo "<SELECT name=\"framework\" id=\"framework\" class=\"form-control selectpicker\" data-live-search=\"true\" multiple>";
-                                            $results = mysqli_query($con, "SELECT * FROM cities");
-                                            echo'<option >'.'בדוק את הערים הקימות'.'</option>';
-                                            while ($rows=mysqli_fetch_array($results)){
-                                                echo'<option>'.$rows['cityName'].'</option>';
-                                            }
-                                            echo"</SELECT><br/><br/>
-                                      <input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />                                 
+                                    echo "<SELECT name=\"framework\" id=\"framework\" class=\"form-control selectpicker\" data-live-search=\"true\" multiple>";
+                                    $results = mysqli_query($con, "SELECT * FROM cities");
+                                    echo'<option >'.'בדוק את הערים הקימות'.'</option>';
+                                    while ($rows=mysqli_fetch_array($results)){
+                                        echo'<option>'.$rows['cityName'].'</option>';
+                                    }
+                                    echo"</SELECT><br/><br/>
+                                    <input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />                                 
                                     <br/></div></div></div>
                                     <div class=\"form-group\">
                                     <div class=\"col-xs-6\">
                                     <div style=\" padding-top: 2%;\"> קורסים";  
-                                          echo "<SELECT name=\"frameworkCourse\" id=\"frameworkCourse\" class=\"form-control selectpicker\" data-live-search=\"true\" multiple>";
-                                          $results = mysqli_query($con, "SELECT * FROM courses");
-                                          echo'<option >'.'קורסים שמלמד'.'</option>';
-                                          while ($rows=mysqli_fetch_array($results)){
-                                              echo'<option>'.$rows['subject'].'</option>';
-                                          }
-                                          echo"</SELECT><br/><br/>";
+                                      echo "<SELECT name=\"frameworkCourse\" id=\"frameworkCourse\" class=\"form-control selectpicker\" data-live-search=\"true\" multiple>";
+                                      $results = mysqli_query($con, "SELECT * FROM courses");
+                                      echo'<option >'.'קורסים שמלמד'.'</option>';
+                                      while ($rows=mysqli_fetch_array($results)){
+                                          echo'<option>'.$rows['subject'].'</option>';
+                                      }
+                                      echo"</SELECT><br/><br/>";
                                       echo"<input type=\"hidden\" name=\"hidden_framework_courses\" id=\"hidden_framework_courses\"/>                 
-                                    <br/></div></div></div>";                           
+                                <br/></div></div></div>";                           
                               }
-                            ?>         
+                          ?>         
                       <div class="form-group"><!--save button-->
                         <div class="col-xs-12"><br>
-                          <label for="Save"></label>
-                          <input type="submit" name="Save" value="שמור">                              
-                        </div></div>
+                          <label for="Save"></label><input type="submit" name="Save" value="שמור">                              
+                        </div>
+                      </div>
                   </form>
-            </div></div></div><!--/tab-content-->
+            </div></div></div><!--update user image-->
             <div class="col-sm-3">
               <form method="POST" action="AdminControlPageEditOnUser.php" enctype="multipart/form-data">
                   <input type="hidden" class="form-control" name="ImgUsername" value="<?php echo $username?>">
@@ -271,6 +272,7 @@
                   <div class="chooseImg"><input class="file-path validate" type="file" name="image"></div>
                   <div><button type="submit" name="upload">שמור תמונה</button></div>
               </form><br><br>
+              <!--start a message with user-->
               <form method="POST" action="AdminControlPageEditOnUser.php" enctype="multipart/form-data">
                 <button name="sendMessageUserButton" class="btn btn-info">שלח הודעה למשתמש </button>
                 <div class="form-group">
@@ -278,6 +280,7 @@
                         <input type="hidden" class="form-control" name="id" value="<?php echo $AdminPutId?>">
                     </div></div>
             </form><br><br>
+            <!--delete user account-->
             <form method="POST" action="AdminControlPageEditOnUser.php" enctype="multipart/form-data">
                 <button name="deleteUserButton" class="btn btn-danger">מחק משתמש</button>
                 <div class="form-group">
@@ -289,7 +292,7 @@
               if(checkUserDefineAs($AdminPutId)==1){//for students, change account to teacher account.
                 echo"<form method=\"POST\" action=\"AdminControlPageEditOnUser.php\" enctype=\"multipart/form-data\">
                   <button name=\"changeFromStudentAccountToTeacherAccount\" class=\"btn btn-warning\"> שינוי לחשבון של מורה</button>
-                  <div class=\"form-group\">
+                  <div class=\"form-group\"><br><br>
                       <div class=\"col-xs-12\"><label for=\"id\"></label>
                           <input type=\"hidden\" class=\"form-control\" name=\"id\" value=\"$ID\">
                       </div>
@@ -297,7 +300,9 @@
                 </form>";
               }
             ?>
-      </div></div></div><!--/row-->
+          </div>
+      </div>  
+    </div>
   </body>
 </html>
 <?php include 'script.php';/*call some function, like up button, select for list of courses for teachers,...*/?>

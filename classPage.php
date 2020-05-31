@@ -7,6 +7,17 @@
   session_start();      
   $ID=$_SESSION['id'];//get the teacher id.
   $_SESSION['id']=$ID;  
+
+  include 'userData.php';//call userData, to use some function from
+  
+  function getstudentLaterLessonsAmount($ID){
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $scheduleResult=mysqli_query($con, "SELECT * FROM teacherSchedule");
+        $lessonsCounter=0;
+        while($rows=mysqli_fetch_assoc($scheduleResult)){
+            if($rows['idOfStudent']==$ID&&$rows['fullOrFree']==1){$lessonsCounter++;}
+        }return $lessonsCounter;//dont display board time lesson
+  }
 ?>
 <!DOCTYPE html>
 <html>
@@ -27,64 +38,54 @@
                   <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                           <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>
-                          <li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי </a></li>  
-                          <li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>         
+                          <?php
+							if(checkUserDefineAs($ID)==1){
+								echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php"> פרופיל שלי</a></li>';
+							}else{
+								echo'<li class="nav-item active"><a class="nav-link" href="profile.php"> פרופיל שלי</a></li>';
+							}
+						?><li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>         
                           <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>
                       </ul>
                   </div>
             </nav>
       </section>
       <br><br><br>
-      <div class="border border-light p-3 mb-4">
-        <div class="text-center">
-          <button  type="button" class="btn btn-success" onclick="openNoneShareDesktopApp()">חדר תרגול ללא שיתוף מסך</button>
-        </div>
-        <br><br>
-        <div class="text-center">
-          <button  type="button" class="btn btn-primary" onclick="openZoomMeeting()">ZOOM</button>
-        </div>
-      </div>  
-      <?php
-        include 'userData.php';//call userData, to use some function from
-        $getTeacherTeachedLessonsAmount=getTeacherTeachedLessonsAmount($ID);
-        echo'<h1 class="text-center">שיעורים שהלמדתי '.$getTeacherTeachedLessonsAmount.'</h1>';
-        $laterLesson=getTeacherLaterLessonsAmount($ID);        
-        echo'<h1 class="text-center"> כמה שיעורים יש לי ללמד '.$laterLesson.'</h1>';
-      ?>
       <table class="table table-dark">
         <thead>
           <tr>
             <th scope="col">#</th>
-            <th scope="col">שם סטודנט</th>
+            <th scope="col">שם המורה</th>
             <th scope="col">תאריך שיעור</th>
             <th scope="col">שעת שיעור</th>
             <th scope="col"> מספר טלפון</th>
-            <th scope="col"> email</th>
+            <th scope="col">Email </th>
           </tr>
         </thead>
         <tbody>
           <?php
-            $studentAskForALessonArrayIds=array();
+            $teachersIds=array();
             $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
             $scheduleResult=mysqli_query($con, "SELECT * FROM teacherSchedule");
             $lessonsCounter=0;
             while($rows=mysqli_fetch_assoc($scheduleResult)){
-                if($rows['idOfTeacher']==$ID&&$rows['fullOrFree']==1){
-                  array_push($studentAskForALessonArrayIds,$rows['idOfStudent']);
+                if($rows['idOfStudent']==$ID){
+                  array_push($teachersIds,$rows['idOfTeacher']);
                 }  
             }
-            $studentName=" ";
+            $laterLesson=getstudentLaterLessonsAmount($ID);
+            $teacherName=" ";
             $lessonDate;
             $lessonTime;
             for($i=0;$i<$laterLesson;$i++){
-              $studentName=name($studentAskForALessonArrayIds[$i]);
-              $lessonDate=getLessonDate($ID,$studentAskForALessonArrayIds[$i]);
-              $lessonTime=getLessonTime($ID,$studentAskForALessonArrayIds[$i]);
-              $phoneNumber=phoneNumber($studentAskForALessonArrayIds[$i]);
-              $EmailAdress=email($studentAskForALessonArrayIds[$i]);
+              $teacherName=name($teachersIds[$i]);
+              $lessonDate=getLessonDate($teachersIds[$i],$ID);
+              $lessonTime=getLessonTime($teachersIds[$i],$ID);
+              $phoneNumber=phoneNumber($ID);
+              $EmailAdress=email($ID);
               echo'<tr>';
                 echo'<th scope="row">'.$i.'</th>';
-                  echo'<td>'.$studentName.'</td>';
+                  echo'<td>'.$teacherName.'</td>';
                   echo'<td>'.$lessonDate.'</td>';
                   echo'<td>'.$lessonTime.':00</td>';
                   echo'<td>'.$phoneNumber.'</td>';
@@ -96,11 +97,3 @@
       </table>
   </body>
 </html>
-<script>
-function openNoneShareDesktopApp() {
-  window.open("https://hakitatest.herokuapp.com/");
-}
-function openZoomMeeting() {
-  window.open("Zoom.php");
-}
-</script>

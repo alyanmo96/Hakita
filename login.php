@@ -33,19 +33,8 @@
             )&&$row['password']!=$_POST['password']){
                 $message=" הסיסמה לא נכונה ";
 
-                /*
-                $resultOfRightUserName=mysqli_query($con, "SELECT * FROM users");
-                while($row=mysqli_fetch_assoc($resultOfRightUserName)){
-                    if($row['username']==$_POST['username']||
-                    $row['email']==$_POST['username']||
-                    $row['phone']==$_POST['username']){
-                        $USERNAME=$row['username'];
-                    }
-                }*/
                 //next section for insert wrong password
                 $invailedLoginPassword=1;$isItNotFirstTimeToEnterInvailPassword=-1;$round;$datrOfInvalidPass;
-                //$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                
                 $resultOFValidPass=mysqli_query($con, "SELECT * FROM invailedPassword");
                 while ($resultRowOFValidPass=mysqli_fetch_assoc($resultOFValidPass)){
                     if($resultRowOFValidPass['username']==$USERNAME){//check how many times, user insert wrong password
@@ -92,6 +81,7 @@
             }
 		}
     }
+    
 ?>
 <!DOCTYPE html>
     <html>
@@ -106,22 +96,22 @@
             <a class="navbar-brand" href="Hakita.php">הכיתה</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
               <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                  <li class="nav-item active"><a class="nav-link" href="Hakita.php">עמוד הבית </a></li>
-                  <li class="nav-item"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
-                        <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
-                  <li class="nav-item"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
+                <li class="nav-item active"><a class="nav-link" href="Hakita.php">עמוד הבית </a></li>
+                <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
+                <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
+                <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
               </ul>
             </div>
           </nav>
-    </section>    
+    </section><br><br><br>    
 		<div class="limiter">
 			<div class="container-login100">
 				<div class="wrap-login100">
-					<div class="login100-pic js-tilt" data-tilt><img src="img/loginPagePhoto.jpg"></div>
+					<div class="login100-pic js-tilt" data-tilt><img id="loginPageImage" src="img/loginPagePhoto.jpg"></div>
 					<form class="login100-form validate-form" action="login.php" method="POST">
 						<span class="login100-form-title">כניסה לחשבון</span>
 						<div class="wrap-input100 validate-input" data-validate = "Valid username is required: ex@abc.xyz">
-							<input class="input100" type="text" name="username" placeholder="שם משתמש">
+							<input class="input100" type="text" name="username" placeholder=" שם משתמש או מייל או מספר טלפון">
 							<span class="focus-input100"></span>
 							<span class="symbol-input100"><i class="fa fa-envelope" aria-hidden="true"></i></span>
 						</div>

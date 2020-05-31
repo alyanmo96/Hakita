@@ -132,7 +132,7 @@
                         if($rows['image']!='image'&&$rows['image']!=null){//display image
                             echo"<img src='img/".$rows['image']."'class='teacherImg img-rounded img-responsive'>";
                             echo"<p>".name($arrayOfId[$j])."</p>";//print name
-                            echo"</button></div>";
+                            echo"</button></div><div class=\"displayOnSmallScreen\"><br></div>";
                         }
                     }
                 }
@@ -350,7 +350,7 @@
                         echo'<option>'.$rows['cityName'].'</option>';
                     }
                     echo"</SELECT><br><br><br>";//
-                    echo'<input type="text" placeholder="הוספת עיר חדשה" name="newCity" required/>
+                    echo'<input type="text" placeholder="הוספת עיר חדשה" name="newCity" id="newCity" required/>
                     <input type="text" placeholder="מחיקת עיר" name="deleteCity" id="deleteCity" required/></div></div><br><br>';
                     echo'<br><br><div class="form-group"><div class="col-xs-12">';
                     echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
@@ -359,8 +359,8 @@
                     while ($rows=mysqli_fetch_array($results)){//list of courses on DB
                         echo'<option>'.$rows['subject'].'</option>';
                     }echo"</SELECT></div></div><br><br><br>";//
-                    echo'<br><br><input type="text" placeholder="הוספת מקצוע חדש" name="newCourse" required>';
-                    echo'<input type="text" placeholder="מחיקת מקצוע " name="deleteCourse" required>
+                    echo'<br><br><input type="text" placeholder="הוספת מקצוע חדש" name="newCourse" id="newCourse" required>';
+                    echo'<input type="text" placeholder="מחיקת מקצוע " name="deleteCourse" id="deleteCourse" required>
                     <fieldset> 
                         <div class="text-center"><input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="שמירת שינוי"></div>
                     </fieldset>';                    
@@ -412,7 +412,7 @@
                 </div>
             </section>
         </div><!--next section for admin to update his information-->         
-        <div id="AdminDetails" class="tabcontent">
+        <div id="AdminDetails" class="tabcontent col-sm-12">
             <?php
                 $firstName=" ";$lastName=" ";$email=" ";$Phone=" ";$username=" ";$ID;//variable of admin inforamtion to display it 
                 $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");

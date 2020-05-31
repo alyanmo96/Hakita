@@ -35,21 +35,21 @@
                     </ul>
                 </div>
           </nav>
-    </section><hr>
-    	<div class="container">
+	</section><hr>
+		<div class="container  col-sm-12">
         	<h3 class=" text-center">תיבת הודעות </h3><!--main page title-->
             <div class="messaging">
                 <div class="inbox_msg">        
         			<div class="mesgs">
           				<div class="msg_history" id="msg_history"></div><!--the chat message will display here-->
-          				<div class="type_msg">
+          				<div class="type_msg  col-sm-9">
             				<div class="input_msg_write" id="input_msg_write"></div><!--input feild-->
           				</div>
         			</div>
 				<div class="inbox_people">
 					<div class="inbox_chat">
 						<div class="chat_list">
-							<div class="chat_people">
+							<div class="chat_people  col-sm-3">
 								<?php
 									//first we check on message table which messages related for this user(sent by this user, or sent for this user)
 									$peopleMessageArray=array();//array of users user talk with them

@@ -54,7 +54,7 @@ $messageIsSentTOEmail=-1;
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">
-        <h1>שחזור סיסמה</h1>
+        <h1 id="pageTitle">שחזור סיסמה</h1>
       </div>
     </div>
   </div>
@@ -68,9 +68,9 @@ $messageIsSentTOEmail=-1;
           <div id="subMenu" class="panel panel-default">
             <ul class="subMenuHighlight panel-heading"><li class="subMenuHighlight panel-title" id="subMenuHighlight"><a id="li_291" class="subMenuHighlight" href="Hakita.php"><span>הכיתה</span></a></li></ul>
             <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="login.php"><span class="subMenuHighlight">כניסה</span></a></li></ul>
-            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="Signup.php"><span>הרשמה</span></a></li></ul>
+            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="Signup.php"><span class="subMenuHighlight">הרשמה</span></a></li></ul>
           </div>
-          <div class="item item-nopad item-noborder item-gold"><a style="padding: 5% 0px;" href="FAQ.php" class="btn btn-primary btn-block" role="button">שאלות ותשובות </a></div>
+          <div class="item item-nopad item-noborder item-gold"><a style="padding: 5% 0px;" href="FAQ.php" class="btn btn-primary btn-block" role="button"><span class="subMenuHighlight">שאלות ותשובות </span></a></div>
         </div>
       </div>
         <?php        
@@ -101,7 +101,7 @@ $messageIsSentTOEmail=-1;
             echo"<div class=\"col-sm-9 col-md-9 col-lg-10 content equal-height\">
             <div class=\"content-area-right\">
               <div class=\"content-crumb-div\">
-              <a class=\"nav-link\" href=\"Hakita.php\"> עמוד הבית</a>
+              <a class=\"nav-link\" id=\"homePage\" href=\"Hakita.php\"> עמוד הבית</a>
               </div>
               <div class=\"row\"><div class=\"col-md-5 forgot-form\">
                   <p>אחרי הכנסת שם משתמש או המייל יש ללחוץ על הכפתור שליחה, ואז יש לבדוק את המייל. במצב ולא קיבלה הודעה יש לעשות את זה שוב</p>

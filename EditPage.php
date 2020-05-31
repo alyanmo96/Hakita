@@ -1,20 +1,24 @@
 <?php
 //edit page for teachers, update his informations, city/cours.
-session_start();
+  
+  session_start();
   $ID=$_SESSION['id'];//get the teacher id.
   $_SESSION['id']=$ID;
-  include 'userData.php';//calling this file to get some teacher information like name,... 
   
+  include 'userData.php';//calling this file to get some teacher information like name,... 
+  //DB connection
   $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
   if(isset($_POST['deleteAccountStepTwo'])){//delete student Account from DB
     DeleteAccount($ID);
     header("location: logout.php");    
   }
 
+  //call DB tables
   $resultOFTeachersCity = mysqli_query($con, "SELECT * FROM teacher_cities"); 
   $resultsOfCities = mysqli_query($con, "SELECT * FROM cities");
   $makeChangeEnter = mysqli_query($con, "SELECT * FROM makeChange");
   $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");
+  $resultsOfShares = mysqli_query($con, "SELECT * FROM shareTable");
 
 //function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
   function returnTeacherCitiesOrCoursesIntoArray($id,$whatToReturn){
@@ -102,9 +106,6 @@ session_start();
         }          
         if($_POST['price']){//if user update his price.
           updatePrice($ID,$_POST['price']);//new price            
-        } 
-        if($_POST['priceTwo']){//if user update his price.
-          updatePriceTwo($ID,$_POST['priceTwo']);//new price            
         }          
         if($_POST['hidden_framework']){//when user add a new, we get teacher cities and add the new city
             $UploadCityOrCourse=1;//for navbar
@@ -184,10 +185,25 @@ session_start();
         $userFirstName=$row['fname'];$userLastName=$row['lname'];//teacher name
         $teacherStatus=$row['status'];    
         $PhoneTwo=$row['phoneTwo'];   
+        $teacherPrice=$row['price'];
       }
     }
   }
   
+  if(isset($_POST['ShareSave'])){//insert or update teacher links              
+    if($_POST['facebook']){
+      updateOrInsertTeacherLinks($ID, 1, $_POST['facebook']);
+    }if($_POST['linkedin']){
+      updateOrInsertTeacherLinks($ID, 2, $_POST['linkedin']);
+    }if($_POST['youtube']){
+      updateOrInsertTeacherLinks($ID, 3, $_POST['youtube']);
+    }if($_POST['otherLinkOne']){
+      updateOrInsertTeacherLinks($ID, 4, $_POST['otherLinkOne']);
+    }if($_POST['otherLinkTwo']){
+      updateOrInsertTeacherLinks($ID, 5, $_POST['otherLinkTwo']);
+    }    
+  }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -198,7 +214,7 @@ session_start();
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-      <link rel="stylesheet" type="text/css" href="css/TeacherEdit.css">
+      <link rel="stylesheet" type="text/css" href="css/TeacherEdit.css"><!--some addition CSS-->
       <?php
         if(isset($_POST['deleteAccount'])){
           echo"<script>$(document).ready(function(){ $('#myModall').modal('show');});</script> ";
@@ -287,17 +303,13 @@ session_start();
           </div>   
           <div class="form-group"><div class="col-sm-6"> 
             <label for="status"><h4 class="inputTitle">סטטוס</h4></label>
-            <input type="text" class="form-control" name="status" id="status" placeholder="מחיר מתחיל">
+            <input type="text" class="form-control" name="status" id="status" placeholder="<?php echo status($ID)?>">
           </div></div>
-          <div class="form-group"><div class="col-sm-6"> <!--price of lesson until-->
-              <label for="price"><h4  class="inputTitle">מחיר עד</h4></label>
-              <input type="number" class="form-control" name="priceTwo" placeholder="מחיר עג">                   
-          </div></div>  
-          <div class="form-group"><div class="col-sm-6"> <!--price of lesson start with coast-->
-              <label for="price"><h4  class="inputTitle">מחיר מתחיל לשעה</h4></label>
-              <input type="number" class="form-control" name="price" placeholder="<?php echo $teacherPrice ?>">                   
+          <div class="form-group"><div class="col-sm-12"> <!--price of lesson start with coast-->
+              <label for="price"><h4  class="inputTitle">מחיר לשעה</h4></label>
+              <input type="text" class="form-control" name="price" placeholder="<?php echo $teacherPrice; ?>">                   
           </div></div>                      
-        <div class="form-group"><br>
+        <div class="form-group"><br><!--save button-->
           <label for="Save"><h4></h4></label>
           <input class="btn btn-primary" type="submit" name="Save" value="שמור">
         </div>
@@ -413,36 +425,48 @@ session_start();
         </form>
       </div>
         <div id="Links" class="tabcontent"><!--let teacher to add links-->
+            <?php
+              $facebook=" ";$linkedin=" ";$youtube=" ";
+              $otherLinkOne=" ";$otherLinkTwo=" ";
+
+              while($rows=mysqli_fetch_assoc($resultsOfShares)){
+                if($rows['id']==$ID){
+                  $facebook=$rows['facebook'];$linkedin=$rows['linkedin'];$youtube=$rows['youtube'];
+                  $otherLinkOne=$rows['firstOtherLink'];$otherLinkTwo=$rows['secondOtherLink'];
+                break;
+                }
+              }
+            ?>
             <form class="form" action="EditPage.php" method="post" id="registrationFor">
             <div class="form-group">
               <div class="col-sm-6">  
-                <label for="facebook"><div class="fa fa-facebook"></div></label><input type="text" class="form-control" name="facebook" placeholder="">  
+                <label for="facebook"><div class="fa fa-facebook"></div></label><input type="text" class="form-control" name="facebook" placeholder="<?php echo $facebook;?>">
               </div>                
             </div>
             <div class="form-group">
             <div class="col-sm-6">  
-              <label for="linkedin"><div class="fa fa-linkedin"></div></label><input type="text" class="form-control" name="linkedin" placeholder="">                   
+              <label for="linkedin"><div class="fa fa-linkedin"></div></label><input type="text" class="form-control" name="linkedin" placeholder="<?php echo $linkedin;?>">                   
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-6">  
-                <label for="youtube"></h4><div class="fa fa-youtube"></div></label><input type="text" class="form-control" name="youtube" placeholder="">                   
+                <label for="youtube"></h4><div class="fa fa-youtube"></div></label><input type="text" class="form-control" name="youtube" placeholder="<?php echo $youtube;?>">             
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-6">  
-                <label for="otherLinkOne"><h4  class="inputTitleIcon">קישור אחר</h4></label><input type="text" class="form-control" name="otherLinkOne" placeholder="">                   
+                <label for="otherLinkOne"><h4  class="inputTitleIcon">קישור אחר</h4></label><input type="text" class="form-control" name="otherLinkOne" placeholder="<?php echo $otherLinkOne;?>">            
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-6">  
                 <label for="otherLinkTwo"><h4  class="inputTitleIcon">קישור אחר</h4></label>
-                <input type="text" class="form-control" name="otherLinkTwo" placeholder="">                   
+                <input type="text" class="form-control" name="otherLinkTwo" placeholder="<?php echo $otherLinkTwo;?>">                   
               </div>
           </div>
             <div class="form-group"><br>
               <label for="Save"><h4></h4></label>
-              <input class="btn btn-secondary" id="iconsSaveButton" type="submit" name="Save" value="שמור">
+              <input class="btn btn-secondary" id="iconsSaveButton" type="submit" name="ShareSave" value="שמור">
             </div>
         </form>
       </div><div></div>

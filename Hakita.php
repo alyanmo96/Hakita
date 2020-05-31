@@ -6,6 +6,7 @@
   we start as we get the id and some information about teachers, id of login user in status of login.
   we need deatils about student for dsiplay on navbar my profile instead of login or sign up, and redirect to other pages. 
 */
+
   session_start();
   include 'userData.php';//this file include function to return user details like name.
   $ID=$_SESSION['id'];//the id of the login user.
@@ -126,13 +127,13 @@
           }
           $fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
           $getRatingOfEachComment=ceil($fill);
-          echo "<button class=\"buttonCard col-sm-4\"  name=\"$array[$i]\" style=\"width:220px; height:360px; margin-left:2%;\">";
+          echo "<button class=\"buttonCard col-sm-4\"  name=\"$array[$i]\" style=\"margin-left:2%;\">";
           echo"<img src='img/".Image($array[$i])." 'class=\"img\">";
           if(Gender($array[$i])==-1){echo"<h2 style=\"color: deeppink; font-weight: 700;\">".name($array[$i])."</h2>";}//just for style
           else{echo"<h2 style=\"color:blue; font-weight: 700;\">".name($array[$i])."</h2>";}//just for style
           if($getRatingOfEachComment>0){
             for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
-              echo ' <span class="fa fa-star checked"></span>';
+              echo'<span class="fa fa-star checked"></span>';
             }
             $emptyStars=5-$getRatingOfEachComment;$e=0;
             while($e<$emptyStars){//the empty star's
@@ -146,25 +147,29 @@
             }else{
               $status=$stst;
             }$status.="...";                     
-            echo"<p class=\"clearfix\" style=\"height:20px;overflow:hidden;\">\"". $status."</p>";          
+            echo"<div id=\"statusDiv\"><p class=\"clearfix\" style=\"height:20px;overflow:hidden;\">\"". $status."</p></div>";          
           }          
           if(returnTeacherCourses($array[$i])!=NULL){//teacher course, if the string length is bigger than 26 letters, write instead ....
             $courses =returnTeacherCourses($array[$i]);
             if(strlen($courses )>26){
               $courses = mb_substr($courses,0,25,'utf-8'); 
             }$courses.="...";                     
-            echo"<p>".$courses."</p>";
+            echo"<div id=\"courseDiv\"><p>".$courses."</p></div>";
           }       
           if(returnTeacherCities($array[$i])!=NULL){//teacher cities, if the string length is bigger than 26 letters, write instead ....
             $cities=returnTeacherCities($array[$i]);
             if(strlen($cities )>26){
               $cities = mb_substr($cities,0,25,'utf-8'); 
             }$cities.="...";         
-            echo"<p><small class=\"cityAndPrice\">".$cities."</span></p>"; 
-         }      
-          if(price($array[$i])!=NULL){//teacher price
-            echo"<p>מחירון לשעה ".price($array[$i])."</small></p>";
-          }echo"</button>"; 
+            echo"<div id=\"cityDiv\"><p><small class=\"cityAndPrice\">".$cities."</span></p></div>"; 
+         }   
+         $price=strlen(price($array[$i]));
+          if(strlen($price)>15){
+            $price = mb_substr($price,0,15,'utf-8'); 
+          }    
+          $price.="...";      
+            echo"<p>".$price."</small></p>";
+          echo"</button>"; 
         }echo"</form>";
   }
 ?>
@@ -175,46 +180,16 @@
     <?php include 'header.php';?>  
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/Hakita.css">
   </head>
   <body>
     <a id="button"></a><!--up button-->
-    <section><!--navbar section-->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>            
-        <?php
-          if($ID){//navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
-            echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">';
-                    if(checkUserDefineAs($ID)==1){
-                      echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only">(current)</span></a> </li>';
-                    }else{// if the login user was a teacher, then he want to access to his profile
-                      echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a> </li>';
-                    }
-                    echo'<li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
-                    <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
-                    <li class="nav-item active"><a class="nav-link" href="FAQ.php"> שאלות ותשובות </a></li>
-                    <li class="nav-item active">
-                    <a class="nav-link" href="logout.php"> יציאה<span class="sr-only">(current)</span></a>
-                  </li>';
-          }else{
-            //navbar include the main page of the site FAQ page, EXIT, redirect page include the login id
-            echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03"><ul class="navbar-nav mr-auto mt-2 mt-lg-0"> 
-                <li class="nav-item active"><a class="nav-link" href="login.php">כניסה</a></li>
-                <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
-                  <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
-                  <li class="nav-item active"><a class="nav-link" href="FAQ.php"> שאלות ותשובות </a></li>  ';
-          }
-        ?>               
-          </ul>
-        </div>
-      </nav>
-    </section>
+    <?php
+      $undisplay='Hakita';
+    ?>
+    <?php include_once 'nav.php'?>
     <div class="bgimg-1"><!--the main photo, include main title--->
       <div class="caption"><span class="border">הכיתה - אינדקס המורים הפרטיים הגדול של ישראל</span></div>
     </div><br><br>

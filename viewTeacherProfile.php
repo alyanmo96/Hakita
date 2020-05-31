@@ -7,17 +7,25 @@
  */
     session_start();
     // get the id of teacher, and get the id of the login user on login state
-    $IDOfTeacher=$_SESSION['teacher'];//get teacher id 
+   
+    
+    $teacher=$_GET['viewprofile'];
+    $gitHowManyDigitsForTheId=substr($teacher, 0, 1); 
+    $IDOfTeacher=substr($teacher, 1, $gitHowManyDigitsForTheId);
+    if(!$IDOfTeacher){
+        $IDOfTeacher=$_SESSION['teacher'];//get teacher id 
+    }
     $IDOfUser=$_SESSION['id'];//get login id t=if there is    
     
-    if($_GET['view']){
+    if($_GET['view']){//when teacher share his profile
         $view=$_GET['view'];
         $gitHowManyDigitsForTheId=substr($view, 0, 1); 
         $IDOfTeacher=substr($view, 1, $gitHowManyDigitsForTheId);
-    }    
-    elseif($IDOfTeacher==$IDOfUser){//if the student he is also the teacher do not let him contiune
+    }   
+    if($IDOfTeacher==$IDOfUser){//if the student he is also the teacher do not let him contiune
        header('Location: logout.php');//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
     }
+    
     include 'userData.php';//calling to use fuction like get image of user
 
     $_SESSION['teacher']=$IDOfTeacher;//share teacher id used after login user write a feedback, choose a lesson time.
@@ -225,15 +233,10 @@
                                 $upDate="UPDATE `teacherSchedule` SET `fullOrFree`='1' , `idOfStudent`=$IDOfUser
                                 WHERE idOfTeacher=$IDOfTeacher  and hourOFLesson=$hour  and dayOfLesson=$day";
                                 $result = mysqli_query($con,$upDate);
-
                                 //send EMAIL for (student + teacher)
                                 $teacherEmail=email($IDOfTeacher);
                                 $to = $teacherEmail;//sending to teacher email address
                                 $from ="HakitaSite";// from
-                                /*date_default_timezone_set('Asia/Jerusalem');  
-                                $script_tz = date_default_timezone_get();
-                                $date=date("Y-m-d"); $hour = date('H:i');//today date + current hour ...to invalid the URL after hour of sending time
-                                */
                                 $subject="שיעור באתר הכיתה";//subject of message
                                 $message="<p>שלום </p>";
                                 $teacherName=name($IDOfTeacher);
@@ -255,10 +258,6 @@
                                 $studentEmail=email($IDOfUser);
                                 $to = $studentEmail;//sending to student email address
                                 $from ="HakitaSite";// from
-                                /*date_default_timezone_set('Asia/Jerusalem');  
-                                $script_tz = date_default_timezone_get();
-                                $date=date("Y-m-d"); $hour = date('H:i');//today date + current hour ...to invalid the URL after hour of sending time
-                                */
                                 $subject="שחזר סיסמה";//subject of message
                                 $message="<p>שלום </p>";
                                 $message.=name($IDOfUser);
@@ -279,7 +278,13 @@
                                 
                                 //send a message automaticly from student to teacher
                                 $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                                $message_date = date("y-m-d h:i");
+                                $resultOFLesson = mysqli_query($con, "SELECT * FROM teacherSchedule");
+                                while ($scheduleRow=mysqli_fetch_assoc($resultOFLesson)){
+                                    if($scheduleRow['idOfStudent']=$IDOfUser &&  $scheduleRow['idOfTeacher']=$IDOfTeacher  &&
+                                            $scheduleRow['hourOFLesson']=$hour  && $scheduleRow['dayOfLesson']=$day){
+                                                $message_date = $scheduleRow['lessonDate'];
+                                    }
+                                }
                                 $message_text='הודעה אוטומתית, שלום רב, אני רוצה לקבוע איתך שיעור בזמן ההוא '.$message_date.'';
                                 $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
                                 ('$IDOfUser',' $IDOfTeacher','$message_text','$message_date')";
@@ -359,17 +364,17 @@
                             }
                         }              
                         if ($teacherArrayInformation[5]!=1&&$teacherArrayInformation[5]!=null){
-                            echo "<h6>" . "מחיר לשעה:-" .$teacherArrayInformation[5] ."</h6>";	
+                            echo "<h6>".$teacherArrayInformation[5] ."</h6>";	
                         }
                         echo "<h6>".$teacherArrayInformation[6]."</h6>";  
                         $fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
                         $allRating=ceil($fill);                    
                         for($stars=0;$stars<$allRating;$stars++){
-                            echo ' <span class="fa fa-star checked"></span>';
+                            echo'<span class="fa fa-star checked"></span>';
                         }
                         $emptyStars=5-$allRating;$e=0;
                         while($e<$emptyStars){
-                            $e++;echo '<span class="fa fa-star"></span>';
+                            $e++;echo'<span class="fa fa-star"></span>';
                         }                     
                     ?>
                     </center>
@@ -558,6 +563,33 @@
                         <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ec53990697c2288"></script>
                         <br>
                         <button class="btn btn-info btn-lg" onclick="myFunction()" id="profileLink"><span class="glyphicon glyphicon-paperclip">העתקת קישור לפרופיל הזה</span></button>
+                        <br><br>                        
+                        <!-- Add font awesome icons -->
+                        <?php
+                            $facebook=" ";$linkedin=" ";$youtube=" ";
+                            $otherLinkOne=" ";$otherLinkTwo=" ";
+                            $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                            $resultsOfShares = mysqli_query($con, "SELECT * FROM shareTable");     
+                            while($rows=mysqli_fetch_assoc($resultsOfShares)){
+                                if($rows['id']==$IDOfTeacher){
+                                $facebook=$rows['facebook'];$linkedin=$rows['linkedin'];$youtube=$rows['youtube'];
+                                $otherLinkOne=$rows['firstOtherLink'];$otherLinkTwo=$rows['secondOtherLink'];
+                                break;
+                                }
+                            }
+                            if(strlen($facebook)>15){
+                                echo"<a href=\"$facebook\" class=\"fa fa-facebook\"></a>";
+                            }if(strlen($linkedin)>15){
+                                echo"<a href=\"$linkedin\" class=\"fa fa-linkedin\"></a>";
+                            }if(strlen($youtube)>15){
+                                echo"<a href=\"$youtube\" class=\"fa fa-youtube\"></a>";
+                            }if(strlen($otherLinkOne)>15){
+                                echo"<a href=\"$otherLinkOne\" class=\"fa fa-flickr\"></a>";
+                            }if(strlen($otherLinkTwo)>15){
+                                echo"<a href=\"$otherLinkTwo\" class=\"fa fa-rss\"></a>";
+                            }
+                        ?>
+                        
                     </div><hr>
                     <div class="form-group col-sm-6">
                         <h3>פרטי תקשורת</h3> 
@@ -622,9 +654,9 @@
                             $idOfCommentWriter=$commentRow['idOfCommentWriter']; $getRatingOfEachComment=$commentRow['rating'];
                             $dateOfComment=$commentRow['dateOfComment']; $textOfComment=$commentRow['textOfComment'];
                             echo"<div class=\"card mb-3\" style=\"max-width: 740px; direction: rtl;\">";
-                            echo'<div class="row no-gutters"><div class="col-md-4">';
+                            echo'<div class="row no-gutters"><div class="col-md-3">';
                             echo"<img src='img/".Image($commentRow['idOfCommentWriter'])." 'class=\"card-img\">";
-                            echo'</div><div class="col-md-8"><div class="card-body">';
+                            echo'</div><div class="col-md-9"><div class="card-body">';
                             echo"<h5 class=\"card-title\">".name($commentRow['idOfCommentWriter'])."";//get the name of comment writter to display it
                             for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
                                 echo'<span class="fa fa-star checked"></span>';

@@ -41,10 +41,10 @@
 							if(checkUserDefineAs($userId)==1){
 								echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php"> פרופיל שלי</a></li>';
 							}else{
-								echo'<li class="nav-item active"><a class="nav-link" href="profile.php"> פרופיל שלי</a></li>';
+								echo'<li class="nav-item active"><a class="nav-link" href="profile.php"> פרופיל שלי</a></li>
+								<li class="nav-item active"><a class="nav-link" href="Lesson.php"> שיעורים</a></li>';
 							}
 						?>
-                        <li class="nav-item active"><a class="nav-link" href="Lesson.php"> שיעורים</a></li>
                         <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
                         <li class="nav-item active"><a class="nav-link" href="searchTeachers.php">חיפוש מורה </a></li>             
                         <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>
@@ -52,20 +52,20 @@
                 </div>
           </nav>
     </section><hr>
-    	<div class="container">
+    	<div class="container  col-sm-12">
         	<h3 class=" text-center">תיבת הודעות </h3><!--main page title-->
             <div class="messaging">
                 <div class="inbox_msg">        
         			<div class="mesgs">
           				<div class="msg_history" id="msg_history"></div><!--the chat message will display here-->
-          				<div class="type_msg">
+          				<div class="type_msg  col-sm-9">
             				<div class="input_msg_write" id="input_msg_write"></div><!--input feild-->
           				</div>
         			</div>
 				<div class="inbox_people">
 					<div class="inbox_chat">
 						<div class="chat_list">
-							<div class="chat_people">
+							<div class="chat_people  col-sm-3">
 								<?php
 									//first we check on message table which messages related for this user(sent by this user, or sent for this user)
 									$peopleMessageArray=array();//array of users user talk with them
@@ -83,7 +83,7 @@
 									}
 									//display other users(talked with them as a list, on click on any user will display the chat history)
 									for($i=0;$i<$peopleMessageArrayCounter;$i++){
-										echo"<button onclick=\"getMessage($userId, $peopleMessageArray[$i])\">";
+										echo"<button class=\"listButton\" onclick=\"getMessage($userId, $peopleMessageArray[$i])\">";
 											echo'<div class="chat_ib"><h5>';
 												echo ''.name($peopleMessageArray[$i]);
 											echo'</h5></div>
@@ -103,9 +103,9 @@
 		var url = 'messageData.php';
         $.get(url+ '?idOwner='+idOwner+'&idOther='+idOther, function(result){
 			if(result){
-                $("#msg_history").empty();//delete the message display history to display it again with a new message or display other messages
-                $('#msg_history').append(renderMessage(result));//display the new details
-            };           
+               $("#msg_history").empty();//delete the message display history to display it again with a new message or display other messages
+               $('#msg_history').append(renderMessage(result));//display the new details
+            };         
         });
 	}
 

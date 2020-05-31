@@ -15,7 +15,8 @@
     {
         $lastFeedback=$commentRow['textOfFeedback'];
     }
-    if(isset($_POST["comments"])){    
+    if(isset($_POST["comments"])){ 
+      $feedback=1;   
         if($_POST["comments"]!=$lastFeedback)
         {
           $getComment=$_POST["comments"];
@@ -115,7 +116,7 @@
     <?php
    if($feedback==1){//next section, to let users write there feedback about the site, to improve it
     echo"<section class=\"feedbackSection\">		
-        <h1> כל תגובה עוזרת לנו לשפר את האתר, להרגיש חופשי. נא לצרף Email</h1>	
+        <h1> כל תגובה עוזרת לנו לשפר את האתר</h1>	
         <button  class=\"addCommentButton btn btn-warning\" alt=\"work 1\" data-toggle=\"modal\" data-target=\"#myModalc\" title=\"כפתור הוספת תגובה על המורה\"> <h5>הוספת תגובה חדשה</h5></button>                   
         <div id=\"comments\" class=\"tabcontent\">
                   <li>
@@ -130,8 +131,7 @@
                                       <div class=\"modal-body\">
                                           <div class=\"pleaseAddFeedback\">
                                               אנא ספק/י את המשוב שלך להלן:
-                                          </div>
-                                          <hr>
+                                          </div><hr>
                                           <div class=\"feedbackValueTitle\">
                                           איך את/ה מדרג/ת את החוויה הכוללת שלך באתר ?
                                               <div>
@@ -143,8 +143,7 @@
                                                   <input type=\"radio\" name=\"teacherValue\" id=\"fiveValue\" value=\"fiveValue\" required>5
                                                   -מצויין
                                               </div>
-                                          </div>
-                                          <hr>
+                                          </div><hr>
                                           <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-lock\"></i></span>
                                           <textarea class=\"form-control\" type=\"textarea\" name=\"comments\" id=\"comments\" placeholder=\"הערות/תגובות שלך\" maxlength=\"6000\" rows=\"7\" required></textarea>
                                           <hr>
@@ -162,16 +161,21 @@
                   while ($commentRow=mysqli_fetch_assoc($feedbackCommentResult)) //get comments if there any comments
                   {  
                     $getRatingOfEachComment=$commentRow['rating'];
-                    $dateOfComment=$commentRow['dateOfFeedback']; 
+                    $rest =$commentRow['dateOfFeedback'];              
+                   $dateOfComment = substr($rest, 0, 10);
                     echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-                  echo'<div class="row no-gutters">';                        
-                echo'<div class="col-md-8">';
-                    echo'<div class="card-body">';
-                    $textOfComment=$commentRow['textOfFeedback'];
-                    echo"<p class=\"card-text\">".$textOfComment."</p>";  
-                for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
-                    echo ' <span class="fa fa-star checked"></span>';
-                }
+                    echo'<div class="row no-gutters">';                        
+                    echo'<div class="col-md-10">';
+                        echo'<div class="card-body">';
+                        $textOfComment=$commentRow['textOfFeedback'];
+                        if(strlen($textOfComment) != strlen(utf8_decode($textOfComment))){
+                          echo"<p class=\"card-text\" style=\"display: flex;\">".$textOfComment."</p>"; //for english display
+                        }else{
+                          echo"<p class=\"card-text\" style=\"display: list-item;\">".$textOfComment."</p>";//for hebrew display
+                        }
+                    for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
+                        echo ' <span class="fa fa-star checked"></span>';
+                    }
                 $emptyStars=5-$getRatingOfEachComment;$e=0;
                 while($e<$emptyStars){//the empty star's
                     $e++;echo '<span class="fa fa-star"></span>';
@@ -315,7 +319,7 @@
           }
           echo"
             <label for=\"name\"></label>
-            <input type=\"text\" id=\"name\" name=\"name\" placeholder=\"שם שלך\" required>
+            <input type=\"text\" id=\"name\" name=\"name\" placeholder=\"שם \" required>
             <label for=\"email\"></label>
             <input type=\"text\" id=\"email\" name=\"email\" placeholder=\"דואר אלקטרוני\" required>
             <label for=\"subject\"></label>
@@ -323,7 +327,7 @@
             <input type=\"submit\" value=\"שליחתה הודעה\">
           </form>
         </div></div></div></div>
-    </div><br><br><br><br><br><br><br><br><br>";
+    </div><br><br><br><br><br><br><br><br><br><div id=\"forSmallScreen\"><br><br></div>";
     }?>
     <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ec53990697c2288"></script>
     <?php include_once 'footer.php';/*get the bottom footer*/?>
