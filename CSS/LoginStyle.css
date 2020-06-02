@@ -521,11 +521,14 @@ text-decoration: none;
 border-radius: 50%;
 }
 @media only screen and (max-width: 400px) {
-#jceImg{
-  max-width: 45px;
-  max-height: 30px;
-} 
-.fa {
-  font-size: 20px;
-} 
+  #jceImg{
+    max-width: 45px;
+    max-height: 30px;
+  } 
+  .fa {
+    font-size: 20px;
+  }
+  .login100-form-title {
+    margin-top: 10%;
+  } 
 }

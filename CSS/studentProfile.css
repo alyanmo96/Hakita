@@ -1,0 +1,307 @@
+body{
+    max-height: 100%;
+    max-width: 100%;
+    text-align: center;
+}   
+.navbar-nav .nav-link {
+    padding-right: 0;
+    padding-left: 40%;
+}
+.nav-link
+{
+    font-size:13px;
+}    
+.nav-link:hover
+{
+    font-size:23px;
+}
+.tablink
+{
+    border-radius: 30px;
+}              
+.fa {
+  padding: 10px;
+  font-size:15px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  margin: 5px 2px;
+  border-radius: 50%;
+}
+
+.fa:hover {
+    opacity: 0.7;
+}
+
+.fa-facebook {
+  background: #3B5998;
+  color: white;
+}
+#jceImg{
+  max-width: 35px;
+  max-height: 30px;
+}
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    padding: 12px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    }
+    /* Darker background on mouse-over */
+    .btn:hover {
+    background-color: RoyalBlue;
+    }
+    .fa {
+width: 13px;
+text-align: center;
+text-decoration: none;
+border-radius: 50%;
+}
+                  
+body{
+    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+    direction: rtl;
+    text-align: center;
+}
+.emp-profile
+{
+    padding: 3%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    border-radius: 0.5rem;
+    background: #fff;
+}
+.profile-img
+{
+    text-align: center;
+}
+.profile-img img
+{
+    width: 70%;
+    max-height: 100%;
+    border-radius: 300px;
+}
+.profile-img .file 
+{
+    position: relative;
+    overflow: hidden;
+    margin-top: -20%;
+    width: 70%;
+    border: none;
+    border-radius: 0;
+    font-size: 15px;
+    background: #212529b8;
+}
+.profile-img .file input 
+{
+    position: absolute;
+    opacity: 0;
+    right: 0;
+    top: 0;
+}
+.profile-head h5
+{
+    color: #333;
+}
+.profile-head h6
+{
+    color: #0062cc;
+}
+.profile-edit-btn
+{
+    border: none;
+    border-radius: 1.5rem;
+    width: 70%;
+    padding: 2%;
+    font-weight: 600;
+    color: #6c757d;
+    cursor: pointer;
+}
+.proile-rating
+{
+    font-size: 12px;
+    color: #818182;
+    margin-top: 5%;
+}
+.proile-rating span
+{
+    color: #495057;
+    font-size: 15px;
+    font-weight: 600;
+}
+.profile-head .nav-tabs
+{
+    margin-bottom:5%;
+}
+.profile-head .nav-tabs .nav-link
+{
+    font-weight:600;
+    border: none;
+}
+.profile-head .nav-tabs .nav-link.active
+{
+    border: none;
+    border-bottom:2px solid #0062cc;
+}
+.profile-work
+{
+    padding: 14%;
+    margin-top: -15%;
+}
+.profile-work p
+{
+    font-size: 12px;
+    color: #818182;
+    font-weight: 600;
+    margin-top: 10%;
+}
+.profile-work a
+{
+    text-decoration: none;
+    color: #495057;
+    font-weight: 600;
+    font-size: 14px;
+}
+.profile-work ul
+{
+    list-style: none;
+}
+.profile-tab label
+{
+    font-weight: 600;
+}
+.footer
+{
+	max-height: 80px;
+	margin-left: 8%;
+	margin-right: 8%;
+    padding: 0%;
+    background-color: black;
+}
+.profile-title
+{
+	max-width: 80%;
+}
+.redirectButtons
+{
+  background-color: #00bdff;
+  font-size: 20px;
+}
+.redirectButtonsGirl
+{
+  background-color: #ff1e8d;
+  font-size: 20px;
+}
+w3-teal, .w3-hover-teal:hover {
+    background-color:black;
+}
+.w3-container{
+    position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   color: white;
+   text-align: center;
+}
+.w3-container, .w3-panel {
+    background-color: black;
+    color: white;
+}
+.ImageSection{
+    background-color:gray;
+    margin-left: auto;
+    margin-right: auto;
+}
+body{
+    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+}
+body {font-family: Arial;}
+/* Style the tab */
+.tab {
+overflow: hidden;
+border: 1px solid #ccc;
+background-color: #f1f1f1;
+}
+/* Style the buttons inside the tab */
+.tab button {
+background-color: inherit;
+float: left;
+border: none;
+outline: none;
+cursor: pointer;
+padding: 14px 16px;
+transition: 0.3s;
+font-size: 17px;
+}
+/* Change background color of buttons on hover */
+.tab button:hover {
+background-color: #ddd;
+}
+/* Create an active/current tablink class */
+.tab button.active {
+background-color: #ccc;
+}
+/* Style the tab content */
+.tabcontent {
+display: none;
+padding: 6px 12px;
+border: 1px solid #ccc;
+border-top: none;
+}
+#deleteAccountButton{
+    background-color: red;
+}
+#changeAccountToTeacherAccountButton{
+    background-color: orange;
+}
+
+@media only screen and (min-width: 970px) {
+    #forSmallScreen{
+        display: none;
+    }
+}
+@media only screen and (max-width: 400px) {
+    #jceImg{
+        max-width: 45px;
+        max-height: 30px;
+    }
+    .fa {
+        padding: 10px;
+        font-size: 15px;
+    }    
+    .navbar-light .navbar-brand{
+        margin: auto;
+    }
+    .row {
+        display: inline-block;
+    }
+    .w3-container{
+        position: unset;
+       left: 0;
+       bottom: 0;
+       max-width: 100%;
+       color: white;
+       text-align: center;
+    }
+    .col-md-6{
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+    .container{
+        width: auto;
+    }
+    .row{
+        display: contents;
+    }
+    .redirectButtons{
+        margin-bottom: 1%;
+    }
+    h2 {
+        font-size: 1rem;
+    }
+    h3 {
+        font-size: 1rem;
+    }
+}
