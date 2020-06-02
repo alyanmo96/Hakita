@@ -6,6 +6,7 @@
   if(!$ID){//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
     header('location: logout.php');
   }
+  
   include 'userData.php';//use some function like name to display, email address...
 ?>
 <!DOCTYPE html>
@@ -62,7 +63,7 @@
                   if($time >= "19") {
                       echo "לילה טוב";
                   }                  
-                  echo"<h2>".name($ID)."</h2>";//display student name
+                  echo" ".name($ID)."</h2>";//display student name
                   echo"<h2>" ."מייל שלי: ". email($ID). "</h2>";//display student email address
                   echo"<h3>"."מספר טלפון:"."&nbsp;".phoneNumber($ID)."</h3>";//display student phone number         	
                 ?>
@@ -75,17 +76,17 @@
                   <?php
                     if(Gender($ID)==1){//for display buttons as a blue or pink color, according to student gender
                       echo'<a href="studentEdit.php"><button type="button" class="redirectButtons btn btn-info">עדכן חשבון</button></a></div>
-                      <div class="col-md-4"><a href="chatPage.php"><button type="button" class="redirectButtons btn btn-info">הודעות</button></a></div>
+                      <div class="col-md-4"><a href="messageRoom.php"><button type="button" class="redirectButtons btn btn-info">הודעות</button></a></div>
                       <div class="col-md-4"><a href="classPage.php"><button type="button" class="redirectButtons btn btn-info">שיעור שקבעתי</button></a></div>';
                     }else{
                       echo'<a href="studentEdit.php"><button type="button" class="redirectButtons btn btn-pink" style="background-color: #ff1e8d;">עדכן חשבון</button></a></div>
-                      <div class="col-md-4"><a href="chatPage.php"><button type="button" class="redirectButtons btn btn-info" style="background-color: #ff1e8d;">הודעות</button></a></div>
+                      <div class="col-md-4"><a href="messageRoom.php"><button type="button" class="redirectButtons btn btn-info" style="background-color: #ff1e8d;">הודעות</button></a></div>
                       <div class="col-md-4"><a href="classPage.php"><button type="button" class="redirectButtons btn btn-info" style="background-color: #ff1e8d;">שיעור שקבעתי</button></a></div>';
                     }
                   ?>
         </div></div>
       </form>           
-    </div>        
+    </div><div id="forSmallScreen"><br></div>        
     <?php include_once 'footer.php';/*botttom footer*/?>
   </body>
 </html>

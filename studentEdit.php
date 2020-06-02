@@ -14,6 +14,7 @@ session_start();
     if(!$ID){//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
         header("location: logout.php");  
     }//else...
+
     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");//connection with DB
     include 'userData.php';//calling userData to use many function as bellow
     
@@ -67,15 +68,14 @@ session_start();
 ?>
 <!DOCTYPE html>
 <html>
-    <head>        
-        <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
+    <head><!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
         <?php include 'header.php';?>  
         <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
-        <link rel="stylesheet" type="text/css" href="css/studentProfile.css">   
+        <link rel="stylesheet" type="text/css" href="css/studentEdit.css">   
         <?php
              if(isset($_POST['changeAccountToTeacherAccount'])){//when student want to changes his account from studetn to teacher account, will get a pop up message to continue the process or not.
                 echo"<script>$(document).ready(function(){ $('#myModall').modal('show');});</script> ";
@@ -122,6 +122,7 @@ session_start();
             </ul></div>
             </nav>
         </section>
+        <div class="container">
         <div class="row"><!--next section is the inputs field--->
             <div class="col-sm-12"> 
                 <form class="form" action="studentEdit.php" method="post" id="registrationForm">
@@ -190,7 +191,7 @@ session_start();
                         <button  class="btn btn-primary" id="saveImageButton" type="submit" name="upload">שמור תמונה</button>
                     </div>
                 </form>
-        </div></div></div></div><br><br><br><br><br>
+        </div></div></div></div></div><br><br><br><br><br>
         <div class="row">  
             <div class="col-sm-6"><!----changeAccountToTeacherAccount()---->
                 <form action="studentEdit.php" method="post"><input type="submit" name="changeAccountToTeacherAccount" class="btn btn-warning" id="changeAccountToTeacherAccountButton"  value="העברה לחשבון של מורה"></form>

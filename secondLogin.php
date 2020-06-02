@@ -37,6 +37,8 @@
       $result = mysqli_query($db,$query);
       $query="INSERT INTO `teacher_cities`(`id`,`cities`) VALUES ('$ID','cities')";
       $result = mysqli_query($db,$query);
+      $query="INSERT INTO `shareTable`(`id`,`facebook`,`linkedin`,`youtube`,`firstOtherLink`,`secondOtherLink`) VALUES ('$ID','facebook','linkedin','youtube','firstOtherLink','secondOtherLink')";
+      $result = mysqli_query($db,$query);
     }
     setUserAs($ID,$studentOrTeacher);//update user as a teacher or a student
     updatePhoneNumber($ID, $PHONE);//update the user phone number
@@ -44,6 +46,24 @@
     if($username=="AdminEliEssiak"){// login of admin (need to change that)
       header('location: AdminControlPage.php');
     }else{// sredirect to user page
+      //send Email for the new user
+      $to = $email;//sending to email address
+      $from ="HakitaSite";// from
+      date_default_timezone_set('Asia/Jerusalem');  
+      $script_tz = date_default_timezone_get();
+      $date=date("Y-m-d"); $hour = date('H:i');//today date + current hour ...to invalid the URL after hour of sending time
+      $subject="משתמש חדש באתר הכיתה";//subject of message
+      $message="<p>שלום </p>";
+      $message.=$first_name;
+      $message.="<br>";
+      $message.="<p>ברכות על הצטרפותך למשפחת אתר הכיתה </p>";
+      $headers="From:".$from."\r\n";
+      $headers.="Content-type: text/html\r\n";
+      if(mail($to,$subject,$message,$headers)){
+      }else{//if there any connection problem
+        echo "בעית תקשורת בשליחת ההודעה למייל";
+        echo "<script type='text/javascript'>alert('בעית תקשורת בשליחת ההודעה למייל');</script>";
+      }
       if( $studentOrTeacher=='teacher'){//teacher page
         header("Location: profile.php");
       }else{//student page
@@ -56,33 +76,23 @@
 <html>
   <head>
     <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
-    <meta charset="utf-8">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <title>הכיתה</title>
-    <link href="https://fonts.googleapis.com/css?family=Cairo:400,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/LoginStyle.css">
+    <?php include 'header.php';?>
+    <link rel="stylesheet" type="text/css" href="css/secondLogin.css">
   </head>
   <body>
     <a id="button"></a><!--up button{will display after down to 300 px and more}-->
     <div class="container bootstrap snippet">
       <div class="row">
-        <h1 id="title">נא למלא את הפרטים</h1><!--title-->
-        <div class="row"></hr><br></div>
+        <h1 id="title">נא למלא את הפרטים למטה</h1><!--title-->
+        <div class="row col-sm-12"></hr><br></div>
           <div class="col-sm-12"><!--display username-->
               <ul class="nav nav-tabs"><li class="active"></li></ul>              
               <div class="tab-content col-sm-3"><!--some information for the user {user can update his details later}-->
                 <h5 id="titleOfCanChangeInformations"><p>***ניתן יהיה לשנות את כל הפרטים אחר כך***</p></h5>
-                <p>  שתי השדות של שם פרטי ושם משפחה להציג אותך כמשתמש בהודעות. במידה והחשבון הוגדר כמורה ניתן יהיה לחפש לפי השם</p>
-                <p>מספר הטלפון כך לצור איתך קשר, אפשר שלא לרשום גם</p>
+                <p>  שתי השדות של שם פרטי ושם משפחה להציג אותך כמשתמש בהודעות. במידה והחשבון הוגדר כמורה ניתן יהיה למצוא אותך בתוצאות החיפוש</p>
+                <p>מספר הטלפון כך לצור איתך קשר, לכנס לחשבון, להחזיר סיסמה.</p>
                 <p> הגדרת המשתמש כ-תלמיד לא תיתן את האפשרות לחפש אותך ב- (חיפוש מורה)</p>
-                <p> במידה והחשבון הוגדר כתלמיד/ה החשבון לא יופיע כמורה </p>
-                <p> הגדרת המין עוזרת בחיפוש לאנשים שמעדיפים מורים גברים או נשים</p>
+                <p> במידה והחשבון הוגדר כתלמיד/ה. תהיה אפשרות לשנות לחשבון של כמורה </p>
               </div>
               <div class="tab-content col-sm-9">
                 <div class="tab-pane active" id="home"><hr>
@@ -102,7 +112,7 @@
                     <div class="form-group"> <!--lable for phone-->                        
                       <div class="col-sm-12">
                         <label for="phone"><h4 class="inputWords">מספר טלפון</h4></label>
-                        <input type="text" class="inputWordsInside form-control" name="phone" id="phone" placeholder="מספר טלפון">
+                        <input type="text" class="inputWordsInside form-control" name="phone" id="phone" placeholder="מספר טלפון" required>
                       </div>
                     </div>  
                     <div class="form-group"><!--lable for Email-->

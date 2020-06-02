@@ -175,7 +175,7 @@
                     //main teacher information
                         echo"<a href=\"#aboutModal\" data-toggle=\"modal\"><img src='img/".$teacherImforamtionArray[10]."' height=140  width=140 class='img-circle'></a>";
                         echo"<h2>".$teacherImforamtionArray[1]." ".$teacherImforamtionArray[2]."</h2>";//teacher name
-                        echo"<h5>"."מחיר לשעה: ".$teacherImforamtionArray[4]."₪</h5>";  
+                        echo"<h5>".$teacherImforamtionArray[4]."</h5>";  
                         echo"<h5>".$teacherImforamtionArray[5]."</h5>";//teacher status
                         echo"<p>".teacherRating($ID)."</p>";//from userData.php              
                     ?>
@@ -293,9 +293,11 @@
                         shareIn: "popup"
                     });
                 </script>
-            </div><!---copy my profile link---->
+            </div><!--copy my profile link-->
             <br>
-            <button class="btn btn-info btn-lg" onclick="myFunction()"><span class="glyphicon glyphicon-paperclip">קישור לפרופיל שלי</span></button>           
+            <button class="btn btn-info btn-lg" onclick="myFunction()"><span class="glyphicon glyphicon-paperclip">קישור לפרופיל שלי</span></button>  
+            <br><br>
+                     
         </div><!--next section for the time board lessons, include a button for display the board on the student side or not. and include the board with button for each hour on week 07:00-22:00-->
         <div id="dashboardSection" class="tabcontent">
             <form action="profile.php" method="post">  
@@ -305,9 +307,7 @@
                     else{echo'<input type="submit" value="להציג יומן שיעורים" name="dashboardSectionbutton">';}
                 ?>
             </form>
-            <section class="board col-sm-12"><!--the board of lessons-->
-                <div class="container">      
-                <div class="col-sm-12">     
+            <section class="board"><!--the board of lessons-->   
                 <table class="table table-sm table-dark">
                     <thead>                                
                     <?php 
@@ -382,7 +382,6 @@
                     </form> 
                     </tbody>
                 </table>
-                </div></div>
             </section>
         </div>
     </section>
