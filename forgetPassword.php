@@ -44,16 +44,15 @@ $messageIsSentTOEmail=-1;
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <?php include 'header.php';?>  
     <link rel="stylesheet" href="css/forget.css">
   </head>
   <body>
+    <?php include_once 'nav.php'?>
   <div id="highlighted" class="hl-basic hidden-xs">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">
+      <div class="col-sm-12 text-center">
         <h1 id="pageTitle">שחזור סיסמה</h1>
       </div>
     </div>
@@ -62,17 +61,6 @@ $messageIsSentTOEmail=-1;
 <div id="content" class="interior-page">
   <div class="container-fluid">
     <div class="row">
-      <!--Sidebar-->
-      <div class="col-sm-3 col-md-3 col-lg-2 sidebar equal-height interior-page-nav hidden-xs">
-        <div class="dynamicDiv panel-group" id="dd.0.1.0">
-          <div id="subMenu" class="panel panel-default">
-            <ul class="subMenuHighlight panel-heading"><li class="subMenuHighlight panel-title" id="subMenuHighlight"><a id="li_291" class="subMenuHighlight" href="Hakita.php"><span>הכיתה</span></a></li></ul>
-            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="login.php"><span class="subMenuHighlight">כניסה</span></a></li></ul>
-            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="Signup.php"><span class="subMenuHighlight">הרשמה</span></a></li></ul>
-          </div>
-          <div class="item item-nopad item-noborder item-gold"><a style="padding: 5% 0px;" href="FAQ.php" class="btn btn-primary btn-block" role="button"><span class="subMenuHighlight">שאלות ותשובות </span></a></div>
-        </div>
-      </div>
         <?php        
         if($messageIsSentTOEmail==1){
             echo"<div class=\"container h-100 d-flex justify-content-center\">
@@ -98,13 +86,10 @@ $messageIsSentTOEmail=-1;
                $resultsOfInsert=mysqli_query($con,$query);
              } 
           }else{
-            echo"<div class=\"col-sm-9 col-md-9 col-lg-10 content equal-height\">
+            echo"<div class=\"col-sm-12 content equal-height\">
             <div class=\"content-area-right\">
-              <div class=\"content-crumb-div\">
-              <a class=\"nav-link\" id=\"homePage\" href=\"Hakita.php\"> עמוד הבית</a>
-              </div>
-              <div class=\"row\"><div class=\"col-md-5 forgot-form\">
-                  <p>אחרי הכנסת שם משתמש או המייל יש ללחוץ על הכפתור שליחה, ואז יש לבדוק את המייל. במצב ולא קיבלה הודעה יש לעשות את זה שוב</p>
+              <div class=\"row col-sm-12\"><div class=\"col-sm-12 forgot-form\">
+                  <p>יש להכניס את המייל השייך לחשבנוך באתר וללחוץ את הכפתור שליחה על מנת לקבל קישור לשחזר סיסמה במייל</p>
                   <form name=\"forgetPassForm\" action=\"forgetPassword.php\" method=\"post\" class=\"login-form\">
                     <label class=\"label-default\" for=\"un\"></label> <input id=\"email_addy\" name=\"email_addy\" class=\"form-control\" type=\"text\" placeholder=\"שם משתמש או דואר אלקטרוני\" ><br>
                     <a id=\"mybad\" class=\"btn btn-primary\" role=\"button\">שליחה</a>
@@ -113,5 +98,6 @@ $messageIsSentTOEmail=-1;
           }
         ?>      
     </div></div></div>
+    <?php include_once 'footer.php';?><!--get the bottom footer-->
   </body>
 </html>

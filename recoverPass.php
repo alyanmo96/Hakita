@@ -1,5 +1,5 @@
 <?php
-/**
+  /**
  *on this page  after check the validate of the URL, user have to insert the new password and confirm it.
  * we check the valid of the password. if there is some wrong with that return a message, 
  * else rediredt to user profile. 
@@ -39,16 +39,15 @@ session_start();
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="css/forget.css">
+    <?php include 'header.php';?>  
+    <link rel="stylesheet" href="css/recover.css">
   </head>
   <body>
+  <?php include_once 'nav.php'?>
   <div id="highlighted" class="hl-basic hidden-xs">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 col-lg-10 col-lg-offset-2">
+      <div class="col-sm-12 col-lg-offset-2">
         <h1>הגדרת סיסמה חדשה</h1>
       </div>
     </div>
@@ -58,30 +57,21 @@ session_start();
   <div class="container-fluid">
     <div class="row">
       <!--Sidebar-->
-      <div class="col-sm-3 col-md-3 col-lg-2 sidebar equal-height interior-page-nav hidden-xs">
-        <div class="dynamicDiv panel-group" id="dd.0.1.0">
-          <div id="subMenu" class="panel panel-default">
-            <ul class="subMenuHighlight panel-heading"><li class="subMenuHighlight panel-title" id="subMenuHighlight"><a id="li_291" class="subMenuHighlight" href="Hakita.php"><span>הכיתה</span></a></li></ul>
-            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="forgetPassword.php"><span class="subMenuHighlight">שליחת מייל מחדש</span></a></li></ul>
-            <ul class="panel-heading"><li class="panel-title"><a class="subMenu1" href="Signup.php"><span>הרשמה</span></a></li></ul>
-          </div>
-          <div class="item item-nopad item-noborder item-gold"><a style="padding: 5% 0px;" href="FAQ.php" class="btn btn-primary btn-block" role="button">שאלות ותשובות </a></div>
-        </div>
-      </div>
+      <div class="col-sm-12 sidebar equal-height interior-page-nav hidden-xs">
         <?php        
         if($validUrl!=1){
           echo"<div id=\"notfound\">
           <div class=\"notfound\">
             <div class=\"notfound-404\"><h1>404</h1></div>
             <h2>אופס! לא ניתן היה למצוא דף זה</h2>
-            <p>מצטערים אבל הדף שאתה מחפש לא קיים, הוסר. שם השתנה או שהוא בלתי אפשרי לזמן מזמן</p>
+            <p>מצטערים אבל הדף שאתה מחפש לא קיים, הוסר.</p>
             <a href=\"forgetPassword.php\">שחזור סיסימה</a>
           </div></div>"; 
           }else{
             echo"<div class=\"top-content\">
               <div class=\"inner-bg\">
               <div class=\"container\" id=\"cen\">
-                    <div class=\"col-sm-6 col-sm-offset-3 text\"><div class=\"form-box\"><div class=\"form-top\"><div class=\"form-top-left\">
+                    <div class=\"col-sm-12 text\"><div class=\"form-box\"><div class=\"form-top\"><div class=\"form-top-left\">
                         <h3>הגדרת סיסמה חדשה לאתר הכיתה</h3></div></div>
                 <div class=\"form-bottom\">
                   <fieldset><form name=\"recoverPasswordForm\" action=\"recoverPass.php\" method=\"post\" class=\"login-form\"><input type=\"hidden\" name=\"id\" value=\"$ID\"> 
@@ -100,5 +90,6 @@ session_start();
           }
         ?>      
     </div></div></div>     
+    <?php include_once 'footer.php';?><!--get the bottom footer-->
   </body>
 </html>
