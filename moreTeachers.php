@@ -73,72 +73,58 @@
 		<link rel="stylesheet" type="text/css" href="css/moreTeachersStyle.css">
 	</head>
 	<body>
-		<section><!--navbar section-->
-			<nav class="navbar navbar-expand-lg navbar-light bg-light">
-				<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>            
-				<?php     
-					echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-					<div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-					<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-						<li class="nav-item"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>';
-					if(!$ID){//for the unlogin user will display (signin/sign up) search for a teacher and FAQ page
-						echo'  
-                        	<li class="nav-item active"><a class="nav-link" href="login.php">כניסה</a></li>
-                        	<li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה</a></li>
-							<li class="nav-item"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
-							<li class="nav-item"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';
-					}else{/*for the login user, first we check if the login user is a student or a teacher
-						that help with redirect to his profile, case there is a different between theprofile of teacher and the profile of student
-						for the login user the navbar include:main page/ my profile  /logout/search for a teacher/FAQ page
-						( on {3,4} what's deffirnet with unlogin user, here we send the id of the user)
-						*/						
-							if(checkUserDefineAs($IDOfStudent)==-1){// if the login user was a student, then he want to access to his profile
-								echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>';
-							}else{// if the login user was a teacher, then he want to access to his profile
-							echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>';
-							}// login user go to search teachers page/FAQ page/exit from his account
-							echo'<li class="nav-item"><a class="nav-link" href="searchTeachers.php">חיפוש מורה</a></li>
-							<li class="nav-item"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
-							<li class="nav-item"><a class="nav-link" href="logout.php">יציאה </a></li>';				
-						}
-					?>
-				</ul>
-				</div>
-			</nav>
-		</section><hr>
-		<section class="col-sm-1"><a id="button"></a></section>
+		<a id="button"></a><!--up button-->
+		<?php include_once 'nav.php'?>
+		<hr>
+		<section class="col-sm-1"></section>
 		<section class="work col-sm-12">
-			<div class="container">
-				<div class="row">
+			<div class="container col-sm-12">
+				<div class="row col-sm-12">
 					<?php
 						if(count($IdArray)==0){//if there is not yet any teacher learn this course on site...on early level.
 							echo'<div id="noResult">עוד אין מורים בתחום הזה שנבחר</div>';
 						}else{//for each teacher show image, name, price and status.
 							$j=0;$TeacherID=0;$D=array();$DCounter=0;
-							echo'<div class="container"><div class="row" style=\'direction:rtl;\'>';
+							echo'<div class="container col-sm-12"><div class="row" style=\'direction:rtl;\'>';
 							echo"<form method=\"post\" action=\"moreTeachers.php\">";
 							while($j<=$i){	
 								$D[$DCounter]=$IdArray[$j];$DCounter++;//insert the teacher id for using on click state. 	next teacher
 										$TeacherID=$IdArray[$j];
-							echo"<button class=\"card mb-3\" name=\"$TeacherID\" style=\"max-width: 740px; direction: rtl;\">";
+							echo"<button class=\"card mb-3\" name=\"$TeacherID\" style=\"direction: rtl;\">";
 								echo"<div class=\"row no-gutters\">
 									<div class=\"col-md-4\"><img src='img/".Image($IdArray[$j])." 'class=\"card-img\"></div>";//teacher image
 										echo'<div class="col-md-8"><div class="card-body">';
 							echo"<h5 class=\"card-title\">";
-							if(Gender($IdArray[$j])==-1){echo "מורה פרטית ".name($IdArray[$j]);}
-							else{echo"מורה פרטי ".name($IdArray[$j]);}
-							echo"</h5>";
+							echo "".name($IdArray[$j]);
+							echo"</h5><br>";
 							teacherRating($IdArray[$j]);//teacher rating
-							echo "".price($IdArray[$j])."₪לשעה<br>";//teacher price
-							echo"קצת עלי&nbsp;\"". status($IdArray[$j])."\"";//teacher status
-                            if(Gender($IdArray[$j])==-1){echo"<p class=\"card-text\">מלמדת שיעור פרטי ב-&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5)."</p>";}
-							else{echo"<p class=\"card-text\"> מלמד שיעורים פרטים ב-&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5)."</p>";}
-                            echo"<p class=\"card-text\"><small class=\"text-muted\">עיר לימוד:&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],3)."</small></p></div></div></div></button>"; 
+							echo"<br>";
+							if(status($IdArray[$j])!='status'){
+								echo"קצת עלי&nbsp;\"". status($IdArray[$j])."\"";//teacher status
+							}
+							
+							$teach=returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5);
+							if($teach!=null){
+								if(Gender($IdArray[$j])==-1){
+									echo"<p class=\"card-text\">מלמדת שיעור פרטי ב-&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5)."</p>";
+								}
+								else{
+									echo"<p class=\"card-text\"> מלמד -&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],5)."</p>";
+								}
+							}
+                            
+							$city=returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],3);
+							if($city!=null){
+								echo"<p class=\"card-text\"><small class=\"text-muted\">עיר לימוד:&nbsp;".returnTeacherCitiesOrCoursesIntoArray($IdArray[$j],3)."</small></p>";
+							}
+							if(strlen(price($IdArray[$j]))>1){
+								echo"<br>".price($IdArray[$j])."<br>";//teacher price
+							}
+							echo"</div></div></div></button>"; 
 							$j++;
 						}echo"</form></div></div>";
 						}	
 					?></div></div>
-		<?php include_once 'footer.php';/*call the bottom footer*/?>
     </body>
 </html>
 <?php include 'script.php';/*some script like up button*/?>  
