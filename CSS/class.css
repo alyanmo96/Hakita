@@ -1,0 +1,11 @@
+body{
+    direction: rtl;
+}
+@media only screen and (max-width: 400px) {
+    dark th, .table-dark thead th {
+        font-size: 10px;
+    } 
+    .table th {
+        padding: 10px;
+    }     
+}
