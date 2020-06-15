@@ -1,39 +1,33 @@
 <?php
 /**
- * (-)on this page admin can make many functions as look for users(all users/teachers/students/new users/
- * add a new city or anew course/which user make changes and admin settings).
+ * (-)on this page admin can make many functions as like look for users(all users/teachers/students/new users/
+ * add a new city or anew course/which user make changes and admin settings), send Email's for many users, check messages.
  * (-)ADMIN look for a user by choose him on list or at the display users section bellow can found him.
  * (-)the section of new user. display user with a new account less than one month.
  */
     session_start();
+    $ID=$_SESSION['id'];//get the Admin id.
+    $_SESSION['id']=$ID;
+    if(!$ID){
+        header("location: logout.php");   
+    }
     include 'userData.php';//call this file to use some functions.
+    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        
+    //delete user who has made change on his account before a month and more
+    date_default_timezone_set('Asia/Jerusalem'); 
+    $script_tz = date_default_timezone_get();
+    $current_month=date('m');
+    $madeChange = mysqli_query($con, "SELECT * FROM makeChange");
+    while ($rows=mysqli_fetch_array($madeChange)){
+        if($rows['dateOfChane']<$current_month){
+            $deleteID=$rows['id'];
+            $sql = "DELETE FROM makeChange WHERE id=$deleteID";//delete from the teacher Schedule table
+            if ($con->query($sql) === TRUE){
+            }
+        }
+    }
 
-    function SiteCities($city){//function to check if admin going to insert a city that is already on DB or not
-       $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-        $teacher_citiesResultForArray=mysqli_query($con, "SELECT * FROM cities");//call the table of cities
-        $arrayOFAll=array();
-          while ($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResultForArray)){
-            $r=$teacherCitiesRows['cityName'];
-            array_push($arrayOFAll,$r);//insert a list of cities names on array, each city on different index on array, 
-            //to compare on next section(after loop) what user choose as a cities and what we have on DB
-          } 
-          for($t=0;$t<count($arrayOFAll);$t++){
-            if((strcmp($city, $arrayOFAll[$t])==0)){return 1;}
-          }return -1;
-    }   
-    function SiteCourses($course){//function to check if admin going to insert a course that is already on DB or not
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-        $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
-        $arrayOFAll=array();
-          while($teacherCitiesRows=mysqli_fetch_array($resultsOfCourses)){
-            $r=$teacherCitiesRows['subject'];
-            array_push($arrayOFAll,$r);//insert a list of courses names on array, each city on different index on array, 
-            //to compare on next section(after loop) what user choose as a courses and what we have on DB
-          }      
-          for($t=0;$t<count($arrayOFAll);$t++){
-            if(strcmp($course,$arrayOFAll[$t])==0){return 1;}
-          }return -1;
-    }   //delete City from DB
     if(isset($_POST['deleteCity'])&&$_POST['deleteCity']!=NULL){
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
@@ -49,7 +43,9 @@
             }
         }else{echo "אין עיר כזאת ברשימה<br>";}//when ADMIN want to delete a city that there is no city by this name
     } 
+
     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+    
     if(isset($_POST['newCity'])&&$_POST['newCity']!=''&&$cityDeleted!=1){//this section for adding a new city to site. statring by get the name of the new city, check that's really a new city, if yes add it else not
       $cityAndCourseNavbar=1;//variable use to check if the ADMIN update on city or course section
       $city=$_POST['newCity'];//get the name of the new city
@@ -88,60 +84,31 @@
     isset($_POST['email'])||isset($_POST['phone'])||
     isset($_POST['first_name'])||isset($_POST['last_name'])){//this section related to ADMIN settings, upload his information as password, email, phone number, name.
         $settingsNavbar=1;//variable use to check if the ADMIN update his information for second navbar
-        $adminId=211;
         $results = mysqli_query($con, "SELECT * FROM users");//connect with user table
         if($_POST['first_name']){//ADMIN update his first name
-            updateFirstName($adminId, $_POST['first_name']);
+            updateAdminFirstName(27341, $_POST['first_name']);
         }        
         if($_POST['last_name']){//ADMIN update his last name
-            updateLastName($adminId, $_POST['last_name']);
+            updateAdminLastName(27341, $_POST['last_name']);
         }
         if($_POST['email']){//ADMIN update his email
-            updateEmail($adminId, $_POST['email']);
+            updateAdminEmail(27341, $_POST['email']);
         }
         if($_POST['phone']){//ADMIN update his phone number
-            updatePhoneNumber($adminId, $_POST['phone']);
+            updateAdminPhoneNumber(27341, $_POST['phone']);
         }
         if($_POST['password']){
-            $invalidPass=Password($adminId, $_POST['password'], $_POST['verifyPassword']);
+            $invalidPass=updateAdminPassword(27341, $_POST['password'], $_POST['verifyPassword']);
         }  
     }
     
-    //get all user id's....not include admin id
+    //get all user id's....not include admin
     $IdResults = mysqli_query($con, "SELECT * FROM users");
     $i=0; $IdArray = array();
     while ($rows=mysqli_fetch_array($IdResults)){
-        if($rows['id']!=211){/*not the admin*/$IdArray[$i]=$rows['id'];$i++;}
+        $IdArray[$i]=$rows['id'];$i++;
     }$i-=1;//we use it to know how many users there is, in this case after the loop we eill get then count of users + one, so we minus one
-    
-    function displayFunction($arrayOfId,$relatedNumber,$i){
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-        $j=0;$arrayIdCounter=0;
-        echo'<div class="teacher col-sm-12">';
-        echo"<form id=\"fform\"  class=\"col-sm-12\" method=\"post\" action=\"AdminControlPageEditOnUser.php\">";
-        while($j<count($arrayOfId)&&count($arrayOfId)>0){//diplay all users
-            if(1==1){//true section
-                    if(checkUserDefineAs($arrayOfId[$j])==1&&$relatedNumber==14444){$j++; continue;}
-                    elseif(checkUserDefineAs($arrayOfId[$j])==-1&&$relatedNumber==18888){$j++;continue;}
-                
-                $results=mysqli_query($con, "SELECT * FROM images");
-                while($rows=mysqli_fetch_array($results)){
-                    if($rows['id']==$arrayOfId[$j]){
-                        echo"<div class=\"col-sm-4\">
-                        <button name=\"user\" value=\"$arrayOfId[$j]\">";
-                        if($rows['image']!='image'&&$rows['image']!=null){//display image
-                            echo"<img src='img/".$rows['image']."'class='teacherImg img-rounded img-responsive'>";
-                            echo"<p>".name($arrayOfId[$j])."</p>";//print name
-                            echo"</button></div><div class=\"displayOnSmallScreen\"><br></div>";
-                        }
-                    }
-                }
-            }$j++;//help with diplay as we said above.
-        }
-        echo"</form>";
-        echo'</div>';
-    }
-
+     
     if(isset($_POST['sendEmails'])){
         //check the select option value
         $to = "";//sending to email address
@@ -163,6 +130,54 @@
             }
         }      
     }
+
+    if(isset($_POST['trashButton'])){//delete a blog
+        $blogId=$_POST['trashButton'];//id Of blog
+        $sql="DELETE FROM artical WHERE  articalNumber=$blogId";
+        if($con->query($sql)===TRUE){
+        }              
+    }
+
+    if(isset($_POST['trashQuestionButton'])){//delete a question of how to use site
+        $questionId=$_POST['trashQuestionButton'];//id Of question
+        $sql="DELETE FROM questionAboutUsingSite WHERE  questionNumber=$questionId";
+        if($con->query($sql)===TRUE){
+        }              
+    }//
+
+    if(isset($_POST['upload'])){//add a new blog, inclue title, text, image
+        $image=$_FILES['image']['name']; 
+        $articalText=$_POST['blogText'];
+        $text= str_replace("'", "''", $articalText);//if the blog text include {'}
+        $articalTitle=$_POST['blogTitle'];
+        $title= str_replace("'", "''", $articalTitle);//if the blog title include {'}
+        
+        $query="INSERT INTO `artical`(`articalText`,`articalTitle`,`articalImg`) VALUES 
+                    ('$text','$title','$image')";
+        $result = mysqli_query($con,$query);
+        
+        $articalNumber;
+        $Results=mysqli_query($con, "SELECT * FROM artical");
+        while ($row=mysqli_fetch_assoc($Results)){
+            $articalNumber=$row['articalNumber'];
+        }
+        $target = "img/".basename($image);// image file directory
+        $upDate="UPDATE `artical` SET `articalImg`='$image'WHERE articalNumber=$articalNumber";//Update user image
+        $resultsOfImageTable = mysqli_query($con,$upDate);
+        move_uploaded_file($_FILES['image']['tmp_name'], $target); 
+    }
+
+    if(isset($_POST['questionUpload'])){//add a new question of to use site
+        $questionText=$_POST['questionText'];
+        $text= str_replace("'", "''", $questionText);//if the blog text include {'}
+        $questionTitle=$_POST['questionTitle'];
+        $title= str_replace("'", "''", $questionTitle);//if the blog title include {'}
+        
+        $query="INSERT INTO `questionAboutUsingSite`(`questionTitle`,`questionAnswer`) VALUES 
+                    ('$title','$text')";
+        $result = mysqli_query($con,$query);
+    }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -173,21 +188,44 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
-        <link rel="stylesheet" type="text/css" href="css/AdminStyle.css"><!--some addition CSS-->
+        <link rel="stylesheet" type="text/css" href="css/Admin.css"><!--some addition CSS-->
+        <style>
+        * {
+        box-sizing: border-box;
+        }
+
+        /* Create two unequal columns that floats next to each other */
+        /* Left column */
+        .leftcolumn {   
+        float: left;
+        width: 75%;
+        }
+
+        /* Add a card effect for articles */
+        .cardBlog {
+        background-color: white;
+        padding: 20px;
+        margin-top: 20px;
+        }
+        .blog{
+            max-width:160px;
+            max-height:170px;
+        }
+        </style>
     </head>
     <body>
-    <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
-    <section><!--navbar section-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-              <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li class="nav-item active"><a class="nav-link" href="adminMessageRoom.php">הודעות</a></li>
-                <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>
-              </ul>
-            </div>
-        </nav>
-    </section>
+        <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
+        <section><!--navbar section-->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                    <li class="nav-item active"><a class="nav-link" href="adminMessageRoom.php">הודעות</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה<span class="sr-only"></span></a></li>
+                </ul>
+                </div>
+            </nav>
+        </section>
     <section class="choose">    
         <div class="row"><!--second navbar for admin, route to all user section/teachers/student/new users...-->
             <?php
@@ -200,7 +238,9 @@
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'orange')\"> מי עשה שינוי </button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\"id=\"defaultOpen\">  פרטי המנהל </button>
-                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">  שליחת מייל </button>";
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">  שליחת מייל </button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('blog', this, 'blueviolet')\">מאמרים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('famousQuestion', this, 'orange')\">שאלות נפוצות</button>";
                 }elseif($cityAndCourseNavbar){//new course/city section on the main page
                     echo "                    
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\">לכל המשתמשים</button>
@@ -210,7 +250,9 @@
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'orange')\"> מי עשה שינוי </button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\">  פרטי המנהל </button>
-                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">שליחת מייל</button>";
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">שליחת מייל</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('blog', this, 'blueviolet')\">מאמרים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('famousQuestion', this, 'orange')\">שאלות נפוצות</button>";
                 }else{//default mode, display the all users section on the main page
                     echo "                    
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('allUSers', this, 'blueviolet')\"id=\"defaultOpen\">לכל המשתמשים</button>
@@ -220,12 +262,14 @@
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('newUSers', this, 'blueviolet')\">   המשתמשים חדשים</button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('madeChange', this, 'orange')\"> מי עשה שינוי </button>
                     <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminDetails', this, 'blueviolet')\">  פרטי המנהל </button>
-                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">שליחת מייל</button>";
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('AdminSendEmails', this, 'orange')\">שליחת מייל</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('blog', this, 'blueviolet')\">מאמרים</button>
+                    <button class=\"tablink col-sm-3\" onclick=\"openPage('famousQuestion', this, 'orange')\">שאלות נפוצות</button>";
                }
             ?>
         </div><!--next section for all users, 
         on this section we can show all users on a cards include image and name. 
-        can click on any card to redirect to edit on choosen card, or choos from list-->              
+        can click on any card to redirect to edit on choosen card, or choos from list, by select any user will redirect to AdminControlPage by used Jquery from script file-->              
         <div id="allUSers" class="tabcontent">
             <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
                 <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
@@ -234,9 +278,7 @@
                         echo"<SELECT name=\"frameworkAllUsers\"  id=\"frameworkAllUsers\" class=\"selectpicker\" data-live-search=\"true\">";
                         $resuls=mysqli_query($con, "SELECT * FROM users");
                         while($rows=mysqli_fetch_array($resuls)){
-                            if($rows['id']!=211){
-                                echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
-                            }
+                            echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
                         }echo"</SELECT>";
                     ?>                                      
                     <input type="hidden" name="hidden_framework_allUsers" id="hidden_framework_allUsers"/><br/>
@@ -247,14 +289,14 @@
                 <div class="container">
                     <div class="row">
                         <?php     
-                           displayFunction($IdArray,155555,$i);//call this function to display all users
+                           displayPeopleFunctionOnAdminPage($IdArray,155555,$i);//call this function to display all users. function in userData file
                         ?>
                     </div>
                 </div>
             </section> 
         </div><!--next section for students, 
         on this section we can show all users on a cards include image and name. 
-        can click on any card to redirect to edit on choosen card, or choos from list-->                  
+        can click on any card to redirect to edit on choosen card, or choos from list, by select any user will redirect to AdminControlPage by used Jquery from script file-->                  
         <div id="students" class="tabcontent">
             <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
                 <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
@@ -263,7 +305,7 @@
                         echo"<SELECT name=\"frameworkStudent\"  id=\"frameworkStudent\" class=\"selectpicker\" data-live-search=\"true\">";
                         $resuls=mysqli_query($con, "SELECT * FROM users");
                         while($rows=mysqli_fetch_array($resuls)){
-                            if($rows['id']!=211&& $rows['setUserAs']=='student'){
+                            if($rows['setUserAs']=='student'){
                                 echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
                             }
                         }echo"</SELECT>";
@@ -275,12 +317,78 @@
                 <div class="container">
                     <div class="row"><!--for display -->
                         <?php
-                            displayFunction($IdArray,18888,$i);//call this function to display all students
+                            displayPeopleFunctionOnAdminPage($IdArray,18888,$i);//call this function to display all students. function in userData file
                         ?>
                     </div>
                 </div>        
             </section>
-        </div> <!--next section for user who made changed on last month, 
+        </div>
+        <div id="blog" class="tabcontent"><!--this section is for add/delete blogs-->
+            <h1>הוספת מאמר חדש</h1>
+            <form action="AdminPage.php" method="POST"  enctype="multipart/form-data">
+                <input type="text" placeholder="כותרת המאמר" name="blogTitle" required>
+                <br>
+                <input type="text" placeholder="תוכן המאמר" name="blogText" required>
+                <input type="hidden" name="size" value="1000000">
+                <h4 class="inputImgTitle">תמונת המאמר</h4>
+                <div class="chooseImg">
+                    <input class="file-path validate" type="file" name="image" required>
+                </div><div><br>
+                    <button  class="btn btn-primary" type="submit" name="upload">הוספת מאמר </button>
+                </div>
+            </form>
+            <hr><hr><br>
+            <h1>צפות במאמרים</h1>
+            <br>
+            <div class="row">
+                <div class="leftcolumn">
+                    <?php
+                        $articalResults=mysqli_query($con, "SELECT * FROM artical");
+                        echo"<form action=\"AdminPage.php\" method=\"POST\">";
+                        while($row=mysqli_fetch_assoc($articalResults)){
+                            echo'<div class="cardBlog">';
+                            echo'<button class="btn" name="trashButton" value="'.$row['articalNumber'].'" title="מחיקת מאמר"><i class="fa fa-trash"></i></button>';
+                                echo'<h2 class="h2InsideCard" style="text-align:center;">'.$row['articalTitle'].'</h2>';
+                                echo'<div class="divInsideCard" style="height:auto; text-align: center;"><img class="blog" src="img/'.$row['articalImg'].'"></div>';
+                                echo "<p>".$row['articalText']."</p>";
+                            echo'</div>';
+                        }echo"</form>";
+                    ?>
+                </div>
+            </div>
+        </div>   
+        
+        <div id="famousQuestion" class="tabcontent"><!--add/delete question on FAQ page about site using-->
+            <h1>הוספת שאלה חדשה</h1>
+            <form action="AdminPage.php" method="POST">
+                <input type="text" placeholder="כותרת השאלה" name="questionTitle" required>
+                <br>
+                <input type="text" placeholder="תוכן השאלה" name="questionText" required>
+                <div>
+                    <br>
+                    <button  class="btn btn-primary" type="submit" name="questionUpload">הוספת שאלה </button>
+                </div>
+            </form>
+            <hr><hr><br>
+            <h1>צפות בשאלות</h1>
+            <br>
+            <div class="row">
+                <div class="leftcolumn">
+                    <?php
+                        $questionsResults=mysqli_query($con, "SELECT * FROM questionAboutUsingSite");
+                        echo"<form action=\"AdminPage.php\" method=\"POST\">";
+                        while($row=mysqli_fetch_assoc($questionsResults)){
+                            echo'<div class="cardBlog">';
+                            echo'<button class="btn" name="trashQuestionButton" value="'.$row['questionNumber'].'" title="מחיקת שאלה"><i class="fa fa-trash"></i></button>';
+                                echo'<h2 class="h2InsideCard" style="text-align:center;">'.$row['questionTitle'].'</h2>';
+                                echo "<p>".$row['questionAnswer']."</p>";
+                            echo'</div>';
+                        }echo"</form>";
+                    ?>
+                </div>
+            </div>
+        </div>        
+        <!--next section for user who made changed on last month, 
         on this section we can show all users on a cards include image and name. 
         can click on any card to redirect to edit on choosen card, or choos from list-->                          
         <div id="madeChange" class="tabcontent">
@@ -303,14 +411,14 @@
                 <div class="container">
                     <div class="row">
                         <?php
-                            displayFunction($IdArray,17777,$i);//call this function to display all users made changes
+                            displayPeopleFunctionOnAdminPage($IdArrayChanges,17777,$i);//call this function to display all users made changes. function in userData file
                         ?>
                     </div>
                 </div>
             </section>
         </div><!--next section for teachers, 
         on this section we can show all users on a cards include image and name. 
-        can click on any card to redirect to edit on choosen card, or choos from list-->  
+        can click on any card to redirect to edit on choosen card, or choos from list, by select any user will redirect to AdminControlPage by used Jquery from script file-->  
         <div id="teachers" class="tabcontent">
             <h1 class="col-sm-12">חפש לפי שם או בחר מהרשימה למטה</h1>
                 <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
@@ -319,7 +427,7 @@
                         echo"<SELECT name=\"frameworkTeacher\"  id=\"frameworkTeacher\" class=\"selectpicker\" data-live-search=\"true\">";
                         $resuls=mysqli_query($con, "SELECT * FROM users");
                         while($rows=mysqli_fetch_array($resuls)){
-                            if($rows['id']!=211&&$rows['setUserAs']!='student'){
+                            if($rows['setUserAs']!='student'){
                                 echo'<option value="'.$rows['username'].'">'.$rows['fname']." ".$rows['lname'].'</option>';
                             }
                         }echo"</SELECT>";
@@ -331,7 +439,7 @@
                 <div class="container">
                     <div class="row">
                         <?php
-                           displayFunction($IdArray,14444,$i);//call this function to display all teachers
+                           displayPeopleFunctionOnAdminPage($IdArray,14444,$i);//call this function to display all teachers. function in userData file
                         ?>
                     </div>
                 </div>
@@ -342,6 +450,19 @@
             <form action="AdminPage.php" method="post">  
                 <?php
                     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                    
+                    echo'<div class="form-group"><div class="col-xs-12">';
+                    echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
+                    $results = mysqli_query($con, "SELECT * FROM courses");
+                    echo'<option>בדוק את המקצועות הקיימים  </option>';
+                    while ($rows=mysqli_fetch_array($results)){//list of courses on DB
+                        echo'<option>'.$rows['subject'].'</option>';
+                    }echo"</SELECT></div></div><br><br><br>";
+                    echo'<br><br><input type="text" placeholder="הוספת מקצוע חדש" name="newCourse" id="newCourse" required>';
+                    echo'<input type="text" placeholder="מחיקת מקצוע " name="deleteCourse" id="deleteCourse" required>';
+                   
+                    echo'<br><br>';
+
                     echo'<div class="form-group"><div class="col-xs-12">';
                     echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
                     $results = mysqli_query($con, "SELECT * FROM cities");
@@ -349,23 +470,16 @@
                     while ($rows=mysqli_fetch_array($results)){//list of cities on DB
                         echo'<option>'.$rows['cityName'].'</option>';
                     }
-                    echo"</SELECT><br><br><br>";//
-                    echo'<input type="text" placeholder="הוספת עיר חדשה" name="newCity" id="newCity" required/>
-                    <input type="text" placeholder="מחיקת עיר" name="deleteCity" id="deleteCity" required/></div></div><br><br>';
-                    echo'<br><br><div class="form-group"><div class="col-xs-12">';
-                    echo "<SELECT class=\"form-control selectpicker\" data-live-search=\"true\">";
-                    $results = mysqli_query($con, "SELECT * FROM courses");
-                    echo'<option>בדוק את המקצועות הקיימים  </option>';
-                    while ($rows=mysqli_fetch_array($results)){//list of courses on DB
-                        echo'<option>'.$rows['subject'].'</option>';
-                    }echo"</SELECT></div></div><br><br><br>";//
-                    echo'<br><br><input type="text" placeholder="הוספת מקצוע חדש" name="newCourse" id="newCourse" required>';
-                    echo'<input type="text" placeholder="מחיקת מקצוע " name="deleteCourse" id="deleteCourse" required>
-                    <fieldset> 
+                    echo"</SELECT></div></div><br><br><br>";
+                    echo'<br><br><input type="text" placeholder="הוספת עיר חדשה" name="newCity" id="newCity" required>';
+                    echo'<input type="text" placeholder="מחיקת עיר" name="deleteCity" id="deleteCity" required>';
+
+                    
+                    echo'<fieldset> 
                         <div class="text-center"><input type="submit" class="logSignButton btn btn-info btn-primary text-center"  value="שמירת שינוי"></div>
                     </fieldset>';                    
                 ?>
-            </form> 
+            </form>
         </div><!--next section for new users, 
         on this section we can show all users on a cards include image and name. 
         can click on any card to redirect to edit on choosen card, or choos from list--> 
@@ -406,7 +520,7 @@
                 <div class="container">
                     <div class="row">
                         <?php
-                            displayFunction($newUsersIdArray,19999,$i);//call this function to display all new users (new account less than one month)
+                            displayPeopleFunctionOnAdminPage($newUsersIdArray,19999,$i);//call this function to display all new users (new account less than one month). function in userData file
                         ?>
                     </div>
                 </div>
@@ -414,17 +528,14 @@
         </div><!--next section for admin to update his information-->         
         <div id="AdminDetails" class="tabcontent col-sm-12">
             <?php
-                $firstName=" ";$lastName=" ";$email=" ";$Phone=" ";$username=" ";$ID;//variable of admin inforamtion to display it 
+                $firstName=" ";$lastName=" ";$email=" ";$Phone=" ";$username=" ";//variable of admin inforamtion to display it 
                 $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                $results=mysqli_query($con, "SELECT * FROM users");
+                $results=mysqli_query($con, "SELECT * FROM AdminTable");
                 while($row=mysqli_fetch_assoc($results)){//get admin information from DB, to display it.
-                    if($row['id']=='211'){
-                        $ID=$row['id'];
                         $username=$row['username'];
                         $firstName=$row['fname'];$lastName=$row['lname'];
                         $email=$row['email'];$Phone=$row['phone'];
                     break;
-                    }
                 }
             ?><hr><!--update admin details-->
             <div class="container">
@@ -438,7 +549,7 @@
                                 <div class="forme-group">                          
                                     <div class="col-xs-12"><!--update admin first name-->
                                         <label for="first_name"><h4>שם פרטי</h4></label>
-                                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>" title="enter your first name if any.">
+                                        <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>" title="enter your first name">
                                     </div>
                                 </div> 
                                 <div class="forme-group">                          
@@ -479,6 +590,7 @@
                                 </div>
                             </form>
             </div></div></div></div></div></div>
+            <!--this section let admin send email's for {all users {happy holiday for example}/ teachers {discount on user}/students {there a new subjects on site}}-->
             <div id="AdminSendEmails" class="tabcontent">
                <form class="form" action="AdminPage.php" method="post">
                     <div class="form-group col-sm-6">
@@ -497,8 +609,10 @@
                         <input type="hidden" name="hidden_send_framework" id="hidden_send_framework"/><br/>
                     </div>
                     <div id="v"><label for="Save"></label><input id="sendEmails" type="submit" name="sendEmails" value="שלח"></div>
-                </form>
-            </div>
+                </form>                
+            </div><!--next to div's for small screen design-->
+            <div id="forSmallScreen"><br><br><br><br><br><br><br><br><br><br><br><br></div>
+            <div id="forPixelScreen"><br><br><br><br><br><br><br><br><br><br><br></div>
     </body>
 </html>
 <?php include 'script.php';/*user script like the select list/ up button*/?>  

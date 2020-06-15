@@ -13,11 +13,7 @@
 <head>
     <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
     <?php include 'header.php';/*get the header from header.php file*/?>
-    <style>
-      body{
-        direction:rtl;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="css/lessons.css"><!--some addition CSS-->
   </head>
   <body>
     <section><!--navbar section--><!--navbar include the main page of the site FAQ page, EXIT-->
@@ -28,6 +24,7 @@
                       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                           <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>
                           <li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי </a></li>  
+                        <li class="nav-item active"><a class="nav-link" href="classPage.php"> שיעורים בתור סטודנט</a></li><!--case teacher could be also as a student-->
                           <li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>         
                           <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>
                       </ul>
@@ -40,9 +37,6 @@
           <button  type="button" class="btn btn-success" onclick="openNoneShareDesktopApp()">חדר תרגול ללא שיתוף מסך</button>
         </div>
         <br><br>
-        <div class="text-center">
-          <button  type="button" class="btn btn-primary" onclick="openZoomMeeting()">ZOOM</button>
-        </div>
       </div>  
       <?php
         include 'userData.php';//call userData, to use some function from
@@ -51,6 +45,7 @@
         $laterLesson=getTeacherLaterLessonsAmount($ID);        
         echo'<h1 class="text-center"> כמה שיעורים יש לי ללמד '.$laterLesson.'</h1>';
       ?>
+      <!--next table student can check which lesson he/she choose. display teacher name, date of lesson and connection details-->
       <table class="table table-dark">
         <thead>
           <tr>
@@ -94,6 +89,7 @@
           ?>
         </tbody>
       </table>
+    <div id="forSmallScreen"><br><br><br><br><br><br><br><br></div>
   </body>
 </html>
 <script>

@@ -1,16 +1,13 @@
 <?php
-//this going to be the chat page for admin
-	//start with check user validate
-	include 'userData.php';//call userData, to use some function from this file, like get name,...
-
-	//function to check that the id's of the two side of each chat are defferent 
-    function checkId($peopleMessageArray, $id, $idOther){
-		if($id==$idOther){return -1;}
-		for($i=0;$i<count($peopleMessageArray);$i++){
-			if($peopleMessageArray[$i]==$idOther){return 1;}
-		}return -1;
-	}
-
+session_start();
+$ID=$_SESSION['id'];//get the Admin id.
+$_SESSION['id']=$ID;
+if(!$ID){
+	header("location: logout.php");   
+}
+	//this going to be the chat page for admin
+	$userId=211;
+	include 'userData.php';//call userData, to use some function from this file, check the users message id and more,...
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,8 +18,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="css/profileStyle.css"><!--some addition CSS-->
-		<link rel="stylesheet" type="text/css" href="css/message.css"><!--some addition CSS-->
+		<link rel="stylesheet" type="text/css" href="css/AdminMessageRoom.css"><!--some addition CSS-->
     </head>	
     <body>
 	<section><!--navbar section--><!--navbar include back to admin main page, EXIT-->
@@ -57,15 +53,14 @@
 									$con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");//DB connection
 									$messageResult=mysqli_query($con, "SELECT * FROM messages");
 									while($rows=mysqli_fetch_assoc($messageResult)){
-										if($rows['message_sender']==$userId && checkId($peopleMessageArray, $userId, $rows['message_receive'])==-1){					
+										if($rows['message_sender']==$userId && checkDifferentId($peopleMessageArray, $userId, $rows['message_receive'])==-1){					
 											$peopleMessageArray[$peopleMessageArrayCounter]=$rows['message_receive'];
 											$peopleMessageArrayCounter++;
-										}elseif($rows['message_receive']==$userId && checkId($peopleMessageArray, $userId, $rows['message_sender'])==-1){
+										}elseif($rows['message_receive']==$userId && checkDifferentId($peopleMessageArray, $userId, $rows['message_sender'])==-1){
 											$peopleMessageArray[$peopleMessageArrayCounter]=$rows['message_sender'];
 											$peopleMessageArrayCounter++;
 										}	
-									}
-									//display other users(talked with them as a list, on click on any user will display the chat history)
+									}//display other users(talked with them as a list, on click on any user will display the chat history)
 									for($i=0;$i<$peopleMessageArrayCounter;$i++){
 										echo"<button onclick=\"getMessage($userId, $peopleMessageArray[$i])\">";
 											echo'<div class="chat_ib"><h5>';

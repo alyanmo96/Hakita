@@ -4,7 +4,7 @@ then redirect to the main page*/
 session_start();
 session_destroy();
     if($_SESSION['username']){
-        unset($_SESSION["fname"]);
+        unset($_SESSION["username"]);
     }  
     if($_SESSION['id']){
         unset($_SESSION["id"]);

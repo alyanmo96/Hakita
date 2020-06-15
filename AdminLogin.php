@@ -9,7 +9,7 @@
     $invailedLoginPassword=-1;
     if(isset($_POST["username"])){
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-        $results = mysqli_query($con, "SELECT * FROM users");
+        $results = mysqli_query($con, "SELECT * FROM AdminTable");
   		while($row=mysqli_fetch_assoc($results)){
             if($row['password']==$_POST['password']&&
                 ($row['username']==$_POST['username']||
@@ -18,19 +18,13 @@
             )){//user can insert his {username/ email/ phone number} as a username.
                 $ID=$row['id'];
                 $_SESSION['id']=$ID;
-                if($row['setUserAs']=='student'){//if account for a student go to student profile
-                    header("Location: studentProfile.php");
-                }else{//if account for a teacher go to teacher profile
-                  header("Location: profile.php");
-                }
+                header("Location: AdminPage.php");
             }// else if user enter a right username or right phone number or right email and unright password
             elseif(($row['username']==$_POST['username']||
             $row['email']==$_POST['username']||
             $row['phone']==$_POST['username']
             )&&$row['password']!=$_POST['password']){
-                $message=" הסיסמה לא נכונה ";
-                invalidPassword($row['username']);//for insert wrong password
-                echo"<script type='text/javascript'>alert('$message');</script>";
+                $message=" הסיסמה לא נכונה ";   
             }
 		}
     }
@@ -60,9 +54,9 @@
 		<div class="limiter">
 			<div class="container-login100">
 				<div class="wrap-login100">
-					<div class="login100-pic js-tilt" data-tilt><img id="loginPageImage" src="img/signup.png"></div>
-					<form class="login100-form validate-form" action="login.php" method="POST">
-						<span class="login100-form-title">כניסה לחשבון</span>
+					<div class="login100-pic js-tilt" data-tilt><img id="loginPageImage" src="img/AdminLogin.png"></div>
+					<form class="login100-form validate-form" action="AdminLogin.php" method="POST">
+						<span class="login100-form-title">כניסה לחשבון המנהל</span>
 						<div class="wrap-input100 validate-input" data-validate = "Valid username is required: ex@abc.xyz">
 							<input class="input100" type="text" name="username" placeholder=" שם משתמש או מייל או מספר טלפון">
 							<span class="focus-input100"></span>

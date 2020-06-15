@@ -1,13 +1,18 @@
 <?php
-/**
- *  this file let ADMIN to update details or delete user.
- */
+// this file let ADMIN to update user details or delete user and more as desscuss down.
     session_start();
+    $ID=$_SESSION['id'];//get the Admin id.
+    $_SESSION['id']=$ID;
+    if(!$ID){
+        header("location: logout.php");   
+    }
     /*start with get the user id.
-      case on Admin.php there is more than one section for user {AllUser, teacher, student,..} 
+      case on Admin.php there is more than one section on AdminPage.php for user {AllUser, teacher, student,..} 
       so the same user will found on more than on section, that's mean user could found on AllUser section
       and on teacher for example so we need a deffrent id for the same user. 
     */
+  include 'userData.php';//call userData.php file, to use function like update password,...
+  
     if($_POST['frameworkAllUsers']){//id from AllUser
       $AdminPutId=$_POST['frameworkAllUsers'];  
     }elseif($_POST['frameworkStudent']){//id from students
@@ -15,11 +20,13 @@
     }elseif($_POST['frameworkTeacher']){//id from teacher
       $AdminPutId=$_POST['frameworkTeacher']; 
     }elseif($_POST['user']){//id from AllUser
-    $AdminPutId=$_POST['user'];
+      $AdminPutId=getRandValues($_POST['user']);
   }elseif($_POST['id']){//id from AllUser
     $AdminPutId=$_POST['id'];
+  }elseif($_SESSION['id']){
+    $AdminPutId=$_SESSION['id'];
   }
-
+  $_SESSION['id']=$AdminPutId;//share the id, used on redirect to other pages.
   //DB connection
   $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
   //if we get an username, case on AdminPage the same user will display on alluser and on other section so we cant use the same id for same person as a different persons
@@ -32,7 +39,7 @@
         }
     }
   }
-  include 'userData.php';//call userData file, to use function like update password,...
+
   // if the admin update password/ email/ name/ phone number / courses/ cities of user. function of userData file.
   if((isset($_POST['verifyPassword'])&&isset($_POST['password']))||
     isset($_POST['email'])||isset($_POST['phone'])||isset($_POST['price'])||isset($_POST['status'])||
@@ -48,9 +55,6 @@
       if($_POST['price']){//if ADMIN update user min price
         updatePrice($AdminPutId,$_POST['price']);//new price 
       }         
-      if($_POST['priceTwo']){//if user update his max price.
-        updatePriceTwo($ID,$_POST['priceTwo']);//new price            
-      }       
       if($_POST['status']){//if ADMIN update user status
         updateStatus($AdminPutId,$_POST['status']);//new status  
       }
@@ -88,7 +92,7 @@
     header('location: AdminPage.php');
   }    
 
-  //admin going to start a message with user
+  //admin going to send a message for user
   if(isset($_POST['sendMessageUserButton'])){     
      $message_date = date("y-m-d h:i");
      $message_text='';
@@ -100,7 +104,7 @@
      header("Location: adminMessageRoom.php");
   } 
 
-  if ($_POST['ImgId']){ // any changed on user IMAGE
+  if ($_POST['ImgUsername']){ // any changed on user IMAGE
     $image=$_FILES['image']['name'];
     updateImage($AdminPutId, $image,$_POST['image_text']);
   }  
@@ -108,17 +112,17 @@
   $db=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
   $results=mysqli_query($db, "SELECT * FROM users");
   //varibale use to display user information for ADMIN 
-  $firstName=" ";$lastName=" ";$price=" ";$status=" ";$username=" ";$maxPrice;
+  $firstName=" ";$lastName=" ";$price=" ";$username=" ";
   while($row=mysqli_fetch_assoc($results)){//get the details from teachers table
     if($row['id']==$AdminPutId){
       $username=$row['username'];
       $firstName=$row['fname'];$lastName=$row['lname'];      
-      $price=$row['price'];$maxPrice=$row['priceTwo'];
-      $status=$row['status'];
+      $price=$row['price'];
     break;
     }
   }
   $_SESSION['varname']=$username;
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -134,22 +138,21 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/AdminControlPageEditOnUser.css">
+    <link rel="stylesheet" type="text/css" href="css/AdminControl.css"><!--some addition CSS-->
   </head>
   <body>
   <section><!--navbar section// for login user and unlogin user-->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>  
-                <a class="navbar-brand" href=""></a>
-                        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                            <li class="nav-item active"><a class="nav-link" href="AdminPage.php">חזרה לעמוד המנהל</a></li>
-                            <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>
-                            
-                    </ul>
-                </div>
-            </nav>
-        </section>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>  
+        <a class="navbar-brand" href=""></a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item active"><a class="nav-link" href="AdminPage.php">חזרה לעמוד המנהל</a></li>
+            <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>      
+          </ul>
+        </div>
+    </nav>
+  </section>
   <hr>
     <div class="container bootstrap snippet">
       <div class="row"><!--next section related to let ADMIN to update user information-->
@@ -162,51 +165,48 @@
           </a>
         </div>
       </div>
-      <div class="row">
+      <div class="col-sm-12">
         <div>            
           <div class="col-sm-9">
             <ul class="nav nav-tabs"><!--print username of user--></ul>              
             <div class="tab-content">
               <div class="tab-pane active" id="home"><hr>
-                    <form class="form" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
+                    <form class="form col-sm-12" action="AdminControlPageEditOnUser.php" method="post" id="registrationForm">
                         <div class="form-group"><!--hidden username use on update-->
-                          <div class="col-xs-12"><label for="user_name"></label><input type="hidden" class="form-control" name="username" value="<?php echo $username?>"></div>
-                        </div>
-                        <div class="form-group"><!--hidden id use on update-->
-                          <div class="col-xs-12"><label for="id"></label><input type="hidden" class="form-control" name="id" value="<?php echo $AdminPutId?>"></div>
+                          <div class="col-sm-12"><label for="user_name"></label><input type="hidden" class="form-control" name="username" value="<?php echo $username?>"></div>
                         </div>
                         <div class="form-group">                          
-                          <div class="col-xs-6">
+                          <div class="col-sm-6">
                             <label for="last_name"><h4>שם משפחה</h4></label><!--lable use to  update last_name-->
                               <input type="text" class="form-control" name="last_name" id="last_name" placeholder="<?php echo $lastName?>" >
                           </div>
                         </div>
                         <div class="form-group">                          
-                          <div class="col-xs-6">
+                          <div class="col-sm-6">
                             <label for="first_name"><h4>שם פרטי</h4></label><!--lable use to  update first_name-->
                             <input type="text" class="form-control" name="first_name" id="first_name" placeholder="<?php echo $firstName?>">
                           </div>
                         </div> 
                         <div class="form-group">                         
-                          <div class="col-xs-6">
+                          <div class="col-sm-6">
                             <label for="phone"><h4>מספר טלפון</h4></label><!--lable use to  update phone-->
                             <input type="text" class="form-control" name="phoneTwo" id="phoneTwo" placeholder="<?php echo phoneNumber($AdminPutId)?>">
                           </div>
                         </div>
                         <div class="form-group">                         
-                          <div class="col-xs-6">
+                          <div class="col-sm-6">
                             <label for="phone"><h4>מספר טלפון</h4></label><!--lable use to  update phone-->
                             <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo phoneNumber($AdminPutId)?>">
                           </div>
                         </div>                        
                         <div class="form-group">
-                          <div class="col-xs-6">
+                          <div class="col-sm-6">
                             <label for="mobile"><h4>סטטוס</h4></label>
-                            <input type="text" class="form-control" name="status" id="status" placeholder="<?php echo $status?>" >
+                            <input type="text" class="form-control" name="status" id="status" placeholder="<?php echo status($AdminPutId)?>" >
                           </div>
                         </div>
                         <div class="form-group">
-                          <div class="col-xs-6">
+                          <div class="col-sm-6">
                             <label for="email"><h4>Email</h4></label><!--lable use to  update email-->
                             <input type="email" class="form-control" name="email" id="email" placeholder="<?php echo email($AdminPutId)?>">
                           </div>
@@ -217,13 +217,13 @@
                             }
                           ?>
                           <div class="form-group">                          
-                            <div class="col-xs-6">
+                            <div class="col-sm-6">
                               <label for="verifyPassword"><h4>אימות סיסמה</h4></label><!--lable use to  update password-->
                                 <input type="password" class="form-control" name="verifyPassword" id="verifyPassword" placeholder="אימות הסיסמה החדשה">
                             </div>
                           </div>  
                           <div class="form-group">                          
-                            <div class="col-xs-6">
+                            <div class="col-sm-6">
                               <label for="password"><h4> סיסמה חדשה</h4></label><!--lable use to  update password-->
                               <input type="password" class="form-control" name="password" id="password" placeholder="סיסמה חדשה">
                             </div>
@@ -231,7 +231,7 @@
                           <?php
                             if(checkUserDefineAs($AdminPutId)==-1){//display just for teahers account
                               echo'<div class="form-group">
-                                <div class="col-xs-6">
+                                <div class="col-sm-6">
                                   <div style=" padding-top: 2%;">  עירים ';
                                     echo "<SELECT name=\"framework\" id=\"framework\" class=\"form-control selectpicker\" data-live-search=\"true\" multiple>";
                                     $results = mysqli_query($con, "SELECT * FROM cities");
@@ -243,7 +243,7 @@
                                     <input type=\"hidden\" name=\"hidden_framework\" id=\"hidden_framework\" />                                 
                                     <br/></div></div></div>
                                     <div class=\"form-group\">
-                                    <div class=\"col-xs-6\">
+                                    <div class=\"col-sm-6\">
                                     <div style=\" padding-top: 2%;\"> קורסים";  
                                       echo "<SELECT name=\"frameworkCourse\" id=\"frameworkCourse\" class=\"form-control selectpicker\" data-live-search=\"true\" multiple>";
                                       $results = mysqli_query($con, "SELECT * FROM courses");
@@ -302,7 +302,9 @@
             ?>
           </div>
       </div>  
-    </div>
+    </div><!--next to div's for small screen design-->
+    <div id="forSmallScreen"><br><br><br><br><br><br><br><br></div>
+    <div id="forMidScreen"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>
   </body>
 </html>
 <?php include 'script.php';/*call some function, like up button, select for list of courses for teachers,...*/?>

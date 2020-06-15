@@ -43,9 +43,7 @@
     setUserAs($ID,$studentOrTeacher);//update user as a teacher or a student
     updatePhoneNumber($ID, $PHONE);//update the user phone number
     $_SESSION['id']=$ID;
-    if($username=="AdminEliEssiak"){// login of admin (need to change that)
-      header('location: AdminControlPage.php');
-    }else{// sredirect to user page
+   //redirect to user page
       //send Email for the new user
       $to = $email;//sending to email address
       $from ="HakitaSite";// from
@@ -69,15 +67,15 @@
       }else{//student page
         header("Location: studentProfile.php");
       }
-    }
   }
+
 ?>
 <!DOCTYPE html>
 <html>
   <head>
     <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
     <?php include 'header.php';?>
-    <link rel="stylesheet" type="text/css" href="css/secondLogin.css">
+    <link rel="stylesheet" type="text/css" href="css/signupDetails.css"><!--some addition CSS-->
   </head>
   <body>
     <a id="button"></a><!--up button{will display after down to 300 px and more}-->
@@ -87,29 +85,29 @@
         <div class="row col-sm-12"></hr><br></div>
           <div class="col-sm-12"><!--display username-->
               <ul class="nav nav-tabs"><li class="active"></li></ul>              
-              <div class="tab-content col-sm-3"><!--some information for the user {user can update his details later}-->
+              <div class="tab-content col-sm-12"><!--some information for the user {user can update his details later}-->
                 <h5 id="titleOfCanChangeInformations"><p>***ניתן יהיה לשנות את כל הפרטים אחר כך***</p></h5>
                 <p>  שתי השדות של שם פרטי ושם משפחה להציג אותך כמשתמש בהודעות. במידה והחשבון הוגדר כמורה ניתן יהיה למצוא אותך בתוצאות החיפוש</p>
                 <p>מספר הטלפון כך לצור איתך קשר, לכנס לחשבון, להחזיר סיסמה.</p>
                 <p> הגדרת המשתמש כ-תלמיד לא תיתן את האפשרות לחפש אותך ב- (חיפוש מורה)</p>
                 <p> במידה והחשבון הוגדר כתלמיד/ה. תהיה אפשרות לשנות לחשבון של כמורה </p>
               </div>
-              <div class="tab-content col-sm-9">
+              <div class="tab-content col-sm-12">
                 <div class="tab-pane active" id="home"><hr>
                   <form class="form" action="secondLogin.php" method="post" id="registrationForm">                   
-                    <div class="form-group"> <!--lable for first_name-->
+                    <div class="form-group"><!--lable for first_name-->
                       <div class="col-sm-12">
                           <label for="first_name"><h4 class="inputWords">שם פרטי</h4></label>
                           <input type="text" class="inputWordsInside form-control" name="first_name" id="first_name" placeholder="שם פרטי" title="שם פרטי" required>
                       </div>
                     </div>
-                    <div class="form-group">    <!--lable for last_name-->                      
+                    <div class="form-group"><!--lable for last_name-->                      
                         <div class="col-sm-12">
                           <label for="last_name"><h4 class="inputWords">שם משפחה</h4></label>
                           <input type="text" class="inputWordsInside form-control" name="last_name" id="last_name"placeholder="שם משפחה" required>
                         </div>
                     </div>             
-                    <div class="form-group"> <!--lable for phone-->                        
+                    <div class="form-group"><!--lable for phone-->                        
                       <div class="col-sm-12">
                         <label for="phone"><h4 class="inputWords">מספר טלפון</h4></label>
                         <input type="text" class="inputWordsInside form-control" name="phone" id="phone" placeholder="מספר טלפון" required>
@@ -119,7 +117,7 @@
                       <div class="email col-sm-12">
                         <label for="email"><h4 class="inputWords">Email</h4></label>
                       <?php
-                        if($updateEmail==-1){                          
+                        if($updateEmail==-1){//check if there is any other user use the same email address or not                       
                           echo' <input type="email" class="inputWordsInside form-control  border-danger" name="email" id="email" placeholder="המייל כבר רשום במערכת" title="דואר אלקטרוני"required>';
                         }else{
                           echo' <input type="email" class="inputWordsInside form-control" name="email" id="email" placeholder="your.email@email.com" title="דואר אלקטרוני"required>';
@@ -155,7 +153,9 @@
                       </div>
                     </div>
                   </form>
-      </div></div></div></div></div>
+      </div></div></div></div></div><!--next to div's for small screen design-->
+      <div id="forSmallScreen"><br><br><br><br><br><br><br><br></div>
+      <div id="forPiexlScreen"><br><br><br><br><br><br></div>
   </body>
 </html>
 <?php include 'script.php';/*some scripts like up button, select form list*/?>                                             
