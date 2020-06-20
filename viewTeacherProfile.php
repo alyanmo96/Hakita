@@ -7,15 +7,17 @@
  */
     session_start();
     // get the id of teacher, and get the id of the login user on login state
-   
-    
-    $teacher=$_GET['viewprofile'];
-    $gitHowManyDigitsForTheId=substr($teacher, 0, 1); 
-    $IDOfTeacher=substr($teacher, 1, $gitHowManyDigitsForTheId);
-    if(!$IDOfTeacher){
-        $IDOfTeacher=$_SESSION['teacher'];//get teacher id 
+    include 'userData.php';//calling to use fuction like get image of user
+    if($_POST['showTeacher']){
+        $IDOfTeacher=getRandValues($_POST['showTeacher']);
     }
-    $IDOfUser=$_SESSION['id'];//get login id t=if there is    
+    
+    if(!$IDOfTeacher){//get from searchTeacher or moreTeachers pages
+        $teacher=$_GET['viewprofile'];
+        $gitHowManyDigitsForTheId=substr($teacher, 0, 1); 
+        $IDOfTeacher=substr($teacher, 1, $gitHowManyDigitsForTheId);
+        $IDOfTeacher=$_SESSION['teacher'];//get teacher id 
+    } 
     
     if($_GET['view']){//when teacher share his profile
         $view=$_GET['view'];
@@ -23,10 +25,9 @@
         $IDOfTeacher=substr($view, 1, $gitHowManyDigitsForTheId);
     }   
     if($IDOfTeacher==$IDOfUser){//if the student he is also the teacher do not let him contiune
-       header('Location: logout.php');//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
+      header('Location: logout.php');//if there is no id, redirect to logout page to forget id and username, then to redirect to main page.
     }
-    
-    include 'userData.php';//calling to use fuction like get image of user
+    $IDOfUser=$_SESSION['id'];//get login id t=if there is   
 
     $_SESSION['teacher']=$IDOfTeacher;//share teacher id used after login user write a feedback, choose a lesson time.
 
@@ -38,7 +39,7 @@
         if($row['lessonDate']<$todayDate){
             $idOfLesson=$row['idOfLesson'];
             $sql = "DELETE FROM teacherSchedule WHERE idOfLesson=$idOfLesson";
-            if ($con->query($sql) === TRUE){}   
+            if ($con->query($sql) === TRUE){}  
         }
     }    
     $IdResults=mysqli_query($con, "SELECT * FROM users");   
@@ -65,51 +66,7 @@
         $query="INSERT INTO `dBOfComments`(`idOfTeacher`,`idOfCommentWriter`,`dateOfComment`,`textOfComment`,`rating`) VALUES ('$IDOfTeacher','$commentWriterId','$todayDate','$getComment','$rating')";
         $result=mysqli_query($con,$query);
     }//next function take the city or the course and insert into array to display them as a button
-//for eaxmple on Jerusalem nutton on this page redirect user to all teachers on Jerusalem...
-    function insertCitiesAndCoursesOnArray($subject,$arrayOfTeacherCoursesOrCities){
-        $subject.=",ADD";//adding space to string
-        $IndexOfArrayOfTeacher=0;
-        $length=strlen($subject); //case we will get the cities or cources as a one string 
-        $lastComma=0;$counterOfDigits=0;$ifFoundAComma=-1;$howManyTimesFindComma=0;    
-        for($q=0;$q<$length;$q++){
-            if(substr($subject, $q, 1)==","){
-                $ifFoundAComma=1;
-                if($howManyTimesFindComma==0){
-                    $arrayOfTeacherCoursesOrCities[$IndexOfArrayOfTeacher]=substr($subject, $lastComma,$q); $howManyTimesFindComma++;
-                }else{
-                    $arrayOfTeacherCoursesOrCities[$IndexOfArrayOfTeacher]=substr($subject, $lastComma,$counterOfDigits-1);                    
-                }  
-                $IndexOfArrayOfTeacher++;  $counterOfDigits=0; $lastComma=$q+1;
-            }
-            if($ifFoundAComma==1){
-                $counterOfDigits++;
-            }   
-        }return $arrayOfTeacherCoursesOrCities;
-    }
     
-    function returnTeacherCitiesOrCoursesIntoArray($id,$whatToReturn){//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
-        $returnData="";//data{cities or courses want to return}
-        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-        $CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");
-        if($whatToReturn==5){//for courses
-            while ($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
-                if ($rows['id']==$id){
-                    if($rows['subject']!='subject'){
-                        $returnData.=$rows['subject'];break;
-                    }
-                }	
-            }
-        }else{//for cities
-            $resultOFTeachersCity = mysqli_query($con, "SELECT * FROM teacher_cities"); 
-            while ($rows=mysqli_fetch_assoc($resultOFTeachersCity)){
-                if ($rows['id']==$id){
-                    if($rows['cities']!='cities'){
-                        $returnData.=$rows['cities'];break;
-                    }			
-                }		
-            }
-        }return $returnData;//return data     
-    }
     
     $teacherArrayInformation=array();
     $IdResult=mysqli_query($con, "SELECT * FROM users");
@@ -134,8 +91,6 @@
         $arrayOfTeacherCourses=array();	
     } 
     
-    
-    
     $Cities=returnTeacherCitiesOrCoursesIntoArray($IDOfTeacher,3);//cities
     $arrayOfTeacherCities=array();	
     $arrayOfTeacherCities=insertCitiesAndCoursesOnArray($Cities,$arrayOfTeacherCities);  
@@ -144,24 +99,22 @@
     } 
 
     //sendMessageUserButton
-  if(isset($_POST['messageSubmit'])){//ADMIN going to delete the choosen user
+  if(isset($_POST['messageSubject'])){//ADMIN going to delete the choosen user
     //send a message automaticly from student to teacher
-    if($_POST['id']){//check if the message sent bu a site user or unlogin user
-      $id=$_POST['id'];//if yes sent the id 
-    }else{//else sent id as 0
-      $id=0;
+    if(!$IDOfUser){//else sent id as a big random number
+        $id=rand(29576,55555);
     }
     $name=$_POST['name'];
     $message_text='שם: '.$name.'\n';
-    $email=$_POST['email'];
+    $email=$_POST['messageEmail'];
     $message_text.='email: '.$email.'\n';   
     $message_date = date("y-m-d h:i");
-    $message_text.=$_POST['subject'];
+    $message_text.=$_POST['messageSubject'];
     $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
     ('$id',' $IDOfTeacher','$message_text','$message_date')";
     $messageResults = mysqli_query($con,$query);
- }
-
+    echo "<script type='text/javascript'>alert('ההודעה נשלחה בהצלחה');</script>";//message was sent
+}
 
 ?>
 <!DOCTYPE html>
@@ -169,7 +122,7 @@
     <head>
         <!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
         <?php include_once 'header.php';?>
-        <link rel="stylesheet" type="text/css" href="css/viewTeacherStyle.css">
+        <link rel="stylesheet" type="text/css" href="css/viewTeacher.css">
         <?php
             if(isset($_POST['chooseLessonButton'])||$_POST['chooseLesson']){//ask for a lesson with teacher 
                 $dashboardSection=1;
@@ -258,7 +211,7 @@
                                 $studentEmail=email($IDOfUser);
                                 $to = $studentEmail;//sending to student email address
                                 $from ="HakitaSite";// from
-                                $subject="שחזר סיסמה";//subject of message
+                                $subject=" שיעור נקבע";//subject of message
                                 $message="<p>שלום </p>";
                                 $message.=name($IDOfUser);
                                 $message.=",<br>";
@@ -406,8 +359,7 @@
                         echo"
                         <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'aboutTeacher')\"id=\"defaultOpen\"> קורסים ועירים של המורה</button>
                         <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'Links')\">צור קשר ושיתוף</button>
-                        <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'comments')\">תגובות </button>
-                        ";
+                        <button class=\"tablink col-sm-4\" onclick=\"openPageSection(event, 'comments')\">תגובות </button>";
                     }
                 ?>
             </div>
@@ -465,16 +417,15 @@
                     }                    
                 ?>
             <section class="board"><!--display the time board if the teacher alredy choose to display it on student side-->         
-                <table class="table table-sm table-dark">
+                <table class="table table-sm">
                     <thead>                                
                     <?php 
                         $todayIndex;// case the time is according to where the server location, we need to check that time is right according israel
                         date_default_timezone_set('Asia/Jerusalem');  $script_tz = date_default_timezone_get();
                         $todayOnWeek=date('d-m-Y');$day_of_week=date('N', strtotime($todayOnWeek));
                         $todayIndex=$day_of_week+1;$currentHour=date('H');$currentHour+=1;                        
-                        $firstdayDateType=date('d', strtotime("this week")); 
+                        $firstdayDateType=date('d', strtotime("0 week")); 
                         $firstday=intval($firstdayDateType); 
-                        $firstday-=1;  
                         if($todayIndex>7){
                             $todayIndex=1;  
                         }                      
@@ -606,11 +557,11 @@
                             if($IDOfUser){
                                 echo"<input type=\"hidden\" name=\"id\" value=\"$IDOfUser\">";
                             }else{
-                                echo'<input type="email" name="email" placeholder="מייל לצור קשר" class="form-control" required>';
+                                echo'<input type="email" name="messageEmail" placeholder="מייל לצור קשר" class="form-control" required>';
                             }
                         ?>
-                        <input type="text" name="subject" placeholder="תוכן ההודעה" class="form-control" required>
-                        <input type="messageSubmit" value="שלח/י" class="btn btn-success text-center">
+                        <input type="text" name="messageSubject" placeholder="תוכן ההודעה" class="form-control" required>
+                        <input type="submit" value="שלח/י" class="btn btn-success text-center">
                     </form>
                 </div></div>
             </div>
@@ -673,7 +624,8 @@
                         echo" <h1>אין עוד תגובות</h1>";
                     }
                 ?>
-            </div><br><br><br><br>              
+            </div><br><br><br><br>   <!--next to div's for small screen design-->
+            <div id="forPiexlScreen"><br><br><br><br><br></div>            
         <?php include_once 'footer.php';/*bottom footer*/?>
     </body>
 </html>

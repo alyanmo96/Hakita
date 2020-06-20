@@ -62,7 +62,7 @@ if(!$ID){
 										}	
 									}//display other users(talked with them as a list, on click on any user will display the chat history)
 									for($i=0;$i<$peopleMessageArrayCounter;$i++){
-										echo"<button onclick=\"getMessage($userId, $peopleMessageArray[$i])\">";
+										echo"<button class=\"userCard\" onclick=\"getMessage($userId, $peopleMessageArray[$i])\">";
 											echo'<div class="chat_ib"><h5>';
 												echo ''.name($peopleMessageArray[$i]);
 											echo'</h5></div>
@@ -72,7 +72,10 @@ if(!$ID){
 										</button>';
 									}
 								?>
-		</div></div></div></div></div></div></div>
+                                <div><br><br><br><br></div>
+                                <div id="forSmallIphone"><br><br><br><br><br><br><br><br><br><br><br><br></div>
+        </div></div></div></div></div></div></div>
+        <div id="forSmallScreen"><br><br><br><br><br><br><br><br><br><br><br><br></div><!--next to div's for small screen design-->
     </body>
 </html>    
 <script>  

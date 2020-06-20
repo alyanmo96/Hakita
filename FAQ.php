@@ -10,15 +10,15 @@
     $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
     $feedbackCommentResult = mysqli_query($con, "SELECT * FROM feedback");
     $feedbackLastResult = mysqli_query($con, "SELECT * FROM feedback");
+    
     $lastFeedback=" ";
-    while ($commentRow=mysqli_fetch_assoc($feedbackLastResult))
-    {
+    while ($commentRow=mysqli_fetch_assoc($feedbackLastResult)){
         $lastFeedback=$commentRow['textOfFeedback'];
     }
-    if(isset($_POST["comments"])){ 
+
+    if(isset($_POST["comments"])){ //add a new feedback about site
       $feedback=1;   
-        if($_POST["comments"]!=$lastFeedback)
-        {
+        if($_POST["comments"]!=$lastFeedback){//get the rating from 1-5
           $getComment=$_POST["comments"];
           $rating=-1;
           if($_POST["teacherValue"]=="oneValue"){
@@ -36,13 +36,14 @@
             $ID=$_POST['id'];                   
             $commentWriterId=267;
             $todayDate=date('Y-m-d');
+            //insert into DB include date
             $query="INSERT INTO `feedback`(`dateOfFeedback`,`textOfFeedback`,`rating`) 
             VALUES('$todayDate','$getComment','$rating')";
             $result = mysqli_query($con,$query);
         }      
     }
 
-    $ID=$_SESSION['id'];//get user id, if login.
+    $ID=$_SESSION['id'];//get user id, if login. for navbar and send admin message
     $_SESSION['id']=$ID;
     if(isset($_POST['feedback'])){
       $feedback=1;
@@ -55,8 +56,8 @@
   if(isset($_POST['subject'])){    
     if($_POST['id']){//check if the message sent bu a site user or unlogin user
       $id=$_POST['id'];//if yes sent the id 
-    }else{//else sent id as 0
-      $id=0;
+    }else{//else sent id as a big random number
+      $id=rand(29576,55555);
     }
 
     $name=$_POST['name'];
@@ -68,14 +69,15 @@
     $query="INSERT INTO `messages`(`message_sender`,`message_receive`,`message_text`,`message_date`) VALUES
     ('$id',' 211','$message_text','$message_date')";
     $messageResults = mysqli_query($con,$query);
+    echo "<script type='text/javascript'>alert('ההודעה נשלחה בהצלחה');</script>";
  } 
 
 ?>
 <!DOCTYPE html>
 <html>
-  <head><!--import bootstrap (help with showing{STYLE}), js for the list of cities and courses also for the up button, connect with CSS file and write the TITLE-->
+  <head><!--import bootstrap (help with showing{STYLE})-->
     <?php include 'header.php';?><!--some addition CSS-->
-    <link rel="stylesheet" type="text/css" href="css/FAQStyle.css"><!--some addition CSS--> 
+    <link rel="stylesheet" type="text/css" href="css/FAQ.css"><!--some addition CSS--> 
   </head>
   <body>
     <a id="button"></a><!--up button-->
@@ -116,7 +118,7 @@
     <?php
    if($feedback==1){//next section, to let users write there feedback about the site, to improve it
     echo"<section class=\"feedbackSection\">		
-        <h1> כל תגובה עוזרת לנו לשפר את האתר</h1>	
+        <h1 id=\"feedbackSectionTitle\"> כל תגובה עוזרת לנו לשפר את האתר</h1>	
         <button  class=\"addCommentButton btn btn-warning\" alt=\"work 1\" data-toggle=\"modal\" data-target=\"#myModalc\" title=\"כפתור הוספת תגובה על המורה\"> <h5>הוספת תגובה חדשה</h5></button>                   
         <div id=\"comments\" class=\"tabcontent\">
                   <li>
@@ -183,44 +185,24 @@
                 echo"</div></div></div></div>"; 
                   }
               echo"<br><br></div><br><br>
-    </section>";
+    </section><div id=\"forPixelScreen\"><br><br><br><br><br><br><br><br></div>";
    }elseif($usingSite==1){//next section for the question/answer how to use site.
     echo'<div class="usingSite">';    
     echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
       echo'<div class="row no-gutters">';
         echo'<div class="card-body">';
         echo'<h3 align="right">עבור כל בעיה, תקלה במערכת יש לפנות בהודעה לאדמין האתר.</h3>';
-        echo"</div></div></div>";  
-    echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-      echo'<div class="row no-gutters">';
-        echo'<div class="card-body">';
-        echo'<h3 align="right"><i class="fa fa-question-circle"></i> איך ליצור חשבון באתר, ואיזה סוג חשבון אני צריך ליצור</h3><hr><br>
-        <h3 align="right">למעלה בכל העמודים , במצב של לא מחובר יש את האופציה של {כניסה/הרשמה}. בלחיצה תעבור/י לעמוד אחר שם יש לצור שם משתמש וסיסמה חדשים. לגבי סוג החשבון:- אם המטרה היא ללמד וללמוד אז יש לצור חשבון של מורה במידה ורק ללמוד אז יש לצור חשבון של סטודנט, חשוב לדעת שאפשר לעבור מחשבון של סטודנט לחשבון של מורה אחרי יצירת החשבון זה יהיה בעמוד של עדכון הנתונים.</h3>';
-        echo "</div></div></div>";    
-      echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-      echo'<div class="row no-gutters">';
-        echo'<div class="card-body">';
-        echo'<h3 align="right"><i class="fa fa-question-circle"></i> איך לקבוע שיעור בתור סטודנט</h3><hr><br>
-        <h3 align="right">אחרי שנכנסים לפרופיל של המורה, במידה ומופיע יומן שיעורים תהיה אפשרות ללחוץ לפי הזמן המתאים אחרת אם לא יש צורך לשלוח הודעה למורה.</h3>';
         echo"</div></div></div>"; 
-      echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-      echo'<div class="row no-gutters">';
-        echo'<div class="card-body">';
-        echo'<h3 align="right"><i class="fa fa-question-circle"></i>איך משחזרים סיסמה</h3><hr><br>
-        <h3 align="right">בעמוד של הכניסה מעל כפתור הכניסה רשום " שכחתי סיסמה", בלחיצה עוברים לעמוד אחר, שם יש למלא את המייל או שם משתמש ואז ללחוץ את הכפתור שלחיה. ואז מקבלים קישור כהודעה במייל. לחיצה על הקישור תעביר אותך לעמוד של כתיבה סיסמה חדשה.</h3>';
-        echo "</div></div></div>";        
-      echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-      echo'<div class="row no-gutters">';
-        echo'<div class="card-body">';
-        echo'<h3 align="right"><i class="fa fa-question-circle"></i> מה זה הכפתור שנמצא בעמוד של יומן שיעורים בפרופיל של המחרה</h3><hr><br>
-        <h3 align="right">כשהכפתור יהיה אפור אז יומן השיעורים שלך לא יופיע אצל אחרים, במידה והיה כחול אז זה כן יופיע.</h3>';
-        echo "</div></div></div>"; 
-      echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
-      echo'<div class="row no-gutters">';
-        echo'<div class="card-body">';
-        echo'<h3 align="right"><i class="fa fa-question-circle"></i> הפרופיל שלי לא מופיע בחיפוש</h3><hr>
-        <h3 align="right">ככל שהמורה מחובר לאתר לא ימצא את עצמו כמורה אחר.</h3>';
-        echo "</div></div></div>"; 
+        
+        $questionsResults=mysqli_query($con, "SELECT * FROM questionAboutUsingSite");
+        while($row=mysqli_fetch_assoc($questionsResults)){
+          echo'<div class="card mb-3" style="max-width: 740px; direction: rtl;"> ';                       
+          echo'<div class="row no-gutters">';
+          echo'<div class="card-body">';
+          echo'<h3 align="right"><i class="fa fa-question-circle"></i>'.$row['questionTitle'].'</h3><hr><br>';
+          echo'<h3 align="right">'.$row['questionAnswer'].'</h3>';
+          echo"</div></div></div>"; 
+        }
       echo"</div>"; 
    }else{
     echo"<div class=\"bgimg-1\">
@@ -313,7 +295,7 @@
         <div class=\"row\">
         <div class=\"col-sm-12\">
           <form action=\"FAQ.php\" method=\"POST\">";
-          //message send to admin section
+          //message send to admin section, include name, email to reback for normal user(not a site user or not login), the message subject
           if($ID){
             echo"<input type=\"hidden\" name=\"id\" value=\"$ID\">";
           }
@@ -327,10 +309,11 @@
             <input type=\"submit\" value=\"שליחתה הודעה\">
           </form>
         </div></div></div></div>
-    </div><br><br><br><br><br><br><br><br><br><div id=\"forSmallScreen\"><br><br></div>";
+    </div><br><br><br><br><br><br><br><br><br><div id=\"forSmallScreen\"><br><br></div>";//next to div's for small screen design
     }?>
     <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5ec53990697c2288"></script>
     <?php include_once 'footer.php';/*get the bottom footer*/?>
+    <div id="forMidScreen"><br><br></div><!--next to div's for small screen design-->
   </body>
 </html>
 <?php include 'script.php';/*call the up button function*/?>    

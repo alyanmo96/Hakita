@@ -5,14 +5,24 @@
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $IdResults=mysqli_query($con, "SELECT * FROM users");
         $name=" ";
+        $found=-1;
         while ($row=mysqli_fetch_assoc($IdResults)){
             if($row['id']==$id){
               $name.=$row['fname'];
               $name.="&nbsp;";
               $name.=$row['lname'];
+              $found=1;
               break;
             }
-          }return $name;      
+          }
+          if($found==1){
+            return $name;
+          }elseif($id==211){
+            $name="מנהל אתר";
+            return $name;
+        }
+        $name="משתמש לא רשום במערכת";
+        return $name;      
     }
 
     function email($id){//function to return email.
@@ -43,7 +53,7 @@
             if($ImgRow['id']==$id){
                  return $ImgRow['image'];
             }
-        }
+        }return 'user.png';
     } 
 
     function price($id){//function to return price.
@@ -165,6 +175,11 @@
         }return $invalidPass;//if its equal to 1, that mean user insert a bad password, let the field password input to be on red color
     }
 
+    function updateAdminUsername($id, $username){
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $upDate="UPDATE `AdminTable` SET `username`='$username'WHERE id=$id";//update new username for admin on DB
+        $IdResults = mysqli_query($con,$upDate);
+    }
     function PasswordValidate($password, $verifyPassword){//function to check the password validate if valid insert else return error message as alert.
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $invalidPass=-1;//variable use to check if the new student password is valid or not.
