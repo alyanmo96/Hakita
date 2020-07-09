@@ -17,158 +17,82 @@
 //start with get what the user select on cities or courses list from main page or this page, if already select
   $Cities=$_POST['hidden_framework'];
   $Courses=$_POST['hidden_framework_courses']; 
+  $freeSearch=$_POST['freeSearch'];
 
   $didUserChoose=-1;// use this to write if the user choose any option and it's not avilable(no teacher learn this course or in this city)
-  
-  function returnTeacherCities($id){//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-    $resultOFTeachersCity = mysqli_query($con, "SELECT * FROM teacher_cities"); 
-    while ($rows=mysqli_fetch_assoc($resultOFTeachersCity)){
-        if ($rows['id']==$id){//wanted id
-            if($rows['cities']!='cities'){//teacher courses not null
-              return $rows['cities'];// return data
-            }     
-        }   
-    }           
-  }
 
-  function returnTeacherCourses($id){//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-    $CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");
-    while ($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
-        if ($rows['id']==$id){//wanted id
-            if($rows['subject']!='subject'){//teacher courses not null
-              return $rows['subject'];// return data
-            }     
-        }   
-    }           
-  }
-  function relativeCities($whatSelected,$arrayOfChoosen){
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-    $teacher_citiesResultForArray = mysqli_query($con, "SELECT * FROM cities");//call the table of cities
-    $arrayOFAll=array();
-      while ($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResultForArray)){
-        $r=$teacherCitiesRows['cityName'];
-        array_push($arrayOFAll,$r);//insert a list of cities names on array, each city on different index on array, 
-        //to compare on next section(after loop) what user choose as a cities and what we have on DB
-      }
-      $counterOFArrayOfChoosen=0;      
-      for($t=0;$t<count($arrayOFAll);$t++){
-        if(stristr($whatSelected,$arrayOFAll[$t])){
-          $arrayOfChoosen[$counterOFArrayOfChoosen]=$arrayOFAll[$t];
-          $counterOFArrayOfChoosen++;
-        }
-      }return $arrayOfChoosen;
-  }
-/* 
-  if user selected something, in this section there is three options:-
+/* if user selected something, in this section there is three options:-
     1-if the user choosed course and city 2-if the user choosed course   3-if the user choosed city
 */    
-  if ($Courses!=null||$Cities!=null){    
-    $teacher_citiesResult = mysqli_query($con, "SELECT * FROM teacher_cities");//call the table of teacher cities
-    $teachers_coursesResultForArray = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
-    $teachers_coursesResult = mysqli_query($con, "SELECT * FROM teachers_courses");//call the table of teacher courses
+
+
+  if($freeSearch!=null){
+    $didUserChoose=1; 
+    $teachers_courses = mysqli_query($con, "SELECT * FROM teachers_courses");//call the table of teacher courses
     $courseResultArray=array();// array of information for each teacher
     $courseResultArrayCounter=0;
+    $arrayOfPeople=array();
+    $counterArrayOfPeople=0;
+
+    while($teacherCourseRows=mysqli_fetch_array($teachers_courses)){
+        if(stristr($teacherCourseRows['subject'],$freeSearch)){
+          $arrayOfPeople[$counterArrayOfPeople]=$teacherCourseRows['id'];
+          $counterArrayOfPeople+=1;
+        }
+    }
+
+  }
+  if($Courses!=null||$Cities!=null){
+    $teacher_citiesResult = mysqli_query($con, "SELECT * FROM teacher_cities");//call the table of teacher cities
+    $courses = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
+    $teachers_courses = mysqli_query($con, "SELECT * FROM teachers_courses");//call the table of teacher courses
+    $courseResultArray=array();// array of information for each teacher
+    $courseResultArrayCounter=0;
+    $arrayOfPeople=array();
+    $counterArrayOfPeople=0;
     $didUserChoose=1;    
     /*1- option number one, that user select city + course.
     * so we need to check if user location on selected city, then if the same user learn choosen course,
     * if yes we insert his id on array.
     */
-    if($Courses!=null && $Cities!=null){//if user choose city and course for search
-      //on next section we the choosen cities
-      $idArrayOfPeopleLiveOnChoosenCity=array();
-      $CounterOfIdArrayOfPeopleLiveOnChoosenCity=0;
-      $arrayOfChoosenCities=array();
-      $arrayOfChoosenCities=relativeCities($Cities,$arrayOfChoosenCities);
-      //on next section we compare between list of cities and where teachers found
+    if($Courses!=null){//if user choose city and course for search, start with get teachers learn this course, then if he/she not located on this location delete the id
+      if(strcmp('תוכנה', $Courses) == 0){//user choose software as a course
+        $softwareCourse=1;
+        while($courseRows=mysqli_fetch_array($teachers_courses)){
+          if($courseRows['softwareCourse']==1){//take the id of the software courses
+            $arrayOfPeople[$counterArrayOfPeople]=$courseRows['id'];
+            $counterArrayOfPeople+=1;
+          }
+        }
+      }else{
+        while($teacherCourseRows=mysqli_fetch_array($teachers_courses)){
+          if(stristr($teacherCourseRows['subject'],$Courses)){
+            $arrayOfPeople[$counterArrayOfPeople]=$teacherCourseRows['id'];
+            $counterArrayOfPeople+=1;
+          }
+        }
+      }
+      if($Cities!=null){//if user choose city and course for search, start with get teachers learn this course, then if he/she not located on this location delete the id
+        $cityArray=array();
+        $cityArrayCounter=0;
+        while($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResult)){
+          if(stristr($teacherCitiesRows['cities'],$Cities)||(strcmp($teacherCitiesRows['cities'], $Cities) == 0)){
+            $cityArray[$cityArrayCounter]=$teacherCitiesRows['id'];
+            $cityArrayCounter+=1;
+          }
+        }
+        $arrayOfPeople=array_intersect($arrayOfPeople,$cityArray);
+      }
+    }elseif($Cities!=null&&$Courses==null){//if user select a city and not selected any course
       while($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResult)){
-        for($t=0;$t<count($arrayOfChoosenCities);$t++){
-          if((strcmp($teacherCitiesRows['cities'], $arrayOfChoosenCities[$t]) == 0)||stristr($teacherCitiesRows['cities'],$arrayOfChoosenCities[$t])){
-            $idArrayOfPeopleLiveOnChoosenCity[$CounterOfIdArrayOfPeopleLiveOnChoosenCity]=$teacherCitiesRows['id'];
-            $CounterOfIdArrayOfPeopleLiveOnChoosenCity++;
-            break;
-          }
-        }
-      }
-//on next section we do the same thing above but for course side, then we compare id's from to sections      
-      $idArrayOfPeopleLearnOfChoosenCourse=array();
-      $CounterOfIdArrayOfPeopleLearnOfChoosenCourse=0;
-      $arrayOfChoosenCourse=array();
-      $counterOFArrayOfChoosenCourse=0;
-      $arrayOfAllCourses=array();
-      while($CourseRows=mysqli_fetch_array($teachers_coursesResultForArray)){
-        $r=$CourseRows['subject'];
-        array_push($arrayOfAllCourses,$r); //insert a list of courses names on array, each course on different index on array, 
-        //to compare on next section(after loop) what user choose as a courses and what we have on DB
-      }
-      for($t=0;$t<count($arrayOfAllCourses);$t++){
-        if(stristr($Courses,$arrayOfAllCourses[$t])){
-          $arrayOfChoosenCourse[$counterOFArrayOfChoosenCourse]=$arrayOfAllCourses[$t];
-          $counterOFArrayOfChoosenCourse++;
-        }
-      }
-      while($CourseRows=mysqli_fetch_array($teachers_coursesResult)){// check which teacher learn the specified course
-          for($t=0;$t<count($arrayOfChoosenCourse);$t++){            
-            if(strcmp('תוכנה', $arrayOfChoosenCourse[$t]) == 0){
-              if((strpos($CourseRows['subject'], 'JAVA') !== false)||(strpos($CourseRows['subject'], 'C') !== false)||(strpos($CourseRows['subject'], 'C++') !== false)||(strpos($CourseRows['subject'], 'Android') !== false)){
-                $idArrayOfPeopleLearnOfChoosenCourse[$CounterOfIdArrayOfPeopleLearnOfChoosenCourse]=$CourseRows['id'];
-                $CounterOfIdArrayOfPeopleLearnOfChoosenCourse++;
-              }
-            }
-            elseif(stristr($CourseRows['subject'],$arrayOfChoosenCourse[$t])){
-              $idArrayOfPeopleLearnOfChoosenCourse[$CounterOfIdArrayOfPeopleLearnOfChoosenCourse]=$CourseRows['id'];
-              $CounterOfIdArrayOfPeopleLearnOfChoosenCourse++;
-              break;
-            }
-          }
-      }
-      // last section on selected city + course....keep the same id        
-      for($t=0;$t<count($idArrayOfPeopleLiveOnChoosenCity);$t++){
-        for($f=0;$f<count($idArrayOfPeopleLearnOfChoosenCourse);$f++){
-          if($idArrayOfPeopleLiveOnChoosenCity[$t]==$idArrayOfPeopleLearnOfChoosenCourse[$f]){
-            $courseResultArray[$courseResultArrayCounter]=$idArrayOfPeopleLiveOnChoosenCity[$t];
-            $courseResultArrayCounter+=1;
-            break;
-          }
-        }
-      }
-    }elseif($Courses!=null&&$Cities==null){ //if user selected course and not choosing any city, user can check just for one course
-      while($CourseRows=mysqli_fetch_array($teachers_coursesResult)){
-        if(strcmp('תוכנה', $Courses) == 0){
-          if((strcmp($CourseRows['subject'],'JAVA')==0)||(strcmp($CourseRows['subject'],'C')==0)||(strcmp($CourseRows['subject'],'Cpp')==0)||(strcmp($CourseRows['subject'],'Android')==0)){
-            $courseResultArray[$courseResultArrayCounter]=$CourseRows['id'];
-            $courseResultArrayCounter+=1;
-          }
-        }
-        elseif(stristr($CourseRows['subject'],$Courses)){
-          $courseResultArray[$courseResultArrayCounter]=$CourseRows['id'];
-          $courseResultArrayCounter+=1;
-        }
-      }
-    }elseif($Cities!=null&&$Courses==null){
-      $arrayOfChoosenCities=array();
-      $arrayOfChoosenCities=relativeCities($Cities,$arrayOfChoosenCities);
-      while ($teacherCitiesRows=mysqli_fetch_array($teacher_citiesResult)){ //on next section we compare between list of cities and where teachers found
-        for($t=0;$t<count($arrayOfChoosenCities);$t++){
-          if(stristr($teacherCitiesRows['cities'],$arrayOfChoosenCities[$t])){
-            $courseResultArray[$courseResultArrayCounter]=$teacherCitiesRows['id'];
-            $courseResultArrayCounter+=1;
-            break;
-          }
+        if(stristr($teacherCitiesRows['cities'],$Cities)){
+          $arrayOfPeople[$counterArrayOfPeople]=$teacherCitiesRows['id'];
+          $counterArrayOfPeople+=1;
         }
       }
     }
   }
-  for($e=1;$e<20000;$e++){
-    if(array_key_exists($e, $_POST)) { 
-      redirectFunction($e); 
-    } 
-  } 
-  function redirectFunction($id){
-    $_SESSION['teacher']=$id;
-    header('location: viewTeacherProfile.php');
-  }
+  
 ?>
 <!DOCTYPE html>
 <html>
@@ -185,34 +109,10 @@
   </head>
   <body>
     <a id="button"></a><!--up button, on click the button will back to here this id the top of the page-->
-    <section><!--navbar section-->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <?php
-          if($IDOfStudent){
-              echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-              <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-              <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>'; 
-              if(checkUserDefineAs($IDOfStudent)==-1){echo'<li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>';}
-              else{echo'<li class="nav-item active"><a class="nav-link" href="studentProfile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>';}
-              echo'<li class="nav-item active"><a class="nav-link" href="messageRoom.php">הודעות</a></li>
-              <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>
-              <li class="nav-item active"><a class="nav-link" href="logout.php"> יציאה</a></li>';
-            }else{
-              echo'<a class="navbar-brand" href="Hakita.php">הכיתה</a>
-              <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-              <li class="nav-item active"><a class="nav-link" href="Hakita.php">עמוד הבית <span class="sr-only">(current)</span></a></li>
-              <li class="nav-item active"><a class="nav-link" href="Signup.php">הרשמה </a></li>
-              <li class="nav-item active"><a class="nav-link" href="login.php">כניסה </a></li>
-              <li class="nav-item active"><a class="nav-link" href="FAQ.php">שאלות ותשובות</a></li>';                
-            }
-        ?>     
-         </ul>
-        </div>
-      </nav>
-      </section>
+    <?php
+      $undisplay='search';
+    ?>
+    <?php include_once 'nav.php'?>
       <?php
         if($IDOfStudent){// for login user : say hello/ good(morning/afternoon...)
           /* Set the $timezone variable to become the current timezone */
@@ -240,7 +140,7 @@
 		<div class="limiter">
 			<div class="container-login100">
 				<div class="form-group col-sm-12">
-					<form class="form" action="searchTeachers.php" method="post" id="registrationForm">
+					<form class="form" action="otherSearchTeachers.php" method="post" id="registrationForm">
               <div class="form-group col-sm-6">
                  <p class="searchWords"> חיפוש מורה לפי עיר</p>
                    <?php
@@ -262,6 +162,11 @@
                  }echo"</SELECT>";
                ?>                                      
                <input type="hidden" name="hidden_framework_courses" id="hidden_framework_courses"/><br/>
+            </div><br>
+              <div class="form-group">
+                <div class="col-sm-12" id="freeSearch"><br>
+                  <label for="Save"></label><input type="text" name="freeSearch"  class="form-control" placeholder="חיפש חופשי">
+                </div>
             </div>
               <div class="form-group">
                 <div class="col-xs-12"><br>
@@ -271,69 +176,78 @@
         </form>
 		</div></div></div>
     <?php
-      if($didUserChoose==1){
+      if($didUserChoose==1 && $arrayOfPeople[0]!=NULL){
         echo"<section id=\"searchResult\">
             <div class=\"container\">
               <div class=\"row\">";
-                    if($courseResultArrayCounter==0&&$didUserChoose==1){echo '<div id="notAvilableTitle"> אין מורים בתחום שנבחר או באזור '.'</div>';}//no teachers on selected course or city
+                    if($counterArrayOfPeople==0&&$didUserChoose==1){echo '<div id="notAvilableTitle"> אין מורים בתחום שנבחר או באזור '.'</div>';}//no teachers on selected course or city
                     else{//show the results of teachers
                       $D=array();
                       $DCounter=0;
-                      echo'<div class="row"><div class="col-sm-10">'; 
-                      echo"<form method=\"post\" action=\"searchTeachers.php\">";                   
-                      for($i=0;$i<$courseResultArrayCounter;$i++){
-                          $D[$DCounter]=$courseResultArray[$i];$DCounter++;
-                          $ID=$courseResultArray[$i];
-                          $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-                          $commentResult=mysqli_query($con, "SELECT * FROM dBOfComments");
-                          $countRatingOfTeacher=0;        
-                          $totalCountRatingOfTeacher=0;
-                          while($ratingOfTeacher=mysqli_fetch_assoc($commentResult)){
-                              if($ratingOfTeacher['idOfTeacher']==$ID){
-                                  $countRatingOfTeacher++;  $totalCountRatingOfTeacher+=$ratingOfTeacher['rating'];
-                              }
-                          }
-                          $fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
-                          $getRatingOfEachComment=ceil($fill);                 
-                          if($i%3==0&&$i!=0){echo'<br>';}
-                          echo "<button class=\"buttonCard col-sm-4\" name=\"$ID\" style=\"width:220px; height:360px; margin-left:2%;\">";
-                          echo"<img src='img/".Image($ID)." 'class=\"img\">";
-                          if(Gender($ID)==-1){echo"<h2 style=\"color: deeppink; font-weight: 700;\">".name($ID)."</h2>";}
-                          else{echo"<h2 style=\"color:blue; font-weight: 700;\">".name($ID)."</h2>";}
-                          for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
+                      echo'<div class="row col-sm-12"><div class="col-sm-10">'; 
+                      echo"<form method=\"post\" action=\"viewTeacherProfile.php\">";                   
+                      for($i=0;$i<$counterArrayOfPeople;$i++){
+                          if($arrayOfPeople[$i]!=NULL){
+                            $D[$DCounter]=$arrayOfPeople[$i];$DCounter++;
+                            $ID=$arrayOfPeople[$i];
+                            $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+                            $commentResult=mysqli_query($con, "SELECT * FROM dBOfComments");
+                            $countRatingOfTeacher=0;        
+                            $totalCountRatingOfTeacher=0;
+                            while($ratingOfTeacher=mysqli_fetch_assoc($commentResult)){
+                                if($ratingOfTeacher['idOfTeacher']==$ID){
+                                    $countRatingOfTeacher++;  $totalCountRatingOfTeacher+=$ratingOfTeacher['rating'];
+                                }
+                            }
+                            $value=randValues($ID);
+                            $fill=$totalCountRatingOfTeacher/$countRatingOfTeacher;
+                            $getRatingOfEachComment=ceil($fill);                 
+                            if($i%3==0&&$i!=0){echo'<br>';}
+                            echo "<button class=\"buttonCard col-sm-4\" name=\"showTeacher\" value=\"$value\" style=\"width:220px; height:360px;\">";
+                            echo"<img src='img/".Image($ID)." 'class=\"img\">";
+                            if(Gender($ID)==-1){echo"<h2 style=\"color: deeppink; font-weight: 700;\">".name($ID)."</h2>";}
+                            else{echo"<h2 style=\"color:blue; font-weight: 700;\">".name($ID)."</h2>";}
+                            for($star=0;$star<$getRatingOfEachComment;$star++){//the orange star's
                               echo ' <span class="fa fa-star checked"></span>';
-                          }
-                          $emptyStars=5-$getRatingOfEachComment;$e=0;
-                          while($e<$emptyStars){//the empty star's
+                            }
+                            $emptyStars=5-$getRatingOfEachComment;$e=0;
+                            while($e<$emptyStars){//the empty star's
                               $e++;echo '<span class="fa fa-star"></span>';
+                            } 
+                            if(strcmp(status($ID),'status')!=0){//teacher status, if the string length is bigger than 26 letters, write instead ....
+                              $stat=status($ID); 
+                              if(strlen($stat)>26){
+                                $status = mb_substr($stat,0,25,'utf-8');                            
+                              }else{
+                                $status=$stat;
+                              }$status.="...";                     
+                              echo"<p class=\"clearfix\" style=\"height:20px;overflow:hidden;\">\"". $status."</p>"; 
+                            }          
+                            if(returnTeacherCourses($ID)!=NULL){//teacher courses, if the string length is bigger than 26 letters, write instead ....
+                              $courses =returnTeacherCourses($ID);
+                              if(strlen($courses)>26){
+                                $courses = mb_substr($courses,0,25,'utf-8'); 
+                              }$courses.="...";                     
+                              echo"<p>".$courses."</p>";
+                            }              
+                            if(returnTeacherCities($ID)!=NULL){//teacher cities, if the string length is bigger than 26 letters, write instead ....
+                              $cities=returnTeacherCities($ID);
+                              if(strlen($cities)>26){
+                                $cities = mb_substr($cities,0,25,'utf-8'); 
+                              }$cities.="...";         
+                              echo"<p><small class=\"cityAndPrice\">".$cities."</span></p>"; 
+                          }
+                          if(strlen(price($ID))>1){
+                            echo"<p>".price($ID)."</small></p>"; //teacher price
+                          }
+                            echo"</button>"; 
                           } 
-                          if(strcmp(status($ID),'status')!=0){//teacher status, if the string length is bigger than 26 letters, write instead ....
-                            $stat=status($ID); 
-                            if(strlen($stat)>26){
-                              $status = mb_substr($stat,0,25,'utf-8');                            
-                            }else{
-                              $status=$stat;
-                            }$status.="...";                     
-                            echo"<p class=\"clearfix\" style=\"height:20px;overflow:hidden;\">\"". $status."</p>"; 
-                          }          
-                          if(returnTeacherCourses($ID)!=NULL){//teacher courses, if the string length is bigger than 26 letters, write instead ....
-                            $courses =returnTeacherCourses($ID);
-                            if(strlen($courses )>26){
-                              $courses = mb_substr($courses,0,25,'utf-8'); 
-                            }$courses.="...";                     
-                            echo"<p>".$courses."</p>";
-                          }              
-                          if(returnTeacherCities($ID)!=NULL){//teacher cities, if the string length is bigger than 26 letters, write instead ....
-                            $cities=returnTeacherCities($ID);
-                            if(strlen($cities )>26){
-                              $cities = mb_substr($cities,0,25,'utf-8'); 
-                            }$cities.="...";         
-                            echo"<p><small class=\"cityAndPrice\">".$cities."</span></p>"; 
-                         }echo"<p>מחירון לשעה ".$teacherNameAndStatusFunction[2]."</small></p>"; //teacher price
-                          echo"</button>";  
                         }echo"</form></div></div>";
                     }echo"</div></div>
         </section>";
+      }
+      elseif($didUserChoose==1 && $arrayOfPeople[0]==NULL){
+        echo '<div id="notAvilableTitle"> אין מורים בתחום שנבחר או באזור '.'</div>';
       }
     ?>
       <?php include_once 'footer.php';/*get the bottom footer*/?>
