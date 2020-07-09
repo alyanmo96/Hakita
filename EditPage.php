@@ -20,61 +20,6 @@
   $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");
   $resultsOfShares = mysqli_query($con, "SELECT * FROM shareTable");
 
-//function te return courses that teacher learn and cities he location in, the variable {whatToReturn} is used to return cities or courses
-  function returnTeacherCitiesOrCoursesIntoArray($id,$whatToReturn){
-    $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
-    $returnData="";//data{cities or courses want to return}
-    if($whatToReturn==5){//for courses
-      $CoursesOfTeachersResults = mysqli_query($con, "SELECT * FROM teachers_courses");//calling the teachers_courses
-        while($rows=mysqli_fetch_assoc($CoursesOfTeachersResults)){
-          if($rows['id']==$id){//found the wanted id
-            if($rows['subject']!='subject'){
-              $returnData.=$rows['subject'];break;
-            }
-          }	
-        }
-    }else{//for cities
-      $resultOFTeachersCity = mysqli_query($con, "SELECT * FROM teacher_cities"); 
-      while($rows=mysqli_fetch_assoc($resultOFTeachersCity)){
-          if($rows['id']==$id){//found the wanted id
-              if($rows['cities']!='cities'){
-                $returnData.=$rows['cities'];break;
-              }			
-          }		
-      }
-    }return $returnData;//return data     
-  }
-
-  function returnStringWithoutComma($new,$last){//function use to remove over comma's
-    $new.=',';//addin a new comma, cause we going to add a new subject
-    $new.=$last;//add the currently subject
-    if(substr($new, -1)==','){//after delete the city on DB will keep the comma of it, so we need to delete it
-      $new=rtrim($new, ",");
-    }
-    if(substr($new, 0, 1)==','){//after delete the city on DB will keep the comma of it, so we need to delete it
-      $new=ltrim($new, $new[0]); 
-    }return $new;//return data
-  }
-
-  function insertCitiesAndCoursesOnArray($subject,$arrayOfTeacherCoursesOrCities){//function use to return cities and courses on diffreents arrays, to use each index as a bottton of city or course
-      $subject.=",ADD";//adding space to string
-      $IndexOfArrayOfTeacher=0;
-      $length=strlen($subject); //case we will get the cities or cources as a one string 
-      $lastComma=0;        $counterOfDigits=0;        $ifFoundAComma=-1;        $howManyTimesFindComma=0;    
-      for($q=0;$q<$length;$q++){
-          if(substr($subject, $q, 1)==","){
-              $ifFoundAComma=1;
-              if($howManyTimesFindComma==0){
-                $howManyTimesFindComma++;
-                $arrayOfTeacherCoursesOrCities[$IndexOfArrayOfTeacher]=substr($subject, $lastComma,$q);
-              }else{
-                $arrayOfTeacherCoursesOrCities[$IndexOfArrayOfTeacher]=substr($subject, $lastComma,$counterOfDigits-1);                    
-              }$IndexOfArrayOfTeacher++;  $counterOfDigits=0; $lastComma=$q+1;
-          }
-          if($ifFoundAComma==1){$counterOfDigits++;}   
-      }return $arrayOfTeacherCoursesOrCities;
-  }
-
   $userMakeChange=-1;//variable used to know if the user make any update on his information if yes--> let the admin know.
   //get any update data (by POST) to save it on table.{first/last name,phone number, email, password....}
   if(isset($_POST['first_name'])||isset($_POST['last_name'])||
@@ -107,6 +52,9 @@
         if($_POST['price']){//if user update his price.
           updatePrice($ID,$_POST['price']);//new price            
         }          
+        if($_POST['study']){//if user update his study.
+          updateStudy($ID,$_POST['study']);//new study            
+        }          
         if($_POST['hidden_framework']){//when user add a new, we get teacher cities and add the new city
             $UploadCityOrCourse=1;//for navbar
             $Cities=$_POST['hidden_framework'];//new city
@@ -121,9 +69,17 @@
             $Courses=$_POST['hidden_framework_courses']; 
             if(strpos($_POST['Courses'],$Courses )!==false){}
             else{
+                //if it's a software course--> insert into DB that this teacher learn any software language
+              //this would help with search
+              $courseAsASoftware=courseAsASoftware($Courses);
               $Courses=returnStringWithoutComma($Courses,$_POST['Courses']);//function remove over comma's
               $upDate="UPDATE `teachers_courses` SET `subject`='$Courses'WHERE id=$ID";//update new data on DB
               $result=mysqli_query($con,$upDate);
+          
+              if($courseAsASoftware==1){//update as a software teacher on DB
+                $update="UPDATE `teachers_courses` SET `softwareCourse`='1'WHERE id=$ID";//update new data on DB
+                $result=mysqli_query($con,$update);
+              }
             }            
         } 
     }      
@@ -164,7 +120,8 @@
       }
   }
   if($userMakeChange==1){//this table used for admin, to check which user make any update
-      $query="INSERT INTO `makeChange`(`id`) VALUES ('$ID')";
+      $thisMonth = date("m");
+      $query="INSERT INTO `makeChange`(`id`,`dateOfChane`) VALUES ('$ID','$thisMonth')";
       $makeChangeEnter=mysqli_query($con,$query);
   }  
   $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
@@ -184,8 +141,12 @@
       if($row['id']==$ID){
         $userFirstName=$row['fname'];$userLastName=$row['lname'];//teacher name
         $teacherStatus=$row['status'];    
-        $PhoneTwo=$row['phoneTwo'];   
+        $PhoneTwo=$row['phoneTwo'];  
+        if($PhoneTwo=== 'phoneTwo'){
+          $PhoneTwo='0000000000';
+        }
         $teacherPrice=$row['price'];
+        $teacherStudy=$row['study'];
       }
     }
   }
@@ -214,7 +175,7 @@
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
-      <link rel="stylesheet" type="text/css" href="css/TeacherEdit.css"><!--some addition CSS-->
+      <link rel="stylesheet" type="text/css" href="css/Edit.css"><!--some addition CSS-->
       <?php
         if(isset($_POST['deleteAccount'])){
           echo"<script>$(document).ready(function(){ $('#myModall').modal('show');});</script> ";
@@ -238,8 +199,8 @@
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-              <a class="navbar-brand" href="Hakita.php">הכיתה</a>
-                <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <a class="navbar-brand" href="Hakita.php">הכיתה</a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li class="nav-item active"><a class="nav-link" href="Hakita.php"> עמוד הבית</a></li>
                 <li class="nav-item active"><a class="nav-link" href="profile.php">פרופיל שלי <span class="sr-only">(current)</span></a></li>
@@ -270,7 +231,7 @@
         </div>
       </div><!--next section, input for user, like first/last name, etc.....-->
       <div id="profile" class="tabcontent">  
-          <form class="form" action="EditPage.php" method="post" id="registrationForm"><!--  show the detail of user that get from DB-->
+          <form class="form" action="EditPage.php" method="post" id="registrationForm"><!-- show the detail of user that get from DB-->
             <div class="form-group"><!--Bootstrap desgin-->
                 <div class="col-sm-6"><!--Bootstrap desgin-->
                   <label for="last_name"><h4  class="inputTitle">שם משפחה</h4></label>
@@ -285,13 +246,13 @@
             </div>
             <div class="form-group"><!--Bootstrap desgin-->
                 <div class="col-sm-6"><!--Bootstrap desgin--> 
-                    <label for="phone"><h4  class="inputTitle">   מספר טלפון    </h4></label>
+                    <label for="phone"><h4  class="inputTitle">מספר טלפון</h4></label>
                     <input type="text" class="form-control" name="phoneTwo" id="phoneTwo" placeholder="<?php echo $PhoneTwo?>" title="מספר טלפון ">
                 </div>
             </div>
             <div class="form-group"><!--Bootstrap desgin-->
                 <div class="col-sm-6"><!--Bootstrap desgin--> 
-                    <label for="phone"><h4  class="inputTitle">   מספר טלפון    </h4></label>
+                    <label for="phone"><h4  class="inputTitle">מספר טלפון</h4></label>
                     <input type="text" class="form-control" name="phone" id="phone" placeholder="<?php echo phoneNumber($ID)?>" title="מספר טלפון ">
                 </div>
             </div>
@@ -307,7 +268,11 @@
           </div></div>
           <div class="form-group"><div class="col-sm-12"> <!--price of lesson start with coast-->
               <label for="price"><h4  class="inputTitle">מחיר לשעה</h4></label>
-              <input type="text" class="form-control" name="price" placeholder="<?php echo $teacherPrice; ?>">                   
+              <input type="text" class="form-control" name="price" placeholder="<?php echo price($ID) ?>">                   
+          </div></div>  
+          <div class="form-group"><div class="col-sm-12"> <!--price of lesson start with coast-->
+              <label for="study"><h4  class="inputTitle">השכלה</h4></label>
+              <input type="text" class="form-control" name="study" placeholder="<?php echo teacherStudy($ID) ?>">                   
           </div></div>                      
         <div class="form-group"><br><!--save button-->
           <label for="Save"><h4></h4></label>
@@ -424,11 +389,10 @@
           </div>
         </form>
       </div>
-        <div id="Links" class="tabcontent"><!--let teacher to add links-->
+        <div id="Links" class="tabcontent"><!--let teacher to add links, his facebook profile for example-->
             <?php
               $facebook=" ";$linkedin=" ";$youtube=" ";
               $otherLinkOne=" ";$otherLinkTwo=" ";
-
               while($rows=mysqli_fetch_assoc($resultsOfShares)){
                 if($rows['id']==$ID){
                   $facebook=$rows['facebook'];$linkedin=$rows['linkedin'];$youtube=$rows['youtube'];
@@ -471,6 +435,7 @@
         </form>
       </div><div></div>
     </section>
+    <div id="forPixelScreen"><br><br><br><br><br><br><br><br><br><br><br></div><!--next to div's for small screen design-->
     <?php include_once 'footer.php';/*bottom footer*/?>
   </body>
 </html> 

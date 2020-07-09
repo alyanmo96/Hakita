@@ -229,6 +229,27 @@
         }  
         $sql = "DELETE FROM teacherSchedule WHERE idOfStudent=$ID";//delete from the teacher Schedule table
         if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM teachers_courses WHERE id=$ID";//delete from the teachers_courses table
+        if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM teacher_cities WHERE id=$ID";//delete from the teacher_cities table
+        if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM shareTable WHERE id=$ID";//delete from the teacher shareTable table
+        if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM invailedPassword WHERE id=$ID";//delete from the invailedPassword table
+        if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM showThisTeacher WHERE teacherId=$ID";//delete from the showThisTeacher table
+        if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM messages WHERE message_receive=$ID";//delete from the messages table
+        if ($con->query($sql) === TRUE){
+        }  
+        $sql = "DELETE FROM messages WHERE message_sender=$ID";//delete from the messages table
+        if ($con->query($sql) === TRUE){
         }return;
     }
 
@@ -282,14 +303,14 @@
             }
         }
         $upDate="UPDATE `AdminTable` SET `email`='$newEmail'WHERE id=$id";//update new data on DB
-        $IdResults = mysqli_query($con,$upDate);  
+        $Results = mysqli_query($con,$upDate);  
         return 1;
     }
 
     function updatePhoneNumber($id, $newPhone){//function to update user phone number.
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
         $upDate="UPDATE `users` SET `phone`='$newPhone'WHERE id=$id";//update new data on DB
-        $IdResults = mysqli_query($con,$upDate);  
+        $Results = mysqli_query($con,$upDate);  
         return;
     }
 
@@ -512,7 +533,7 @@
           for($t=0;$t<count($arrayOFAll);$t++){
             if(strcmp($course,$arrayOFAll[$t])==0){return 1;}
           }return -1;
-    }   //delete City from DB
+    } 
      
     function displayPeopleFunctionOnAdminPage($arrayOfId,$relatedNumber,$i){
         $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
@@ -870,4 +891,151 @@
             echo"<script type='text/javascript'>alert('$message');</script>";   
         }
     }
+    function getProfileViewerCounter($ID){
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");//connect with DB
+        $viewResult = mysqli_query($con, "SELECT * FROM showThisTeacher");
+        while($row=mysqli_fetch_assoc($viewResult)){
+            if($row['teacherId']==$ID){
+            return $row['viewProfileCounter'];
+            }
+        }return 0;
+    }
+    function addToProfileViewerCounter($ID){//update the number of view specific profile
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");//connect with DB
+        //first get the number of view
+        $viewResult = mysqli_query($con, "SELECT * FROM showThisTeacher");
+        $viewCounter=0;
+        while($row=mysqli_fetch_assoc($viewResult)){
+            if($row['teacherId']==$ID){
+            $viewCounter=$row['viewProfileCounter'];
+            break;
+            }
+        }
+        //update the number
+        $viewCounter+=1;
+        if($viewCounter==1){//if it first time
+            $query="INSERT INTO `showThisTeacher`(`teacherId`,`viewProfileCounter`) VALUES ('$ID','$viewCounter')";
+            $result = mysqli_query($con,$query);
+        }else{//else            
+            $upDate="UPDATE `showThisTeacher` SET `viewProfileCounter`='$viewCounter'WHERE teacherId=$ID";
+            $result = mysqli_query($con,$upDate);
+        }
+        return;
+    }
+
+     
+    function checkLessonTime($teacherLessonsArray, $day, $hours){//after insert the lesson of a specific teacher on array check match with current day + hour {for profile and viewTeacher files}
+        for($i=1; $i<count($teacherLessonsArray); $i+=3){
+             if($teacherLessonsArray[$i]==$hours && $teacherLessonsArray[$i-1]==$day&& $teacherLessonsArray[$i+1]==1){
+                 return -1;
+             }elseif($teacherLessonsArray[$i]==$hours && $teacherLessonsArray[$i-1]==$day&& $teacherLessonsArray[$i+1]==-1){
+                 return 1;
+             }
+         }
+         return 0;
+     }
+
+     function returnTodayOfWeekAsANumber(){//return the current day of week as a number to ignore the last days
+         date_default_timezone_set('Asia/Jerusalem'); 
+         $script_tz = date_default_timezone_get();
+         $today=date("l");
+         switch ($today) {
+         case "Sunday":
+             return 1;
+             break;
+         case "Monday":
+             return 2;
+             break;
+         case "Tuesday":
+             return 3;
+             break;
+         case "Wednesday":
+             return 4;
+             break;
+         case "Thursday":
+             return 5;
+             break;
+         case "Friday":
+             return 6;
+             break;
+         case "Saturday":
+             return 7;
+             break;
+         }
+    }
+    
+    function softwareCourses($course){//check if course is in DB, then check if it's recognize as a software course or not, update or return error message as alert 
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
+        while($teacherCourseRows=mysqli_fetch_array($resultsOfCourses)){
+            if((strpos($teacherCourseRows['subject'], $course) !== false) && $teacherCourseRows['softwareCourse']==1){//=1--> course already recognize as software course
+                echo"<script type='text/javascript'>alert('הקורס כבר מוגדר כקורס תוכנה מקודם');</script>";
+                return;
+            }elseif((strpos($teacherCourseRows['subject'], $course) !== false) && $teacherCourseRows['softwareCourse']!=1){
+                $softwareCourseID=$teacherCourseRows['id'];
+                $upDate="UPDATE `courses` SET `softwareCourse`='1'WHERE id=$softwareCourseID";
+                if($result = mysqli_query($con,$upDate)){
+                    echo"<script type='text/javascript'>alert('הקורס הוגדר כקורס תוכנה בהצלחה');</script>";//update succues
+                }else{
+                    echo"<script type='text/javascript'>alert('הייתה שגיה נא לנסות שוב אחר כך');</script>";
+                } 
+                return;
+            }
+        } 
+        echo"<script type='text/javascript'>alert('הקורס לא קיים במערכת');</script>";
+        return;   
+    }
+
+    function deleteSoftwareCourse($course){//check if course is in DB, then check if it's recognize as a software course or not, update to not a software course or return error message as alert 
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
+        while($teacherCourseRows=mysqli_fetch_array($resultsOfCourses)){
+            if((strpos($teacherCourseRows['subject'], $course) !== false) && $teacherCourseRows['softwareCourse']!=1){//!=1--> course already is not recognize as software course
+                echo"<script type='text/javascript'>alert('הקורס לא מוגדר כקורס תוכנה מקודם');</script>";
+                return;
+            }elseif((strpos($teacherCourseRows['subject'], $course) !== false) && $teacherCourseRows['softwareCourse']==1){
+                $softwareCourseID=$teacherCourseRows['id'];
+                $upDate="UPDATE `courses` SET `softwareCourse`='-1'WHERE id=$softwareCourseID";
+                if($result = mysqli_query($con,$upDate)){
+                    echo"<script type='text/javascript'>alert('הקורס הוגדר כקורס שאינו תוכנה בהצלחה');</script>";//update succues
+                }else{
+                    echo"<script type='text/javascript'>alert('הייתה שגיה נא לנסות שוב אחר כך');</script>";
+                } 
+                return;
+            }
+        } 
+        echo"<script type='text/javascript'>alert('הקורס לא קיים במערכת');</script>";
+        return;   
+    }
+    
+    function courseAsASoftware($course){//when teacher going to uptade his course if what he choose is a software course 
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $resultsOfCourses = mysqli_query($con, "SELECT * FROM courses");//call the table of courses
+        while($teacherCourseRows=mysqli_fetch_array($resultsOfCourses)){
+            if((strpos($teacherCourseRows['subject'], $course) !== false) && $teacherCourseRows['softwareCourse']==1){//yes is a software course
+                return 1;
+            }elseif((strpos($teacherCourseRows['subject'], $course) !== false) && $teacherCourseRows['softwareCourse']!=1){//not a software course
+                return -1;
+            }
+        } 
+        return -1;
+    }
+
+    function teacherStudy($ID){//return the teacher study collage/university waht else... 
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $results= mysqli_query($con, "SELECT * FROM users");
+        while ($Row=mysqli_fetch_assoc($results)){
+            if($Row['id']==$ID){
+                return $Row['study'];
+            }
+        }
+    }
+
+    
+    function updateSStudy($id,$status){//function to update teacher status.
+        $con=mysqli_connect("sql105.epizy.com","epiz_25492203","3vHHD8yqUaFf8z","epiz_25492203_Hakita");
+        $upDate="UPDATE `users` SET `study`='$status'WHERE id=$id";//update new data on DB
+        $IdResults = mysqli_query($con,$upDate);
+        return;
+    } 
 ?>
